@@ -1,0 +1,14 @@
+{
+  "manifest_version": 2,
+  "name": "e621.net shortcuts",
+  "version": "1.0",
+
+  "description": "Go to next post and prev post.",
+
+  "content_scripts": [
+    {
+      "matches": ["*://e621.net/*", "*://e926.net/*"],
+      "js": ["ext.js"]
+    }
+  ]
+}
