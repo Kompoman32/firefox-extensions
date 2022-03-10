@@ -1,0 +1,58 @@
+#ffk-controls {
+  position: fixed;
+  top: 0;
+
+  height: 20px;
+  width: 100%;
+
+  background-color: #6a6a6a6a;
+
+  display: flex;
+  flex-direction: row;
+
+  justify-content: center;
+  align-items: center;
+
+  z-index: 999999;
+
+  /* transition: 2s; */
+  visibility: visible;
+}
+
+#ffk-controls > * {
+  /* transition: 2s; */
+}
+#ffk-controls:not(:hover) > * {
+  visibility: hidden;
+}
+
+#ffk-controls:not(:hover) {
+  width: 50px;
+
+  left: calc(50% - 25px);
+  background-color: #6a6a6a;
+
+  border-bottom-left-radius: 50%;
+  border-bottom-right-radius: 50%;
+}
+
+#ffk-controls:hover {
+  height: 50px;
+}
+
+#ffk-controls > * {
+  margin-right: 10px;
+}
+
+#ffk-controls > .checkbox,
+#ffk-controls > input[type="checkbox"] {
+  cursor: pointer;
+}
+
+#ffk-hide-controls {
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  z-index: 999999;
+}

@@ -1,0 +1,15 @@
+{
+  "manifest_version": 2,
+  "name": "ff-comic-scroller",
+  "version": "1.0",
+
+  "description": "ff-comic-scroller",
+
+  "content_scripts": [
+    {
+      "matches": ["*://*.furaffinity.net/view/*"],
+      "js": ["ext.js"],
+      "css": ["./style.css"]
+    }
+  ]
+}
