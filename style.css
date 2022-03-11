@@ -117,16 +117,16 @@ body.kd-toggle .post__details__oppost .post__title {
   font-size: 24px;
 }
 
-#js-mv-main {
+body.kd-toggle #js-mv-main {
   z-index: 984 !important;
 }
 
-#up-nav-arrow,
-#down-nav-arrow {
+body.kd-toggle #up-nav-arrow,
+body.kd-toggle #down-nav-arrow {
   z-index: 983 !important;
 }
 
-.mv {
+body.kd-toggle .mv {
   position: fixed;
   top: 0;
   left: 0;
