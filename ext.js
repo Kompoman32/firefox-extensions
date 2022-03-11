@@ -69,10 +69,10 @@ try {
       const postsImgsVideos = [...post.querySelectorAll(".post__image-link img.post__file-webm")];
 
       postsImgs.forEach((x) => {
-        setTimeout(() => {
-          x.removeAttribute("height");
-          x.removeAttribute("width");
-        });
+        // setTimeout(() => {
+        x.removeAttribute("height");
+        x.removeAttribute("width");
+        // });
         if (!x || x.src === x.dataset.src) {
           return;
         }
