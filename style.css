@@ -70,6 +70,8 @@ body.kd-toggle .post.post_type_oppost:not(.post_preview) .post__images {
 }
 
 body.kd-toggle .post:not(.post_preview) .post__images figure.post__image {
+  display: inline-block;
+  vertical-align: top;
   max-width: 100%;
 }
 
@@ -91,7 +93,7 @@ body.kd-toggle .post:not(.post_preview) .post__image-link.webm div {
 
   position: absolute;
   top: 0;
-  z-index: 982;
+  z-index: 299;
   right: 0;
   padding: 5px;
   background: var(--theme_default_bg);
@@ -127,7 +129,7 @@ body.kd-toggle #down-nav-arrow {
 }
 
 body.kd-toggle .mv {
-  position: fixed;
+  /* position: fixed; */
   top: 0;
   left: 0;
 

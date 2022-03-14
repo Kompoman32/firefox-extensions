@@ -124,6 +124,7 @@ function consoleGroupEnd() {
             x.dataset.thumbWidth = x.width;
             x.setAttribute("height", x.dataset.height);
             x.setAttribute("width", x.dataset.width);
+            x.setAttribute("loading", "lazy");
 
             x.dataset.thumbSrc = x.src;
             x.src = x.dataset.src;
@@ -225,6 +226,7 @@ function consoleGroupEnd() {
 
             x.setAttribute("width", x.dataset.thumbWidth);
             x.setAttribute("height", x.dataset.thumbHeight);
+            x.removeAttribute("loading");
 
             // x.src = x.dataset.thumbSrc;
           });
@@ -255,6 +257,7 @@ function consoleGroupEnd() {
           .then(() => {
             if (toggledValue) {
               clearInterval(MainClass.interval);
+              MainClass.render();
               MainClass.interval = setInterval(MainClass.render, intervalTimeout);
             } else {
               clearInterval(MainClass.interval);
@@ -274,10 +277,6 @@ function consoleGroupEnd() {
 
         if (toggled) {
           toggler.classList.add("toggled");
-
-          // setTimeout(() => {
-          //   render();
-          // }, 100);
         } else {
           toggler.classList.remove("toggled");
         }
