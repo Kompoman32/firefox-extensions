@@ -141,3 +141,7 @@ body.kd-toggle .mv {
   /* background: #15202bdd; */
   background: #15202b00;
 }
+
+body.kd-toggle .post.post_preview {
+  z-index: 999;
+}
