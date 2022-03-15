@@ -114,7 +114,14 @@ body.kd-toggle .post__details__oppost {
   background: var(--theme_default_bg);
 
   z-index: 982;
+
+  display: flex;
+  align-items: baseline;
 }
+body.kd-toggle .post__details__oppost > * {
+  margin-right: 4px;
+}
+
 body.kd-toggle .post__details__oppost .post__title {
   font-size: 24px;
 }
@@ -143,5 +150,26 @@ body.kd-toggle .mv {
 }
 
 body.kd-toggle .post.post_preview {
-  z-index: 999;
+  z-index: 999 !important;
+}
+
+body.kd-toggle .thread.collapsed .thread__oppost,
+body.kd-toggle .thread.collapsed .thread__post {
+  display: none;
+}
+
+body.kd-toggle .thread .post__details__oppost .collapser {
+  font-size: 1rem;
+  width: 1.5rem;
+
+  border-radius: 0.3em;
+
+  display: inline-block;
+  text-align: center;
+  align-self: center;
+
+  color: var(--theme_default_title);
+  border: 1px solid var(--theme_default_alttext);
+
+  cursor: pointer;
 }

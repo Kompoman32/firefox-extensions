@@ -32,6 +32,8 @@ function consoleGroupEnd() {
       throw "No Archivach please";
     }
 
+    const isThreadPage = new RegExp("/.+/res/*/").test(location.pathname);
+
     let { toggled, intervalTimeout } = await browser.storage.sync.get({ toggled: true, intervalTimeout: 5000 });
 
     if (!isFinite(intervalTimeout) || intervalTimeout < 0) {
@@ -53,7 +55,7 @@ function consoleGroupEnd() {
       }
 
       static updateThreads() {
-        const threads = [...document.querySelectorAll(".thread:not([data-missed-moved])")];
+        const threads = [...document.querySelectorAll(".thread:not([data-thread-updated])")];
 
         consoleGroup("Threads");
         consoleLog("Threads updated:", threads.length);
@@ -67,21 +69,47 @@ function consoleGroupEnd() {
           const missedPostCount = thread.querySelector(".thread__missed");
           const postOppost = thread.querySelector(".post_type_oppost .post__details");
 
-          if (!postOppost || !missedPostCount) {
-            thread.dataset.missedMoved = true;
-            return;
+          if (!!postOppost) {
+            postOppost.classList.add("post__details__oppost");
+
+            thread.insertAdjacentElement("afterbegin", postOppost);
+
+            const title = postOppost.querySelector(".post__title");
+
+            if (!!title) {
+              const a = document.createElement("a");
+              a.href = postOppost.querySelector(".post__reflink").href;
+              a.innerText = title.innerText;
+              a.classList.add("post__title");
+              a.target = "_blank";
+
+              title.replaceWith(a);
+            }
+
+            if (!!missedPostCount) {
+              postOppost.insertAdjacentElement("beforeend", missedPostCount);
+            }
+
+            if (!isThreadPage) {
+              const collapser = postOppost.querySelector(".collapser") || document.createElement("span");
+              collapser.classList.add("collapser");
+              collapser.innerText = thread.classList.contains("collapsed") ? "˄" : "˅";
+
+              collapser.removeEventListener("click", MainClass.collapseClick);
+              collapser.addEventListener("click", MainClass.collapseClick);
+
+              postOppost.insertAdjacentElement("afterbegin", collapser);
+            }
           }
 
-          postOppost.insertAdjacentElement("beforeend", missedPostCount);
-
-          thread.dataset.missedMoved = true;
+          thread.dataset.threadUpdated = true;
         });
 
         consoleGroupEnd();
       }
 
       static updatePosts() {
-        const posts = [...document.querySelectorAll(".post:not([data-original-href]):not(.post_preview)")];
+        const posts = [...document.querySelectorAll(".post:not([data-post-updated]):not(.post_preview)")];
 
         consoleGroup("Posts");
         consoleLog("Posts updated: ", posts.length);
@@ -91,27 +119,6 @@ function consoleGroupEnd() {
         }
 
         posts.forEach((post, _, arr) => {
-          const post_oppost_detail = post.querySelector(".post_type_oppost .post__details");
-          const thread = post.parentElement.parentElement;
-
-          if (!!post_oppost_detail) {
-            post_oppost_detail.classList.add("post__details__oppost");
-
-            thread.insertAdjacentElement("afterbegin", post_oppost_detail);
-
-            const title = post_oppost_detail.querySelector(".post__title");
-
-            if (!!title) {
-              const a = document.createElement("a");
-              a.href = post_oppost_detail.querySelector(".post__reflink").href;
-              a.innerText = title.innerText;
-              a.classList.add("post__title");
-              a.target = "_blank";
-
-              title.replaceWith(a);
-            }
-          }
-
           const postsImgs = [...post.querySelectorAll(".post__image-link img:not(.post__file-webm)")];
           const postsImgsVideos = [...post.querySelectorAll(".post__image-link img.post__file-webm")];
 
@@ -143,7 +150,7 @@ function consoleGroupEnd() {
             aLink.classList.add("webm");
           });
 
-          post.dataset.originalHref = true;
+          post.dataset.postUpdated = true;
         });
 
         consoleGroupEnd();
@@ -158,7 +165,7 @@ function consoleGroupEnd() {
       }
 
       static deUpdateThreads() {
-        const threads = [...document.querySelectorAll(".thread[data-missed-moved]")];
+        const threads = [...document.querySelectorAll(".thread[data-thread-updated]")];
 
         consoleGroup("Threads");
         consoleLog("Threads deUpdated:", threads.length);
@@ -175,14 +182,21 @@ function consoleGroupEnd() {
             thread.children[0].insertAdjacentElement("afterend", missedPostCount);
           }
 
-          delete thread.dataset.missedMoved;
+          delete thread.dataset.threadUpdated;
+
+          thread.classList.remove("collapsed");
+          const collapser = postOppost.querySelector(".collapser");
+          if (!!collapser) {
+            collapser.removeEventListener("click", MainClass.collapseClick);
+            collapser.remove();
+          }
         });
 
         consoleGroupEnd();
       }
 
       static deUpdatePosts() {
-        const posts = [...document.querySelectorAll(".post[data-original-href]:not(.post_preview)")];
+        const posts = [...document.querySelectorAll(".post[data-post-updated]:not(.post_preview)")];
 
         consoleGroup("Posts");
         consoleLog("Posts deUpdated: ", posts.length);
@@ -239,7 +253,7 @@ function consoleGroupEnd() {
             aLink.classList.remove("webm");
           });
 
-          delete post.dataset.originalHref;
+          delete post.dataset.postUpdated;
         });
 
         consoleGroupEnd();
@@ -282,6 +296,23 @@ function consoleGroupEnd() {
         }
 
         MainClass.setToggled(toggled);
+      }
+
+      static collapseClick(e) {
+        const collapser = e.target;
+        const thread = collapser.parentElement.parentElement;
+
+        if (!!thread) {
+          const collapse = !thread.classList.contains("collapsed");
+
+          if (collapse) {
+            thread.classList.add("collapsed");
+          } else {
+            thread.classList.remove("collapsed");
+          }
+
+          collapser.innerText = collapse ? "˄" : "˅";
+        }
       }
     }
 
