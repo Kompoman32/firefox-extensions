@@ -1,3 +1,12 @@
+var defaultOptionsValues = {
+  maxHeight: 700,
+  // Reversed (if true => replace)
+  thumbImages: true,
+  bTitles: true,
+  bTitlesSize: 47,
+  runGif: true,
+};
+
 function consoleLog(...args) {
   if (localStorage.getItem("kd-debug")) {
     console.log(...args);
@@ -32,6 +41,12 @@ function consoleGroupEnd() {
       throw "No Archivach please";
     }
 
+    const settings = await browser.storage.sync.get(defaultOptionsValues);
+
+    if (!settings) {
+      return;
+    }
+
     const isThreadPage = new RegExp("/.+/res/*/").test(location.pathname);
     const threadGroup = location.pathname.substring(0, location.pathname.substr(1).indexOf("/") + 2);
 
@@ -46,6 +61,9 @@ function consoleGroupEnd() {
     class MainClass {
       static toggled = toggled;
       static interval = null;
+
+      static toggler = null;
+      static settingsPageButton = null;
 
       static render() {
         consoleGroup("KD -", "Render");
@@ -75,7 +93,29 @@ function consoleGroupEnd() {
 
             thread.insertAdjacentElement("afterbegin", postOppost);
 
+            if (!!missedPostCount) {
+              postOppost.insertAdjacentElement("beforeend", missedPostCount);
+            }
+
+            if (!isThreadPage) {
+              const collapser = postOppost.querySelector(".collapser") || document.createElement("span");
+              collapser.classList.add("collapser");
+              collapser.innerText = thread.classList.contains("collapsed") ? "˄" : "˅";
+
+              collapser.removeEventListener("click", MainClass.collapseClick);
+              collapser.addEventListener("click", MainClass.collapseClick);
+
+              postOppost.insertAdjacentElement("afterbegin", collapser);
+            }
+
             let title = postOppost.querySelector(".post__title");
+
+            const isBThread = threadGroup === "/b/";
+            const isBThreadTitlesEnabled = settings.bTitles;
+
+            if (isBThread && !isBThreadTitlesEnabled) {
+              return;
+            }
 
             if (!title) {
               title = document.createElement("span");
@@ -91,7 +131,7 @@ function consoleGroupEnd() {
                 let titleText = "";
 
                 for (let i = 0; i < textByWords.length; i++) {
-                  if (titleText.length + textByWords[i].length > 47) {
+                  if (titleText.length + textByWords[i].length > settings.bTitlesSize) {
                     titleText += " ...";
                     break;
                   }
@@ -124,21 +164,6 @@ function consoleGroupEnd() {
 
               title.replaceWith(a);
             }
-
-            if (!!missedPostCount) {
-              postOppost.insertAdjacentElement("beforeend", missedPostCount);
-            }
-
-            if (!isThreadPage) {
-              const collapser = postOppost.querySelector(".collapser") || document.createElement("span");
-              collapser.classList.add("collapser");
-              collapser.innerText = thread.classList.contains("collapsed") ? "˄" : "˅";
-
-              collapser.removeEventListener("click", MainClass.collapseClick);
-              collapser.addEventListener("click", MainClass.collapseClick);
-
-              postOppost.insertAdjacentElement("afterbegin", collapser);
-            }
           }
 
           thread.dataset.threadUpdated = true;
@@ -161,6 +186,10 @@ function consoleGroupEnd() {
           const postsImgs = [...post.querySelectorAll(".post__image-link img:not(.post__file-webm)")];
           const postsImgsVideos = [...post.querySelectorAll(".post__image-link img.post__file-webm")];
 
+          if (!settings.runGif) {
+            postsImgsVideos.push(...post.querySelectorAll(`.post__image-link img[data-type="4"]`));
+          }
+
           postsImgs.forEach((x) => {
             // if (!x || x.src === `${location.origin}${x.dataset.src}`) {
             //   return;
@@ -173,7 +202,9 @@ function consoleGroupEnd() {
             x.setAttribute("loading", "lazy");
 
             x.dataset.thumbSrc = x.src;
-            x.src = x.dataset.src;
+            if (settings.thumbImages && (x.dataset.type !== "4" || settings.runGif)) {
+              x.src = x.dataset.src;
+            }
           });
 
           postsImgsVideos.forEach((x) => {
@@ -328,13 +359,30 @@ function consoleGroupEnd() {
 
         consoleLog("TogglerClick", toggled);
 
-        if (toggled) {
-          toggler.classList.add("toggled");
-        } else {
-          toggler.classList.remove("toggled");
+        if (MainClass.toggler) {
+          if (toggled) {
+            MainClass.toggler.classList.add("toggled");
+          } else {
+            MainClass.toggler.classList.remove("toggled");
+          }
         }
 
         MainClass.setToggled(toggled);
+      }
+
+      static settingsPageButtonClick() {
+        function onOpened() {
+          console.log(`Options page opened`);
+        }
+
+        function onError(error) {
+          console.log(`Error: ${error}`);
+        }
+
+        let opening = browser.runtime.openOptionsPage();
+        opening.then(onOpened, onError);
+
+        // browser.runtime.openOptionsPage().then(console.log).catch(console.error);
       }
 
       static collapseClick(e) {
@@ -364,11 +412,13 @@ function consoleGroupEnd() {
           </span>
           <label>Включить Kompoman32's design</label>
       </span>
+      <span class="settings" title="Open settings">⛭</span>
       `;
 
     document.querySelector(".header__adminbar .adminbar__boards").appendChild(extensionSettingsEl);
 
     const toggler = extensionSettingsEl.querySelector("#kd-toggler");
+    const settingsPageButton = extensionSettingsEl.querySelector("#kd-settings > .settings");
 
     if (MainClass.toggled) {
       toggler.classList.add("toggled");
@@ -379,13 +429,28 @@ function consoleGroupEnd() {
     }
 
     MainClass.toggler = toggler;
+    MainClass.settingsPageButton = settingsPageButton;
 
     MainClass.toggler.removeEventListener("click", MainClass.togglerClick);
     MainClass.toggler.addEventListener("click", MainClass.togglerClick);
 
+    MainClass.settingsPageButton.removeEventListener("click", MainClass.settingsPageButtonClick);
+    MainClass.settingsPageButton.addEventListener("click", MainClass.settingsPageButtonClick);
+
     setTimeout(() => {
       MainClass.setToggled(MainClass.toggled);
     }, 100);
+
+    const settingsStyle = document.head.querySelector("#kd-settings-style") || document.createElement("style");
+    settingsStyle.id = "kd-settings-style";
+
+    settingsStyle.innerText = `
+      body.kd-toggle .post:not(.post_preview) .post__image-link img {
+        max-height: ${settings.maxHeight}px;
+      }
+    `;
+
+    document.head.insertAdjacentElement("beforeend", settingsStyle);
   } catch (e) {
     console.error(e);
   }

@@ -4,12 +4,68 @@
   <head>
     <meta charset="utf-8" />
     <title>Kompoman32's for 2ch.hk</title>
+    <link rel="stylesheet" href="./options.css" />
+    <script src="./options.js"></script>
   </head>
 
   <body>
     <form>
-      <label>Border color<input type="text" id="color" /></label>
-      <button type="submit">Save</button>
+      <div id="loader" class="loader" data-completed="false">
+        <div><div></div></div>
+      </div>
+      <table>
+        <thead></thead>
+        <tbody>
+          <tr>
+            <td>
+              <label>Max image height</label>
+            </td>
+            <td>
+              <input type="number" id="max-height" name="maxHeight" step="0.01" min="1" required />px
+              <span class="validity"></span>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label>Replace thumb images with full-sized images<br />(slow loading)</label>
+            </td>
+            <td><input type="checkbox" id="thumb-images" name="thumbImages" /></td>
+          </tr>
+          <tr>
+            <td>
+              <label>Run GIF</label>
+            </td>
+            <td><input type="checkbox" id="run-gif" name="runGif" /></td>
+          </tr>
+          <tr class="splitter">
+            <td colspan="2"></td>
+          </tr>
+          <tr>
+            <td>
+              <label>Show titles on /b/</label>
+            </td>
+            <td><input type="checkbox" id="b-titles" name="bTitles" /></td>
+          </tr>
+          <tr>
+            <td>
+              <label>/b/ titles max symbols</label>
+            </td>
+            <td>
+              <input type="number" id="b-titles-size" name="bTitlesSize" step="1" min="1" required />
+              <span class="validity"></span>
+            </td>
+          </tr>
+          <tr class="splitter">
+            <td colspan="2"></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>
+              <button type="submit">Save</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </form>
 
     <script src="options.js"></script>

@@ -34,8 +34,8 @@ body.kd-toggle .thread {
 }
 
 body.kd-toggle .thread > div {
-  width: 100%;
-  max-width: 100%;
+  width: calc(100% + var(--post-margin));
+  max-width: calc(100% + var(--post-margin));
 }
 
 body.kd-toggle .thread .thread__oppost,
@@ -102,7 +102,7 @@ body.kd-toggle .post:not(.post_preview) .post__image-link.webm div {
 }
 
 body.kd-toggle .post:not(.post_preview) .post__image-link img {
-  max-height: 700px;
+  /* max-height: 700px; */
   max-width: 100%;
   width: unset;
 }
@@ -176,4 +176,19 @@ body.kd-toggle .thread .post__details__oppost .collapser {
 
 body.kd-toggle #settings-window {
   z-index: 998;
+}
+
+body.kd-toggle #settings-window .settings__header span {
+  font-family: "Courier New", Courier, monospace;
+}
+body.kd-toggle .bb.desktop {
+  z-index: 997;
+}
+
+body.kd-toggle #kd-settings .settings {
+  cursor: pointer;
+}
+
+body.kd-toggle #kd-toggler:not(.toggled) + .settings {
+  display: none;
 }
