@@ -33,6 +33,7 @@ function consoleGroupEnd() {
     }
 
     const isThreadPage = new RegExp("/.+/res/*/").test(location.pathname);
+    const threadGroup = location.pathname.substring(0, location.pathname.substr(1).indexOf("/") + 2);
 
     let { toggled, intervalTimeout } = await browser.storage.sync.get({ toggled: true, intervalTimeout: 5000 });
 
@@ -74,14 +75,52 @@ function consoleGroupEnd() {
 
             thread.insertAdjacentElement("afterbegin", postOppost);
 
-            const title = postOppost.querySelector(".post__title");
+            let title = postOppost.querySelector(".post__title");
 
-            if (!!title) {
+            if (!title) {
+              title = document.createElement("span");
+              title.classList.add("post__title");
+
+              if (isThreadPage) {
+                title.innerText = document.head.querySelector("title").innerText.replace(`${threadGroup} - `, "");
+              } else {
+                const postText = thread.querySelector(".post_type_oppost article").innerText;
+
+                const textByWords = postText.replaceAll("\n", " ").replaceAll("  ", " ").split(" ");
+
+                let titleText = "";
+
+                for (let i = 0; i < textByWords.length; i++) {
+                  if (titleText.length + textByWords[i].length > 47) {
+                    titleText += " ...";
+                    break;
+                  }
+
+                  titleText += ` ${textByWords[i]}`;
+                }
+
+                titleText = titleText.trim();
+
+                title.innerText = titleText;
+
+                title.title = postText;
+              }
+
+              const detailPart = postOppost.querySelector(".post__detailpart");
+
+              if (detailPart) {
+                detailPart.insertAdjacentElement("afterbegin", title);
+              }
+            }
+
+            if (!isThreadPage) {
               const a = document.createElement("a");
               a.href = postOppost.querySelector(".post__reflink").href;
               a.innerText = title.innerText;
               a.classList.add("post__title");
               a.target = "_blank";
+
+              a.title = title.title;
 
               title.replaceWith(a);
             }

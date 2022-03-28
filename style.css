@@ -173,3 +173,7 @@ body.kd-toggle .thread .post__details__oppost .collapser {
 
   cursor: pointer;
 }
+
+body.kd-toggle #settings-window {
+  z-index: 998;
+}
