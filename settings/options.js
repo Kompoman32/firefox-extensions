@@ -2,9 +2,15 @@ var defaultOptionsValues = {
   maxHeight: 700,
   // Reversed (if true => replace)
   thumbImages: true,
+
   bTitles: true,
   bTitlesSize: 47,
+
   runGif: true,
+
+  previewBackground: true,
+  previewBackgroundColor: "#15202b",
+  previewBackgroundOpacity: 0.86328125,
 };
 
 function formSerializer(form) {
@@ -30,8 +36,10 @@ function formSerializer(form) {
           case "button":
           case "reset":
           case "submit":
+          case "color":
             res[el.name] = el.value;
             break;
+          case "range":
           case "number":
             res[el.name] = +el.value;
             break;
@@ -104,11 +112,115 @@ function restoreOptions() {
   function setCurrentChoice(result) {
     setLoader(true);
 
-    document.querySelector("#max-height").value = result.maxHeight || defaultOptionsValues.maxHeight;
-    document.querySelector("#thumb-images").checked = result.thumbImages || defaultOptionsValues.thumbImages;
-    document.querySelector("#b-titles").checked = result.bTitles || defaultOptionsValues.bTitles;
-    document.querySelector("#b-titles-size").value = result.bTitlesSize || defaultOptionsValues.bTitlesSize;
-    document.querySelector("#run-gif").checked = result.runGif || defaultOptionsValues.runGif;
+    document.querySelector("#max-height").value = result.maxHeight;
+    document.querySelector("#thumb-images").checked = result.thumbImages;
+
+    document.querySelector("#b-titles").checked = result.bTitles;
+    document.querySelector("#b-titles-size").value = result.bTitlesSize;
+
+    document.querySelector("#run-gif").checked = result.runGif;
+
+    document.querySelector("#preview-background").checked = result.previewBackground;
+    document.querySelector("#preview-background-color").value = result.previewBackgroundColor;
+    document.querySelector("#preview-background-opacity").value = result.previewBackgroundOpacity;
+    document.querySelector("#preview-background-opacity-value").value = result.previewBackgroundOpacity;
+
+    setListeners(result);
+  }
+
+  function setListeners(settings) {
+    function setDisabled(section) {
+      const el = document.querySelector(`.${section}-toggler input`);
+
+      const func = function (e) {
+        const checked = this.checked;
+        document.querySelectorAll(`.${section}`).forEach((e) => {
+          if (checked) {
+            e.classList.remove("disabled");
+          } else {
+            e.classList.add("disabled");
+          }
+        });
+      };
+
+      func.call(el);
+      el.addEventListener("change", func.bind(el));
+    }
+
+    setDisabled("section-preview");
+    setDisabled("section-b");
+
+    let el;
+
+    /*----------------------BACKGROUND-PREVIEW----------------------*/
+
+    const previewBackgroundColorPicker = new ColorPicker({
+      dom: document.getElementById("preview-background-color-picker"),
+      value: document.getElementById("preview-background-color").value,
+    });
+
+    const setBackgroundPreview = () => {
+      const color =
+        document.getElementById("preview-background-color").value +
+        Math.round(
+          Math.min(Math.max(document.getElementById(`preview-background-opacity`).value, 0), 1) * 255
+        ).toString(16);
+
+      document.querySelector("td.background-preview .preview").style.backgroundColor = color;
+    };
+
+    setBackgroundPreview();
+
+    previewBackgroundColorPicker.addEventListener("change", (e) => {
+      document.getElementById("preview-background-color").value = previewBackgroundColorPicker.value;
+      setBackgroundPreview();
+    });
+
+    el = document.querySelector(`.background-preview .collapser`);
+    el &&
+      el.addEventListener("click", (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const collapsed = e.target.classList.contains("collapsed");
+
+        setTimeout(() => {
+          if (collapsed) {
+            e.target.classList.remove("collapsed");
+          } else {
+            e.target.classList.add("collapsed");
+          }
+        });
+      });
+
+    el = document.querySelector(`.section-preview-toggler input`);
+    el &&
+      el.addEventListener("change", (e) => {
+        if (!e.target.checked) {
+          document.querySelector(`.background-preview .collapser`).classList.add("collapsed");
+        }
+      });
+    el = document.getElementById(`preview-background-opacity`);
+    el &&
+      el.addEventListener("input", (e) => {
+        let _el = document.getElementById(`preview-background-opacity-value`);
+        _el && (_el.value = e.target.value);
+
+        setBackgroundPreview();
+      });
+
+    el = document.getElementById(`preview-background-opacity-value`);
+    el &&
+      el.addEventListener("change", (e) => {
+        if (!e.target.validity.valid) {
+          return;
+        }
+        let _el = document.getElementById(`preview-background-opacity`);
+        _el && (_el.value = e.target.value);
+
+        setBackgroundPreview();
+      });
+
+    /*----------------------BACKGROUND-PREVIEW----------------------*/
   }
 
   function onError(error) {

@@ -5,6 +5,10 @@ var defaultOptionsValues = {
   bTitles: true,
   bTitlesSize: 47,
   runGif: true,
+
+  previewBackground: true,
+  previewBackgroundColor: "#15202b",
+  previewBackgroundOpacity: 0.86328125,
 };
 
 function consoleLog(...args) {
@@ -448,7 +452,21 @@ function consoleGroupEnd() {
       body.kd-toggle .post:not(.post_preview) .post__image-link img {
         max-height: ${settings.maxHeight}px;
       }
+
     `;
+
+    if (settings.previewBackground) {
+      const color =
+        settings.previewBackgroundColor +
+        Math.round(Math.min(Math.max(settings.previewBackgroundOpacity, 0), 1) * 255).toString(16);
+
+      settingsStyle.innerText += `
+      body.kd-toggle .mv {
+        position: fixed;
+        background: ${color};
+      }
+      `;
+    }
 
     document.head.insertAdjacentElement("beforeend", settingsStyle);
   } catch (e) {

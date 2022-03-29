@@ -140,13 +140,10 @@ body.kd-toggle .mv {
   top: 0;
   left: 0;
 
-  z-index: 984 !important;
-
   width: 100%;
   height: 100%;
 
   /* background: #15202bdd; */
-  background: #15202b00;
 }
 
 body.kd-toggle .post.post_preview {
@@ -174,15 +171,15 @@ body.kd-toggle .thread .post__details__oppost .collapser {
   cursor: pointer;
 }
 
-body.kd-toggle #settings-window {
-  z-index: 998;
+body.kd-toggle #qr,
+body.kd-toggle #settings-window,
+body.kd-toggle .bb.desktop,
+body.kd-toggle .mv {
+  z-index: 998 !important;
 }
 
 body.kd-toggle #settings-window .settings__header span {
   font-family: "Courier New", Courier, monospace;
-}
-body.kd-toggle .bb.desktop {
-  z-index: 997;
 }
 
 body.kd-toggle #kd-settings .settings {
