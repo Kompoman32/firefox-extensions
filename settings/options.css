@@ -82,7 +82,12 @@ form table {
   width: 100%;
 }
 
-tr.disabled {
+input[type="number"] {
+  max-width: 70px;
+}
+
+tr.disabled,
+td.disabled {
   opacity: 0.5;
 
   pointer-events: none;

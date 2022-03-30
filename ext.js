@@ -9,6 +9,10 @@ var defaultOptionsValues = {
   previewBackground: true,
   previewBackgroundColor: "#15202b",
   previewBackgroundOpacity: 0.86328125,
+
+  autoSave: false,
+  toggled: true,
+  intervalTimeout: 5000,
 };
 
 function consoleLog(...args) {
@@ -54,7 +58,7 @@ function consoleGroupEnd() {
     const isThreadPage = new RegExp("/.+/res/*/").test(location.pathname);
     const threadGroup = location.pathname.substring(0, location.pathname.substr(1).indexOf("/") + 2);
 
-    let { toggled, intervalTimeout } = await browser.storage.sync.get({ toggled: true, intervalTimeout: 5000 });
+    let { toggled, intervalTimeout } = settings;
 
     if (!isFinite(intervalTimeout) || intervalTimeout < 0) {
       intervalTimeout = 5000;
@@ -63,11 +67,48 @@ function consoleGroupEnd() {
     toggled = !!toggled;
 
     class MainClass {
+      static settings = {};
+
       static toggled = toggled;
       static interval = null;
 
       static toggler = null;
       static settingsPageButton = null;
+
+      static start() {
+        clearInterval(MainClass.interval);
+        MainClass.render();
+        MainClass.interval = setInterval(MainClass.render, intervalTimeout);
+
+        MainClass.toggled = true;
+        MainClass.settings.toggled = true;
+
+        browser.storage.sync
+          .set({
+            toggled: true,
+          })
+          .catch(() => {
+            consoleError("Toggled sync error", toggledValue);
+            clearInterval(MainClass.interval);
+          });
+      }
+
+      static stop() {
+        clearInterval(MainClass.interval);
+        MainClass.derender();
+
+        MainClass.toggled = false;
+        MainClass.settings.toggled = false;
+
+        browser.storage.sync
+          .set({
+            toggled: false,
+          })
+          .catch(() => {
+            consoleError("Toggled sync error", toggledValue);
+            clearInterval(MainClass.interval);
+          });
+      }
 
       static render() {
         consoleGroup("KD -", "Render");
@@ -88,92 +129,98 @@ function consoleGroupEnd() {
           return;
         }
 
-        threads.forEach((thread) => {
-          const missedPostCount = thread.querySelector(".thread__missed");
-          const postOppost = thread.querySelector(".post_type_oppost .post__details");
+        threads.forEach((thread) => MainClass.updateThread(thread));
 
-          if (!!postOppost) {
-            postOppost.classList.add("post__details__oppost");
+        consoleGroupEnd();
+      }
 
-            thread.insertAdjacentElement("afterbegin", postOppost);
+      static updateThread(thread, updateGeneratedTitle = false) {
+        const missedPostCount = thread.querySelector(".thread__missed");
+        const postOppost = thread.querySelector(".post_type_oppost .post__details");
 
-            if (!!missedPostCount) {
-              postOppost.insertAdjacentElement("beforeend", missedPostCount);
-            }
+        if (!!postOppost) {
+          postOppost.classList.add("post__details__oppost");
 
-            if (!isThreadPage) {
-              const collapser = postOppost.querySelector(".collapser") || document.createElement("span");
-              collapser.classList.add("collapser");
-              collapser.innerText = thread.classList.contains("collapsed") ? "˄" : "˅";
+          thread.insertAdjacentElement("afterbegin", postOppost);
 
-              collapser.removeEventListener("click", MainClass.collapseClick);
-              collapser.addEventListener("click", MainClass.collapseClick);
+          if (!!missedPostCount) {
+            postOppost.insertAdjacentElement("beforeend", missedPostCount);
+          }
 
-              postOppost.insertAdjacentElement("afterbegin", collapser);
-            }
+          if (!isThreadPage) {
+            const collapser = postOppost.querySelector(".collapser") || document.createElement("span");
+            collapser.classList.add("collapser");
+            collapser.innerText = thread.classList.contains("collapsed") ? "˄" : "˅";
 
-            let title = postOppost.querySelector(".post__title");
+            collapser.removeEventListener("click", MainClass.collapseThreadClick);
+            collapser.addEventListener("click", MainClass.collapseThreadClick);
 
-            const isBThread = threadGroup === "/b/";
-            const isBThreadTitlesEnabled = settings.bTitles;
+            postOppost.insertAdjacentElement("afterbegin", collapser);
+          }
 
-            if (isBThread && !isBThreadTitlesEnabled) {
-              return;
-            }
+          let title = updateGeneratedTitle ? undefined : postOppost.querySelector(".post__title");
 
-            if (!title) {
-              title = document.createElement("span");
-              title.classList.add("post__title");
+          const isBThread = threadGroup === "/b/";
+          const isBThreadTitlesEnabled = MainClass.settings.bTitles;
 
-              if (isThreadPage) {
-                title.innerText = document.head.querySelector("title").innerText.replace(`${threadGroup} - `, "");
-              } else {
-                const postText = thread.querySelector(".post_type_oppost article").innerText;
+          if (isBThread && !isBThreadTitlesEnabled) {
+            return;
+          }
 
-                const textByWords = postText.replaceAll("\n", " ").replaceAll("  ", " ").split(" ");
+          if (!title) {
+            title = document.createElement("span");
+            title.classList.add("post__title");
+            title.classList.add("post__title__generated");
 
-                let titleText = "";
+            if (isThreadPage) {
+              title.innerText = document.head.querySelector("title").innerText.replace(`${threadGroup} - `, "");
+            } else {
+              const postText = thread.querySelector(".post_type_oppost article").innerText;
 
-                for (let i = 0; i < textByWords.length; i++) {
-                  if (titleText.length + textByWords[i].length > settings.bTitlesSize) {
-                    titleText += " ...";
-                    break;
-                  }
+              const textByWords = postText.replaceAll("\n", " ").replaceAll("  ", " ").split(" ");
 
-                  titleText += ` ${textByWords[i]}`;
+              let titleText = "";
+
+              for (let i = 0; i < textByWords.length; i++) {
+                if (titleText.length + textByWords[i].length > MainClass.settings.bTitlesSize) {
+                  titleText += " ...";
+                  break;
                 }
 
-                titleText = titleText.trim();
-
-                title.innerText = titleText;
-
-                title.title = postText;
+                titleText += ` ${textByWords[i]}`;
               }
 
-              const detailPart = postOppost.querySelector(".post__detailpart");
+              titleText = titleText.trim();
 
-              if (detailPart) {
-                detailPart.insertAdjacentElement("afterbegin", title);
-              }
+              title.innerText = titleText;
+
+              title.title = postText;
             }
 
-            if (!isThreadPage) {
-              const a = document.createElement("a");
-              a.href = postOppost.querySelector(".post__reflink").href;
-              a.innerText = title.innerText;
-              a.classList.add("post__title");
-              a.target = "_blank";
+            const detailPart = postOppost.querySelector(".post__detailpart");
 
-              a.title = title.title;
-
-              title.replaceWith(a);
+            if (detailPart) {
+              detailPart.insertAdjacentElement("afterbegin", title);
             }
           }
 
-          thread.dataset.threadUpdated = true;
-        });
+          if (!isThreadPage) {
+            const a = document.createElement("a");
+            a.href = postOppost.querySelector(".post__reflink").href;
+            a.innerText = title.innerText;
+            a.classList.add("post__title");
+            if (title.classList.contains("post__title__generated")) {
+              a.classList.add("post__title__generated");
+            }
+            a.target = "_blank";
 
-        consoleGroupEnd();
+            a.title = title.title;
+
+            title.replaceWith(a);
+          }
+        }
+
+        thread.dataset.threadUpdated = true;
       }
 
       static updatePosts() {
@@ -186,48 +233,54 @@ function consoleGroupEnd() {
           return;
         }
 
-        posts.forEach((post, _, arr) => {
-          const postsImgs = [...post.querySelectorAll(".post__image-link img:not(.post__file-webm)")];
-          const postsImgsVideos = [...post.querySelectorAll(".post__image-link img.post__file-webm")];
-
-          if (!settings.runGif) {
-            postsImgsVideos.push(...post.querySelectorAll(`.post__image-link img[data-type="4"]`));
-          }
-
-          postsImgs.forEach((x) => {
-            // if (!x || x.src === `${location.origin}${x.dataset.src}`) {
-            //   return;
-            // }
-
-            x.dataset.thumbHeight = x.height;
-            x.dataset.thumbWidth = x.width;
-            x.setAttribute("height", x.dataset.height);
-            x.setAttribute("width", x.dataset.width);
-            x.setAttribute("loading", "lazy");
-
-            x.dataset.thumbSrc = x.src;
-            if (settings.thumbImages && (x.dataset.type !== "4" || settings.runGif)) {
-              x.src = x.dataset.src;
-            }
-          });
-
-          postsImgsVideos.forEach((x) => {
-            const aLink = x.parentElement;
-
-            const title = x.dataset.title || "";
-            const ext = title.substr(title.lastIndexOf(".") + 1);
-
-            const div = document.createElement("div");
-            div.innerText = ext;
-            aLink.appendChild(div);
-
-            aLink.classList.add("webm");
-          });
-
-          post.dataset.postUpdated = true;
-        });
+        posts.forEach((post) => MainClass.updatePost(post));
 
         consoleGroupEnd();
+      }
+
+      static updatePost(post, updateRunGif = true, updateThumbImages = true) {
+        const postsImgs = [...post.querySelectorAll(".post__image-link img:not(.post__file-webm)")];
+        const postsImgsVideos = [...post.querySelectorAll(".post__image-link img.post__file-webm")];
+
+        if (updateRunGif && !MainClass.settings.runGif) {
+          postsImgsVideos.push(...post.querySelectorAll(`.post__image-link img[data-type="4"]`));
+        }
+
+        postsImgs.forEach((x) => {
+          // if (!x || x.src === `${location.origin}${x.dataset.src}`) {
+          //   return;
+          // }
+
+          x.dataset.thumbHeight = x.height;
+          x.dataset.thumbWidth = x.width;
+          x.setAttribute("height", x.dataset.height);
+          x.setAttribute("width", x.dataset.width);
+          x.setAttribute("loading", "lazy");
+
+          x.dataset.thumbSrc = x.src;
+          if (
+            updateThumbImages &&
+            MainClass.settings.thumbImages &&
+            (x.dataset.type !== "4" || MainClass.settings.runGif)
+          ) {
+            x.src = x.dataset.src;
+          }
+        });
+
+        postsImgsVideos.forEach((x) => {
+          const aLink = x.parentElement;
+
+          const title = x.dataset.title || "";
+          const ext = title.substr(title.lastIndexOf(".") + 1);
+
+          const div = document.createElement("div");
+          div.innerText = ext;
+          aLink.appendChild(div);
+
+          aLink.classList.add("webm");
+        });
+
+        post.dataset.postUpdated = true;
       }
 
       static derender() {
@@ -248,25 +301,27 @@ function consoleGroupEnd() {
           return;
         }
 
-        threads.forEach((thread) => {
-          const missedPostCount = thread.querySelector(".thread__missed");
-          const postOppost = thread.querySelector(".post_type_oppost .post__details");
-
-          if (postOppost && missedPostCount && thread.children[0]) {
-            thread.children[0].insertAdjacentElement("afterend", missedPostCount);
-          }
-
-          delete thread.dataset.threadUpdated;
-
-          thread.classList.remove("collapsed");
-          const collapser = postOppost.querySelector(".collapser");
-          if (!!collapser) {
-            collapser.removeEventListener("click", MainClass.collapseClick);
-            collapser.remove();
-          }
-        });
+        threads.forEach((thread) => MainClass.deUpdateThread(thread));
 
         consoleGroupEnd();
+      }
+
+      static deUpdateThread(thread) {
+        const missedPostCount = thread.querySelector(".thread__missed");
+        const postOppost = thread.querySelector(".post_type_oppost .post__details");
+
+        if (postOppost && missedPostCount && thread.children[0]) {
+          thread.children[0].insertAdjacentElement("afterend", missedPostCount);
+        }
+
+        delete thread.dataset.threadUpdated;
+
+        thread.classList.remove("collapsed");
+        const collapser = postOppost.querySelector(".collapser");
+        if (!!collapser) {
+          collapser.removeEventListener("click", MainClass.collapseThreadClick);
+          collapser.remove();
+        }
       }
 
       static deUpdatePosts() {
@@ -280,82 +335,105 @@ function consoleGroupEnd() {
           return;
         }
 
-        posts.forEach((post, _, arr) => {
-          const thread = post.parentElement.parentElement;
-          const post_oppost_detail = thread.querySelector(".post_type_oppost .post__details");
-
-          if (!!post_oppost_detail) {
-            post_oppost_detail.classList.remove("post__details__oppost");
-
-            const originalPost = thread.querySelector(".post");
-
-            originalPost.insertAdjacentElement("afterbegin", post_oppost_detail);
-
-            const title = post_oppost_detail.querySelector(".post__title");
-
-            if (!!title) {
-              const span = document.createElement("span");
-              span.innerText = title.innerText;
-              span.classList.add("post__title");
-
-              title.replaceWith(span);
-            }
-          }
-
-          const postsImgs = [...post.querySelectorAll(".post__image-link img:not(.post__file-webm)")];
-          const postsImgsVideos = [...post.querySelectorAll(".post__image-link img.post__file-webm")];
-
-          postsImgs.forEach((x) => {
-            if (!x.dataset.thumbSrc) {
-              x.removeAttribute("width");
-              x.removeAttribute("height");
-              return;
-            }
-
-            x.setAttribute("width", x.dataset.thumbWidth);
-            x.setAttribute("height", x.dataset.thumbHeight);
-            x.removeAttribute("loading");
-
-            // x.src = x.dataset.thumbSrc;
-          });
-
-          postsImgsVideos.forEach((x) => {
-            const aLink = x.parentElement;
-
-            aLink.remove(aLink.querySelector("div"));
-
-            aLink.classList.remove("webm");
-          });
-
-          delete post.dataset.postUpdated;
-        });
+        posts.forEach((post) => MainClass.deUpdatePost(post));
 
         consoleGroupEnd();
+      }
+
+      static deUpdatePost(post) {
+        const thread = post.parentElement.parentElement;
+        const post_oppost_detail = thread.querySelector(".post_type_oppost .post__details");
+
+        if (!!post_oppost_detail) {
+          post_oppost_detail.classList.remove("post__details__oppost");
+
+          const originalPost = thread.querySelector(".post");
+
+          originalPost.insertAdjacentElement("afterbegin", post_oppost_detail);
+
+          const title = post_oppost_detail.querySelector(".post__title");
+
+          if (!!title) {
+            const span = document.createElement("span");
+            span.innerText = title.innerText;
+            span.classList.add("post__title");
+
+            title.replaceWith(span);
+          }
+        }
+
+        const postsImgs = [...post.querySelectorAll(".post__image-link img:not(.post__file-webm)")];
+        const postsImgsVideos = [...post.querySelectorAll(".post__image-link img.post__file-webm")];
+
+        postsImgs.forEach((x) => {
+          if (!x.dataset.thumbSrc) {
+            x.removeAttribute("width");
+            x.removeAttribute("height");
+            return;
+          }
+
+          x.setAttribute("width", x.dataset.thumbWidth);
+          x.setAttribute("height", x.dataset.thumbHeight);
+          x.removeAttribute("loading");
+
+          // x.src = x.dataset.thumbSrc;
+        });
+
+        postsImgsVideos.forEach((x) => {
+          const aLink = x.parentElement;
+
+          aLink.remove(aLink.querySelector("div"));
+
+          aLink.classList.remove("webm");
+        });
+
+        delete post.dataset.postUpdated;
       }
 
       static setToggled(toggledValue) {
         consoleLog("SetToggled", toggledValue);
 
-        MainClass.toggled = toggledValue;
+        if (toggledValue) {
+          MainClass.start();
+        } else {
+          MainClass.stop();
+        }
+      }
 
-        browser.storage.sync
-          .set({
-            toggled: toggledValue,
-          })
-          .then(() => {
-            if (toggledValue) {
-              clearInterval(MainClass.interval);
-              MainClass.render();
-              MainClass.interval = setInterval(MainClass.render, intervalTimeout);
-            } else {
-              clearInterval(MainClass.interval);
-              MainClass.derender();
-            }
-          })
-          .catch(() => {
-            consoleError("Toggled sync error", toggledValue);
-            clearInterval(MainClass.interval);
-          });
+      static setupTopBar() {
+        const extensionSettingsEl = document.querySelector("#kd-settings") || document.createElement("span");
+        extensionSettingsEl.id = "kd-settings";
+        extensionSettingsEl.innerHTML = `
+          <span id="kd-toggler">
+              <span class="nm__switcher">
+                  <span class="nm__bullet"></span>
+              </span>
+              <label>Включить Kompoman32's design</label>
+          </span>
+          <span class="settings" title="Open settings">⛭</span>
+          `;
+
+        document.querySelector(".header__adminbar .adminbar__boards").appendChild(extensionSettingsEl);
+
+        const toggler = extensionSettingsEl.querySelector("#kd-toggler");
+        const settingsPageButton = extensionSettingsEl.querySelector("#kd-settings > .settings");
+
+        if (MainClass.toggled) {
+          toggler.classList.add("toggled");
+          document.body.classList.add("kd-toggle");
+        } else {
+          toggler.classList.remove("toggled");
+          document.body.classList.remove("kd-toggle");
+        }
+
+        MainClass.toggler = toggler;
+        MainClass.settingsPageButton = settingsPageButton;
+
+        MainClass.toggler.removeEventListener("click", MainClass.togglerClick);
+        MainClass.toggler.addEventListener("click", MainClass.togglerClick);
+
+        MainClass.settingsPageButton.removeEventListener("click", MainClass.settingsPageButtonClick);
+        MainClass.settingsPageButton.addEventListener("click", MainClass.settingsPageButtonClick);
       }
 
       static togglerClick() {
@@ -378,7 +456,7 @@ function consoleGroupEnd() {
         browser.runtime.sendMessage({ action: "openOptionsPage" });
       }
 
-      static collapseClick(e) {
+      static collapseThreadClick(e) {
         const collapser = e.target;
         const thread = collapser.parentElement.parentElement;
 
@@ -394,70 +472,102 @@ function consoleGroupEnd() {
           collapser.innerText = collapse ? "˄" : "˅";
         }
       }
+
+      static setupStyleBySettings() {
+        const settingsStyle = document.head.querySelector("#kd-settings-style") || document.createElement("style");
+        settingsStyle.id = "kd-settings-style";
+
+        settingsStyle.innerText = `
+          body.kd-toggle .post:not(.post_preview) .post__image-link img {
+            max-height: ${MainClass.settings.maxHeight}px;
+          }
+    
+        `;
+
+        if (MainClass.settings.previewBackground) {
+          const color =
+            MainClass.settings.previewBackgroundColor +
+            Math.round(Math.min(Math.max(MainClass.settings.previewBackgroundOpacity, 0), 1) * 255).toString(16);
+
+          settingsStyle.innerText += `
+          body.kd-toggle .mv {
+            position: fixed;
+            background: ${color};
+          }
+          `;
+        }
+
+        document.head.insertAdjacentElement("beforeend", settingsStyle);
+      }
+
+      static setupListeners() {
+        browser.runtime.onMessage.addListener((message) => {
+          switch (message.action) {
+            case "settingsUpdated":
+              const newSettings = message.data;
+              const currentSettings = MainClass.settings;
+
+              const maxHeightChanged = newSettings.maxHeight !== currentSettings.maxHeight;
+              const thumbImagesChanged = newSettings.thumbImages !== currentSettings.thumbImages;
+              const bTitlesChanged = newSettings.bTitles !== currentSettings.bTitles;
+              const bTitlesSizeChanged = newSettings.bTitlesSize !== currentSettings.bTitlesSize;
+              const runGifChanged = newSettings.runGif !== currentSettings.runGif;
+              const previewBackgroundChanged = newSettings.previewBackground !== currentSettings.previewBackground;
+              const previewBackgroundColorChanged =
+                newSettings.previewBackgroundColor !== currentSettings.previewBackgroundColor;
+              const previewBackgroundOpacityChanged =
+                newSettings.previewBackgroundOpacity !== currentSettings.previewBackgroundOpacity;
+              const toggledChanged = newSettings.toggled !== currentSettings.toggled;
+              const intervalTimeoutChanged = newSettings.intervalTimeout !== currentSettings.intervalTimeout;
+
+              MainClass.settings = newSettings;
+
+              if (bTitlesChanged || bTitlesSizeChanged) {
+                const threads = [...document.querySelectorAll(".thread")];
+
+                threads.forEach((thread) => {
+                  MainClass.updateThread(thread, true);
+                });
+              }
+
+              if (runGifChanged || thumbImagesChanged) {
+                const posts = [...document.querySelectorAll(".post:not([data-post-updated]):not(.post_preview)")];
+
+                posts.forEach((post) => {
+                  MainClass.updatePost(post, runGifChanged, thumbImagesChanged);
+                });
+              }
+
+              if (
+                maxHeightChanged ||
+                previewBackgroundChanged ||
+                previewBackgroundColorChanged ||
+                previewBackgroundOpacityChanged
+              ) {
+                MainClass.setupStyleBySettings();
+              }
+
+              if (intervalTimeoutChanged && newSettings.toggled) {
+                clearInterval(MainClass.interval);
+                MainClass.interval = setInterval(MainClass.render, MainClass.settings.intervalTimeout);
+              }
+              break;
+            default:
+              break;
+          }
+        });
+      }
     }
 
-    const extensionSettingsEl = document.querySelector("#kd-settings") || document.createElement("span");
-    extensionSettingsEl.id = "kd-settings";
-    extensionSettingsEl.innerHTML = `
-      <span id="kd-toggler">
-          <span class="nm__switcher">
-              <span class="nm__bullet"></span>
-          </span>
-          <label>Включить Kompoman32's design</label>
-      </span>
-      <span class="settings" title="Open settings">⛭</span>
-      `;
+    MainClass.settings = settings;
 
-    document.querySelector(".header__adminbar .adminbar__boards").appendChild(extensionSettingsEl);
-
-    const toggler = extensionSettingsEl.querySelector("#kd-toggler");
-    const settingsPageButton = extensionSettingsEl.querySelector("#kd-settings > .settings");
-
-    if (MainClass.toggled) {
-      toggler.classList.add("toggled");
-      document.body.classList.add("kd-toggle");
-    } else {
-      toggler.classList.remove("toggled");
-      document.body.classList.remove("kd-toggle");
-    }
-
-    MainClass.toggler = toggler;
-    MainClass.settingsPageButton = settingsPageButton;
-
-    MainClass.toggler.removeEventListener("click", MainClass.togglerClick);
-    MainClass.toggler.addEventListener("click", MainClass.togglerClick);
-
-    MainClass.settingsPageButton.removeEventListener("click", MainClass.settingsPageButtonClick);
-    MainClass.settingsPageButton.addEventListener("click", MainClass.settingsPageButtonClick);
+    MainClass.setupTopBar();
+    MainClass.setupStyleBySettings();
+    MainClass.setupListeners();
 
     setTimeout(() => {
       MainClass.setToggled(MainClass.toggled);
     }, 100);
-
-    const settingsStyle = document.head.querySelector("#kd-settings-style") || document.createElement("style");
-    settingsStyle.id = "kd-settings-style";
-
-    settingsStyle.innerText = `
-      body.kd-toggle .post:not(.post_preview) .post__image-link img {
-        max-height: ${settings.maxHeight}px;
-      }
-
-    `;
-
-    if (settings.previewBackground) {
-      const color =
-        settings.previewBackgroundColor +
-        Math.round(Math.min(Math.max(settings.previewBackgroundOpacity, 0), 1) * 255).toString(16);
-
-      settingsStyle.innerText += `
-      body.kd-toggle .mv {
-        position: fixed;
-        background: ${color};
-      }
-      `;
-    }
-
-    document.head.insertAdjacentElement("beforeend", settingsStyle);
   } catch (e) {
     console.error(e);
   }

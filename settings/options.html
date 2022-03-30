@@ -21,11 +21,22 @@
         <tbody>
           <tr>
             <td>
+              <label>Render check posts timeout</label>
+            </td>
+            <td>
+              <input type="number" id="interval-timeout" name="intervalTimeout" step="1" min="100" required />ms
+            </td>
+          </tr>
+
+          <tr class="splitter">
+            <td colspan="2"></td>
+          </tr>
+          <tr>
+            <td>
               <label>Max image height</label>
             </td>
             <td>
               <input type="number" id="max-height" name="maxHeight" step="0.01" min="1" required />px
-              <span class="validity"></span>
             </td>
           </tr>
           <tr>
@@ -104,7 +115,6 @@
             </td>
             <td>
               <input type="number" id="b-titles-size" name="bTitlesSize" step="1" min="1" required />
-              <span class="validity"></span>
             </td>
           </tr>
 
@@ -112,9 +122,12 @@
             <td colspan="2"></td>
           </tr>
           <tr>
-            <td></td>
             <td>
-              <button type="submit">Save</button>
+              <input type="checkbox" id="auto-save" name="autoSave" />
+              <label for="auto-save">Auto save</label>
+            </td>
+            <td>
+              <button id="save-button" type="submit">Save</button>
             </td>
           </tr>
         </tbody>

@@ -11,7 +11,13 @@ var defaultOptionsValues = {
   previewBackground: true,
   previewBackgroundColor: "#15202b",
   previewBackgroundOpacity: 0.86328125,
+
+  autoSave: false,
+  toggled: true,
+  intervalTimeout: 5000,
 };
+
+var autoSave = false;
 
 function formSerializer(form) {
   if (!form || form.nodeName !== "FORM") {
@@ -95,14 +101,14 @@ function saveOptions(e) {
     console.log(`Error: ${error}`);
   }
 
-  e.preventDefault();
+  e.preventDefault && e.preventDefault();
 
   const form = formSerializer(e.target);
 
   browser.storage.sync
     .set(form)
     .then(() => {
-      alert("Saved. Reload 2ch page please!");
+      browser.runtime.sendMessage({ action: "settingsUpdated", data: form });
       setLoader(true);
     })
     .catch(onError);
@@ -111,6 +117,8 @@ function saveOptions(e) {
 function restoreOptions() {
   function setCurrentChoice(result) {
     setLoader(true);
+
+    document.querySelector("#interval-timeout").value = result.intervalTimeout;
 
     document.querySelector("#max-height").value = result.maxHeight;
     document.querySelector("#thumb-images").checked = result.thumbImages;
@@ -124,6 +132,15 @@ function restoreOptions() {
     document.querySelector("#preview-background-color").value = result.previewBackgroundColor;
     document.querySelector("#preview-background-opacity").value = result.previewBackgroundOpacity;
     document.querySelector("#preview-background-opacity-value").value = result.previewBackgroundOpacity;
+
+    autoSave = result.autoSave;
+    document.querySelector("#auto-save").checked = autoSave;
+
+    if (autoSave) {
+      document.getElementById(`save-button`).parentElement.classList.add("disabled");
+    } else {
+      document.getElementById(`save-button`).parentElement.classList.remove("disabled");
+    }
 
     setListeners(result);
   }
@@ -221,6 +238,26 @@ function restoreOptions() {
       });
 
     /*----------------------BACKGROUND-PREVIEW----------------------*/
+
+    el = document.getElementById(`auto-save`);
+    el &&
+      el.addEventListener("change", (e) => {
+        autoSave = e.target.checked;
+        if (autoSave) {
+          document.getElementById(`save-button`).parentElement.classList.add("disabled");
+        } else {
+          document.getElementById(`save-button`).parentElement.classList.remove("disabled");
+        }
+      });
+
+    [...document.querySelectorAll("[name]")].forEach((control) => {
+      const event = control.id === "preview-background-opacity" ? "change" : "change";
+      control.addEventListener(event, () => {
+        if (autoSave) {
+          saveOptions({ target: document.querySelector("form") });
+        }
+      });
+    });
   }
 
   function onError(error) {
@@ -242,4 +279,5 @@ function setLoader(completed = false) {
 setLoader(false);
 
 document.addEventListener("DOMContentLoaded", restoreOptions);
-document.querySelector("form") && document.querySelector("form").addEventListener("submit", saveOptions);
+var form = document.querySelector("form");
+form && form.addEventListener("submit", saveOptions);
