@@ -268,7 +268,7 @@ function consoleGroupEnd() {
           }
 
           let srcToChange =
-            MainClass.settings.thumbImages || (x.dataset.type === "4" && !MainClass.settings.runGif)
+            !MainClass.settings.thumbImages || (x.dataset.type === "4" && !MainClass.settings.runGif)
               ? x.dataset.thumbSrc
               : x.dataset.src;
 
