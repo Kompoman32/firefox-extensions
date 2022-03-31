@@ -238,32 +238,42 @@ function consoleGroupEnd() {
         consoleGroupEnd();
       }
 
-      static updatePost(post, updateRunGif = true, updateThumbImages = true) {
+      static updatePost(post, updateRunGif = true) {
         const postsImgs = [...post.querySelectorAll(".post__image-link img:not(.post__file-webm)")];
         const postsImgsVideos = [...post.querySelectorAll(".post__image-link img.post__file-webm")];
 
-        if (updateRunGif && !MainClass.settings.runGif) {
-          postsImgsVideos.push(...post.querySelectorAll(`.post__image-link img[data-type="4"]`));
+        if (updateRunGif) {
+          const gifs = post.querySelectorAll(`.post__image-link img[data-type="4"]`);
+          if (!MainClass.settings.runGif) {
+            postsImgsVideos.push(...gifs);
+          } else {
+            gifs.forEach((gif) => {
+              const title = gif.parentElement.querySelector(".video-ext");
+              if (title) {
+                title.remove();
+              }
+            });
+          }
         }
 
         postsImgs.forEach((x) => {
-          // if (!x || x.src === `${location.origin}${x.dataset.src}`) {
-          //   return;
-          // }
-
           x.dataset.thumbHeight = x.height;
           x.dataset.thumbWidth = x.width;
           x.setAttribute("height", x.dataset.height);
           x.setAttribute("width", x.dataset.width);
           x.setAttribute("loading", "lazy");
 
-          x.dataset.thumbSrc = x.src;
-          if (
-            updateThumbImages &&
-            MainClass.settings.thumbImages &&
-            (x.dataset.type !== "4" || MainClass.settings.runGif)
-          ) {
-            x.src = x.dataset.src;
+          if (!x.dataset.thumbSrc) {
+            x.dataset.thumbSrc = x.src;
+          }
+
+          let srcToChange =
+            MainClass.settings.thumbImages || (x.dataset.type === "4" && !MainClass.settings.runGif)
+              ? x.dataset.thumbSrc
+              : x.dataset.src;
+
+          if (srcToChange !== x.src) {
+            x.src = srcToChange;
           }
         });
 
@@ -274,6 +284,7 @@ function consoleGroupEnd() {
           const ext = title.substr(title.lastIndexOf(".") + 1);
 
           const div = document.createElement("div");
+          div.classList.add("video-ext");
           div.innerText = ext;
           aLink.appendChild(div);
 
@@ -464,6 +475,10 @@ function consoleGroupEnd() {
           const collapse = !thread.classList.contains("collapsed");
 
           if (collapse) {
+            if (collapser.parentElement.getBoundingClientRect().top > thread.getBoundingClientRect().top) {
+              thread.scrollIntoView();
+            }
+
             thread.classList.add("collapsed");
           } else {
             thread.classList.remove("collapsed");
@@ -531,10 +546,10 @@ function consoleGroupEnd() {
               }
 
               if (runGifChanged || thumbImagesChanged) {
-                const posts = [...document.querySelectorAll(".post:not([data-post-updated]):not(.post_preview)")];
+                const posts = [...document.querySelectorAll(".post:not(.post_preview)")];
 
                 posts.forEach((post) => {
-                  MainClass.updatePost(post, runGifChanged, thumbImagesChanged);
+                  MainClass.updatePost(post, runGifChanged);
                 });
               }
 
