@@ -421,13 +421,11 @@ function consoleGroupEnd() {
               </span>
               <label>Включить Kompoman32's design</label>
           </span>
-          <span class="settings" title="Open settings">⛭</span>
           `;
 
         document.querySelector(".header__adminbar .adminbar__boards").appendChild(extensionSettingsEl);
 
         const toggler = extensionSettingsEl.querySelector("#kd-toggler");
-        const settingsPageButton = extensionSettingsEl.querySelector("#kd-settings > .settings");
 
         if (MainClass.toggled) {
           toggler.classList.add("toggled");
@@ -438,13 +436,9 @@ function consoleGroupEnd() {
         }
 
         MainClass.toggler = toggler;
-        MainClass.settingsPageButton = settingsPageButton;
 
         MainClass.toggler.removeEventListener("click", MainClass.togglerClick);
         MainClass.toggler.addEventListener("click", MainClass.togglerClick);
-
-        MainClass.settingsPageButton.removeEventListener("click", MainClass.settingsPageButtonClick);
-        MainClass.settingsPageButton.addEventListener("click", MainClass.settingsPageButtonClick);
       }
 
       static togglerClick() {
@@ -461,10 +455,6 @@ function consoleGroupEnd() {
         }
 
         MainClass.setToggled(toggled);
-      }
-
-      static settingsPageButtonClick() {
-        browser.runtime.sendMessage({ action: "openOptionsPage" });
       }
 
       static collapseThreadClick(e) {

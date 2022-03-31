@@ -7,9 +7,6 @@ browser.runtime.onMessage.addListener(function (message) {
         });
       });
       break;
-    case "openOptionsPage":
-      openOptionsPage();
-      break;
     case "log":
       console.log(message);
       break;
@@ -17,7 +14,3 @@ browser.runtime.onMessage.addListener(function (message) {
       break;
   }
 });
-
-function openOptionsPage() {
-  browser.runtime.openOptionsPage();
-}
