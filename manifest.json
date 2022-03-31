@@ -15,15 +15,12 @@
 
   "permissions": ["storage"],
 
-  "options_ui": {
-    "page": "settings/options.html",
-    "chrome_style": true,
-    "browser_style": true
-  },
-
-  "browser_action": {
+  "page_action": {
+    "browser_style": true,
     "default_icon": "settings/favicon.ico",
-    "default_popup": "settings/options.html"
+    "default_popup": "settings/options.html",
+    "show_matches": ["*://2ch.hk/*/*"],
+    "hide_matches": ["*://2ch.hk/*/arch", "*://2ch.hk/*/arch/*"]
   },
 
   "background": {
