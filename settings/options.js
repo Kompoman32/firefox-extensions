@@ -12,10 +12,14 @@ var defaultOptionsValues = {
   previewBackgroundColor: "#15202b",
   previewBackgroundOpacity: 0.86328125,
 
+  links: [],
+
   autoSave: false,
   toggled: true,
   intervalTimeout: 5000,
 };
+
+var globalLinks = [];
 
 var autoSave = false;
 
@@ -95,18 +99,14 @@ function formSerializer(form) {
   return res;
 }
 
-function saveOptions(e) {
+function setSettings(settings) {
   function onError(error) {
     setLoader(true);
     console.log(`Error: ${error}`);
   }
 
-  e.preventDefault && e.preventDefault();
-
-  const form = formSerializer(e.target);
-
   browser.storage.sync
-    .set(form)
+    .set(settings)
     .then(() => {
       browser.runtime.sendMessage({ action: "settingsUpdated", data: form });
       setLoader(true);
@@ -114,7 +114,56 @@ function saveOptions(e) {
     .catch(onError);
 }
 
+function saveOptions(e = { target: document.querySelector("form") }) {
+  e.preventDefault && e.preventDefault();
+
+  const form = formSerializer(e.target);
+
+  setSettings(form);
+}
+
 function restoreOptions() {
+  function setupLinks(links) {
+    let table = document.querySelector(`.links table`);
+    
+    links.forEach(x => {
+      const tr =  document.createElement('tr');
+      tr.classList.add('links');
+
+      let td = document.createElement('td');
+      const a = document.createElement('a');
+      a.href=`https://2ch.hk${x.link}`;
+      a.innerText = x.link;
+      td.appendChild(a);
+      tr.appendChild(td);
+
+      td.childNodes[0].addEventListener('click',(e) => {
+        e.preventDefault();
+
+        browser.runtime.sendMessage({ action: "redirect", data: `https://2ch.hk${x.link}` });
+      });
+      
+      td = document.createElement('td');
+      td.innerText = x.name;
+      tr.appendChild(td);
+
+      td = document.createElement('td');
+      td.innerText = 'X';
+      td.title = 'Удалить';
+      td.addEventListener('click', () => {
+        globalLinks = globalLinks.filter(l => l !== x);
+        browser.runtime.sendMessage({ action: "savedLinksUpdated", data: globalLinks });
+        setSettings({
+          links: globalLinks
+        });
+        tr.remove();
+      })
+      tr.appendChild(td);
+
+      table.appendChild(tr);
+    });
+  }
+
   function setCurrentChoice(result) {
     setLoader(true);
 
@@ -132,6 +181,9 @@ function restoreOptions() {
     document.querySelector("#preview-background-color").value = result.previewBackgroundColor;
     document.querySelector("#preview-background-opacity").value = result.previewBackgroundOpacity;
     document.querySelector("#preview-background-opacity-value").value = result.previewBackgroundOpacity;
+
+    globalLinks = result.links || [];
+    setupLinks(globalLinks);
 
     autoSave = result.autoSave;
     document.querySelector("#auto-save").checked = autoSave;
@@ -239,6 +291,30 @@ function restoreOptions() {
 
     /*----------------------BACKGROUND-PREVIEW----------------------*/
 
+    /*----------------------LINKS-----------------------------------*/
+
+    el = document.querySelector(`.links .collapser`);
+    el &&
+      el.addEventListener("click", (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+
+        const element = e.target.parentElement.parentElement;
+
+        const collapsed = element.classList.contains("collapsed");
+
+        setTimeout(() => {
+          if (collapsed) {
+            element.classList.remove("collapsed");
+          } else {
+            element.classList.add("collapsed");
+          }
+        });
+      });
+
+    /*----------------------LINKS-----------------------------------*/
+    
+
     el = document.getElementById(`auto-save`);
     el &&
       el.addEventListener("change", (e) => {
@@ -254,7 +330,7 @@ function restoreOptions() {
       const event = control.id === "preview-background-opacity" ? "change" : "change";
       control.addEventListener(event, () => {
         if (autoSave) {
-          saveOptions({ target: document.querySelector("form") });
+          saveOptions();
         }
       });
     });
@@ -278,6 +354,13 @@ function setLoader(completed = false) {
 
 setLoader(false);
 
-document.addEventListener("DOMContentLoaded", restoreOptions);
+
+let DOMContentLoadedTimeout;
+document.addEventListener("DOMContentLoaded", () => {
+  clearTimeout(DOMContentLoadedTimeout)
+  setTimeout(() => {
+    restoreOptions();
+  }, 100)
+});
 var form = document.querySelector("form");
 form && form.addEventListener("submit", saveOptions);

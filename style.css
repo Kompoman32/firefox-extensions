@@ -189,3 +189,10 @@ body.kd-toggle #kd-settings .settings {
 body.kd-toggle #kd-toggler:not(.toggled) + .settings {
   display: none;
 }
+
+body.kd-toggle #ABU-select .splitter {
+  border-bottom: 1px solid var(--theme_default_alttext);
+
+  margin-top: 3px;
+  margin-bottom: 3px;
+}

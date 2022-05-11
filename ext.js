@@ -10,6 +10,8 @@ var defaultOptionsValues = {
   previewBackgroundColor: "#15202b",
   previewBackgroundOpacity: 0.86328125,
 
+  links: [],
+
   autoSave: false,
   toggled: true,
   intervalTimeout: 5000,
@@ -43,6 +45,11 @@ function consoleGroupEnd() {
 }
 
 (async () => {
+
+  [...document.querySelectorAll("img")].forEach(x => {
+    x.setAttribute("loading", "lazy");
+  });
+
   try {
     // NO ARCHIVACH
     if (new RegExp("/.+/arch/*/").test(location.pathname)) {
@@ -75,6 +82,14 @@ function consoleGroupEnd() {
       static toggler = null;
       static settingsPageButton = null;
 
+      static setOptions(options) {
+        browser.storage.sync.set(options)
+        .catch(() => {
+          consoleError("Toggled sync error", toggledValue);
+          clearInterval(MainClass.interval);
+        });
+      }
+
       static start() {
         clearInterval(MainClass.interval);
         MainClass.render();
@@ -83,14 +98,20 @@ function consoleGroupEnd() {
         MainClass.toggled = true;
         MainClass.settings.toggled = true;
 
-        browser.storage.sync
-          .set({
-            toggled: true,
-          })
-          .catch(() => {
-            consoleError("Toggled sync error", toggledValue);
-            clearInterval(MainClass.interval);
-          });
+        MainClass.setOptions({ toggled: true });
+
+        const form = document.querySelector('#posts-form');
+
+        if (form) {
+          form.removeEventListener('click', MainClass.savePostMenuListener);
+          form.addEventListener('click', MainClass.savePostMenuListener);
+        }
+
+        setTimeout(() => {
+          if (!!location.hash) {
+            location = location
+          }
+        }, 100)
       }
 
       static stop() {
@@ -100,14 +121,27 @@ function consoleGroupEnd() {
         MainClass.toggled = false;
         MainClass.settings.toggled = false;
 
-        browser.storage.sync
-          .set({
-            toggled: false,
-          })
-          .catch(() => {
-            consoleError("Toggled sync error", toggledValue);
-            clearInterval(MainClass.interval);
-          });
+        MainClass.setOptions({ toggled: false });
+
+        const form = document.querySelector('#posts-form');
+
+        if (form) {
+          form.removeEventListener('click', MainClass.savePostMenuListener);
+
+          const menu = document.querySelector('#ABU-select');
+
+          if (!!menu) {
+            let el = menu.querySelector('div.splitter');
+            if (!!el) {
+              el.remove()
+            }
+            
+            el = menu.querySelector('a.save-link');
+            if (!!el) {
+              el.remove()
+            }
+          }
+        }
       }
 
       static render() {
@@ -261,7 +295,6 @@ function consoleGroupEnd() {
           x.dataset.thumbWidth = x.width;
           x.setAttribute("height", x.dataset.height);
           x.setAttribute("width", x.dataset.width);
-          x.setAttribute("loading", "lazy");
 
           if (!x.dataset.thumbSrc) {
             x.dataset.thumbSrc = x.src;
@@ -557,9 +590,74 @@ function consoleGroupEnd() {
                 MainClass.interval = setInterval(MainClass.render, MainClass.settings.intervalTimeout);
               }
               break;
+            
+            case "redirect":
+              location = message.data;
+              break;
+            case "savedLinksUpdated":
+              MainClass.settings.links = message.data;
+              break;
+            
             default:
               break;
           }
+        });
+      }
+
+      static savePostMenuListener(e) {
+        const menu = document.querySelector('#ABU-select');
+
+        if (!menu) {
+          return;
+        }
+
+        let splitter = menu.querySelector('div.splitter');
+        if (!splitter) {
+          splitter = document.createElement('div');
+          splitter.classList.add('splitter');
+        };
+
+        menu.appendChild(splitter);
+
+        let a = menu.querySelector('a.save-link');
+        if (!a) {
+          a = document.createElement('a');
+          a.classList.add('save-link');
+          a.href = '#';
+          a.innerText = 'Сохранить ссылку';
+
+          a.addEventListener('click', MainClass.savePostLink);
+
+          a._postRefLink = e.target.parentElement.parentElement.querySelector('.post__reflink');
+        };
+
+        menu.appendChild(a);
+      }
+
+      static savePostLink(e) {
+        e.preventDefault();
+
+        const postLink = e.target._postRefLink;
+
+        if (!postLink) {
+          return;
+        }
+        
+        const name = window.prompt("Название ссылки",`Пост №${postLink.id}`);
+
+        if (name === null) {
+          return;
+        }
+
+        const newLink = {
+          link: `${postLink.pathname}#${postLink.id}`,
+          name: name
+        }
+
+        MainClass.settings.links.push(newLink);
+
+        MainClass.setOptions({
+          links: MainClass.settings.links
         });
       }
     }
