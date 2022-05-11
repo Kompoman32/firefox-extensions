@@ -1,9 +1,9 @@
 {
   "manifest_version": 2,
   "name": "e621.net shortcuts",
-  "version": "1.1",
+  "version": "1.1.1",
 
-  "description": "Navigate through search query or pools.\n\nLeft arrow - prev.\nRight arrow - next.\nIf there is pool navigation - shift + right/left arrow to navigate.\nIf there is pool navigation and no search navigation - works with/without shift.\n\nShift + Up - go to last in pool.\nShift + Down - go to first in pool.\n(works only with shift key to preserve scrolling)",
+  "description": "Go to next post and prev post.",
 
   "content_scripts": [
     {
