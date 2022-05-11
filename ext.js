@@ -12,8 +12,31 @@ try {
     return el;
   };
 
-  const controls = createElement("div", "ffk-controls");
-  controls.classList.add("ffk-controls");
+  const comicRBut = createElement("input", "ffk-comic-rb");
+  comicRBut.classList.add('pic-mode-visible');
+  comicRBut.type = 'radio';
+  comicRBut.name = 'mode';
+  comicRBut.checked = localStorage.getItem("ffk-comic-rb") || false;
+  const comicRButL = createElement("label", "ffk-comic-rb-label");
+  comicRButL.classList.add('pic-mode-visible');
+  comicRButL.setAttribute("for", "ffk-comic-rb");
+  comicRButL.innerText = "Comics mode";
+  
+  const picRBut = createElement("input", "ffk-pic-rb");
+  picRBut.classList.add('pic-mode-visible');
+  picRBut.type = 'radio'
+  picRBut.name = 'mode';
+  picRBut.checked = localStorage.getItem("ffk-pic-rb");
+  if (localStorage.getItem("ffk-pic-rb") === null) {
+    picRBut.checked = true;
+  }
+  const picRButL = createElement("label", "ffk-pic-rb-label");
+  picRButL.classList.add('pic-mode-visible');
+  picRButL.setAttribute("for", "ffk-pic-rb");
+  picRButL.innerText = "Pictures mode";
+
+  localStorage.setItem("ffk-comic-rb", comicRBut.checked);
+  localStorage.setItem("ffk-pic-rb", picRBut.checked);
 
   const links = createElement("input", "ffk-links");
   links.value = localStorage.getItem("ffk-links-qs") || "";
@@ -46,9 +69,11 @@ try {
   lastL.innerText = "LAST selector:";
 
   const openImageCheckbox = createElement("input", "ffk-fulscreen");
+  openImageCheckbox.classList.add('pic-mode-visible');
   openImageCheckbox.type = "checkbox";
   openImageCheckbox.checked = localStorage.getItem("ffk-fulscreen-qs") === "true" || false;
   const openImageCheckboxL = createElement("label", "ffk-fulscreen-label");
+  openImageCheckboxL.classList.add('pic-mode-visible');
   openImageCheckboxL.classList.add("checkbox");
   openImageCheckboxL.setAttribute("for", "ffk-fulscreen");
   openImageCheckboxL.innerText = "Open fulscreen?:";
@@ -78,36 +103,91 @@ try {
     }
   });
 
+  const controls = createElement("div", "ffk-controls");
+
+  if (picRBut.checked) {
+    controls.classList.add('pic-mode');
+  }
+
+  const rbChange = ({ target }) => {
+    switch (target.id) {
+      case 'ffk-comic-rb': {
+        controls.classList.remove('pic-mode');
+        break;
+      }
+      case 'ffk-pic-rb': {
+        controls.classList.add('pic-mode');
+        break;
+      }
+    }
+
+    localStorage.setItem("ffk-comic-rb", comicRBut.checked);
+    localStorage.setItem("ffk-pic-rb", picRBut.checked);
+  };
+
+  comicRBut.addEventListener("change", rbChange);
+  picRBut.addEventListener("change", rbChange);
+
+
+
   document.body.appendChild(controls);
 
-  [linksL, links, prevL, prev, nextL, next, firstL, first, lastL, last, openImageCheckboxL, openImageCheckbox].forEach(
+  [comicRBut, comicRButL, picRBut, picRButL, linksL, links, prevL, prev, nextL, next, firstL, first, lastL, last, openImageCheckboxL, openImageCheckbox].forEach(
     (x) => !!x && controls.appendChild(x)
   );
 
-  const go = (selector) => {
+  const go = (selector, picMode = false, next = true) => {
+    if (picMode) {
+      const id = parseInt(location.pathname.substring(6));
+
+      let links = [...document.querySelectorAll('.preview-gallery a')];
+
+      let goTo;
+
+      if (next) {
+        links = links.filter(x => parseInt(x.pathname.substring(6)) > id)
+        goTo = links[links.length-1];
+      } else {
+        goTo = links.find(x => parseInt(x.pathname.substring(6)) < id);
+      }
+
+      if (!!goTo) {
+        goTo.click();
+      }
+
+      return;
+    }
+
+
     const el = document.querySelector(selector);
 
-    if (el.tagName === "A") {
+    if (el && el.tagName === "A") {
       el.click();
     }
   };
 
   document.addEventListener("keyup", (e) => {
+    const isPicMode = picRBut.checked;
+
     switch (e.key) {
       case "ArrowLeft": {
-        go(prev.value);
+        go(prev.value, isPicMode, false);
         break;
       }
       case "ArrowRight": {
-        go(next.value);
+        go(next.value, isPicMode, true);
         break;
       }
       case "ArrowUp": {
-        go(last.value);
+        if (!isPicMode) {
+          go(last.value);
+        }
         break;
       }
       case "ArrowDown": {
-        go(first.value);
+        if (!isPicMode) {
+          go(first.value);
+        }
         break;
       }
     }
