@@ -4,6 +4,9 @@ var defaultOptionsValues = {
   thumbImages: true,
   bTitles: true,
   bTitlesSize: 47,
+
+  showPlashque: true,
+
   runGif: true,
 
   previewBackground: true,
@@ -154,6 +157,11 @@ function consoleGroupEnd() {
         MainClass.updateThreads();
         MainClass.updatePosts();
         document.body.classList.add("kd-toggle");
+
+        if (!MainClass.settings.showPlashque) {
+          document.body.classList.add("hide-plashque");
+        }
+
         consoleGroupEnd();
       }
 
@@ -337,6 +345,7 @@ function consoleGroupEnd() {
         MainClass.deUpdateThreads();
         MainClass.deUpdatePosts();
         document.body.classList.remove("kd-toggle");
+        document.body.classList.remove("hide-plashque");
         consoleGroupEnd();
       }
 
@@ -554,6 +563,7 @@ function consoleGroupEnd() {
               const thumbImagesChanged = newSettings.thumbImages !== currentSettings.thumbImages;
               const bTitlesChanged = newSettings.bTitles !== currentSettings.bTitles;
               const bTitlesSizeChanged = newSettings.bTitlesSize !== currentSettings.bTitlesSize;
+              const showPlashqueChanged = newSettings.showPlashque !== currentSettings.showPlashque;
               const runGifChanged = newSettings.runGif !== currentSettings.runGif;
               const previewBackgroundChanged = newSettings.previewBackground !== currentSettings.previewBackground;
               const previewBackgroundColorChanged =
@@ -594,6 +604,15 @@ function consoleGroupEnd() {
                 clearInterval(MainClass.interval);
                 MainClass.interval = setInterval(MainClass.render, MainClass.settings.intervalTimeout);
               }
+
+              if (showPlashqueChanged) {
+                if (!newSettings.showPlashque) {
+                  document.body.classList.add("hide-plashque");
+                } else {
+                  document.body.classList.remove("hide-plashque");
+                }
+              }
+
               break;
             
             case "redirect":

@@ -196,7 +196,11 @@ body.kd-toggle #kd-toggler:not(.toggled) + .settings {
 
 body.kd-toggle #ABU-select .splitter {
   border-bottom: 1px solid var(--theme_default_alttext);
-
+  
   margin-top: 3px;
   margin-bottom: 3px;
+}
+
+body.kd-toggle.hide-plashque #plashque {
+  display: none;
 }

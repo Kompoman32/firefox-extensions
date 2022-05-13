@@ -6,6 +6,8 @@ var defaultOptionsValues = {
   bTitles: true,
   bTitlesSize: 47,
 
+  showPlashque: true,
+
   runGif: true,
 
   previewBackground: true,
@@ -238,6 +240,8 @@ function restoreOptions() {
 
     document.querySelector("#b-titles").checked = result.bTitles;
     document.querySelector("#b-titles-size").value = result.bTitlesSize;
+
+    document.querySelector("#show-plashque").checked = result.showPlashque;
 
     document.querySelector("#run-gif").checked = result.runGif;
 
