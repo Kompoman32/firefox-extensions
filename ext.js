@@ -96,6 +96,8 @@ function consoleGroupEnd() {
           consoleError("Toggled sync error", toggledValue);
           clearInterval(MainClass.interval);
         });
+
+        browser.runtime.sendMessage({ action: "settingsUpdated", data: MainClass.settings });
       }
 
       static start() {
@@ -366,7 +368,7 @@ function consoleGroupEnd() {
 
       static deUpdateThread(thread) {
         const missedPostCount = thread.querySelector(".thread__missed");
-        const postOppost = thread.querySelector(".post_type_oppost .post__details");
+        const postOppost = thread.querySelector(".post__details__oppost.post__details");
 
         if (postOppost && missedPostCount && thread.children[0]) {
           thread.children[0].insertAdjacentElement("afterend", missedPostCount);
