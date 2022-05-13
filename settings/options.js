@@ -125,40 +125,104 @@ function saveOptions(e = { target: document.querySelector("form") }) {
 function restoreOptions() {
   function setupLinks(links) {
     let table = document.querySelector(`.links table`);
+
+    const saveLinks = () => {
+      if (autoSave) {
+        browser.runtime.sendMessage({ action: "savedLinksUpdated", data: globalLinks });
+        setSettings({
+          links: globalLinks
+        });
+      }
+    }
     
     links.forEach(x => {
       const tr =  document.createElement('tr');
       tr.classList.add('links');
 
-      let td = document.createElement('td');
-      const a = document.createElement('a');
-      a.href=`https://2ch.hk${x.link}`;
-      a.innerText = x.link;
-      td.appendChild(a);
-      tr.appendChild(td);
+      /** LINK **/
+      {
+        const td = document.createElement('td');
+        const link = document.createElement('a');
+        link.href = `https://2ch.hk${x.link}`;
+        link.innerText = x.link;
+        link.addEventListener('click',(e) => {
+          e.preventDefault();
 
-      td.childNodes[0].addEventListener('click',(e) => {
-        e.preventDefault();
-
-        browser.runtime.sendMessage({ action: "redirect", data: `https://2ch.hk${x.link}` });
-      });
-      
-      td = document.createElement('td');
-      td.innerText = x.name;
-      tr.appendChild(td);
-
-      td = document.createElement('td');
-      td.innerText = 'X';
-      td.title = 'Удалить';
-      td.addEventListener('click', () => {
-        globalLinks = globalLinks.filter(l => l !== x);
-        browser.runtime.sendMessage({ action: "savedLinksUpdated", data: globalLinks });
-        setSettings({
-          links: globalLinks
+          browser.runtime.sendMessage({ action: "redirect", data: link.href });
         });
-        tr.remove();
-      })
-      tr.appendChild(td);
+
+        td.appendChild(link);
+
+
+        const editLink = document.createElement('div');
+        editLink.classList.add('pen');
+        editLink.title = 'Редактировать'
+        editLink.addEventListener('click',(e) => {
+          const newLink = window.prompt('Новая ссылка - https://2ch.hk<#ССЫЛКА#>', x.link);
+
+          if (newLink === null) {
+            return;
+          }
+
+          x.link = newLink;
+          link.href = `https://2ch.hk${newLink}`;
+          link.innerText = newLink;
+
+          saveLinks();
+        });
+        td.appendChild(editLink);
+
+        tr.appendChild(td);
+      }
+      /** LINK **/
+
+      /** NAME **/
+      {
+        const td = document.createElement('td');
+
+        const name = document.createElement('span');
+        name.innerText = x.name;
+
+        td.appendChild(name);
+
+        const editName = document.createElement('div');
+        editName.classList.add('pen');
+        editName.title = 'Редактировать'
+        editName.addEventListener('click',(e) => {
+          const newName = window.prompt('Новое имя', x.name);
+
+          if (newName === null) {
+            return;
+          }
+
+          x.name = newName;
+          name.innerText = newName;
+
+          saveLinks();
+        });
+        td.appendChild(editName);
+
+        tr.appendChild(td);
+      }
+      /** NAME **/
+
+
+      /** DELETE **/
+      {
+        const td = document.createElement('td');
+        td.innerText = 'X';
+        td.title = 'Удалить';
+        td.addEventListener('click', () => {
+          globalLinks = globalLinks.filter(l => l !== x);
+
+          saveLinks();
+
+          tr.remove();
+        })
+        tr.appendChild(td);
+      }
+
+      /** DELETE **/
 
       table.appendChild(tr);
     });

@@ -600,6 +600,7 @@ function consoleGroupEnd() {
               location = message.data;
               break;
             case "savedLinksUpdated":
+              document.body.style.background = 'red'
               MainClass.settings.links = message.data;
               break;
             
@@ -691,6 +692,8 @@ function consoleGroupEnd() {
         MainClass.setOptions({
           links: MainClass.settings.links
         });
+
+        browser.runtime.sendMessage({ action: "savedLinksUpdated", data: MainClass.settings.links });
       }
     }
 

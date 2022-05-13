@@ -3,7 +3,7 @@ browser.runtime.onMessage.addListener(function (message) {
     case "settingsUpdated":
     case "redirect":
     case "savedLinksUpdated":
-      browser.tabs.query({ currentWindow: true, active: true }).then((tabs) => {
+      browser.tabs.query({}).then((tabs) => {
         tabs.forEach((tab) => {
           browser.tabs.sendMessage(tab.id, { action: message.action, data: message.data });
         });
