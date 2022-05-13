@@ -108,7 +108,7 @@ function setSettings(settings) {
   browser.storage.sync
     .set(settings)
     .then(() => {
-      browser.runtime.sendMessage({ action: "settingsUpdated", data: form });
+      browser.runtime.sendMessage({ action: "settingsUpdated", data: settings });
       setLoader(true);
     })
     .catch(onError);
