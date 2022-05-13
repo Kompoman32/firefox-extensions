@@ -64,6 +64,7 @@ function consoleGroupEnd() {
 
     const isThreadPage = new RegExp("/.+/res/*/").test(location.pathname);
     const threadGroup = location.pathname.substring(0, location.pathname.substr(1).indexOf("/") + 2);
+    const currentThreadId = isThreadPage ? +location.pathname.substring(location.pathname.indexOf('res/')+4).replace('.html', '') : null;
 
     let { toggled, intervalTimeout } = settings;
 
@@ -81,6 +82,10 @@ function consoleGroupEnd() {
 
       static toggler = null;
       static settingsPageButton = null;
+
+      static threadName =  threadGroup;
+      static isThreadPage =  isThreadPage;
+      static currentThreadId = currentThreadId;
 
       static setOptions(options) {
         browser.storage.sync.set(options)
@@ -619,6 +624,8 @@ function consoleGroupEnd() {
 
         menu.appendChild(splitter);
 
+        const postLink = e.target.parentElement.parentElement.querySelector('.post__reflink')
+
         let a = menu.querySelector('a.save-link');
         if (!a) {
           a = document.createElement('a');
@@ -626,32 +633,57 @@ function consoleGroupEnd() {
           a.href = '#';
           a.innerText = 'Сохранить ссылку';
 
-          a.addEventListener('click', MainClass.savePostLink);
-
-          a._postRefLink = e.target.parentElement.parentElement.querySelector('.post__reflink');
+          a.addEventListener('click', (e) => {
+            MainClass.savePostLink(e, postLink);
+          });
         };
+
+        menu.appendChild(a);
+
+        const saveBottom = MainClass.currentThreadId === +postLink.id || e.target.parentElement.parentElement.classList.contains('post__details__oppost');
+
+        if (saveBottom) {
+            a = menu.querySelector('a.save-bottom');
+            if (!a) {
+              a = document.createElement('a');
+            a.classList.add('save-bottom');
+            a.href = '#';
+            a.innerText = `Сохранить #bottom`;
+
+            a.addEventListener('click', (e) => {
+              MainClass.savePostLink(e, postLink, true)
+            });
+          };
+          
+        }
 
         menu.appendChild(a);
       }
 
-      static savePostLink(e) {
+      static savePostLink(e, postLink, saveBottom = false) {
         e.preventDefault();
-
-        const postLink = e.target._postRefLink;
 
         if (!postLink) {
           return;
         }
+
+        let defaultPostName = MainClass.currentThreadId === +postLink.id || saveBottom 
+          ? postLink.parentElement.parentElement.querySelector('.post__title').innerText.trim()
+          : `Пост №${postLink.id} в ${MainClass.threadName}`;
+        defaultPostName = defaultPostName || document.head.querySelector("title").innerText.trim();
         
-        const name = window.prompt("Название ссылки",`Пост №${postLink.id}`);
+        const name = window.prompt("Название ссылки", defaultPostName);
 
         if (name === null) {
           return;
         }
 
+        let link = MainClass.currentThreadId === +postLink.id || saveBottom ? postLink.pathname : `${postLink.pathname}#${postLink.id}`;
+        link = saveBottom ? link + `#bottom` : link;
+
         const newLink = {
-          link: `${postLink.pathname}#${postLink.id}`,
-          name: name
+          link,
+          name
         }
 
         MainClass.settings.links.push(newLink);

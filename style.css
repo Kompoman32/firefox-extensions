@@ -17,6 +17,10 @@
   left: 18px;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body.kd-toggle .thread {
   border-bottom: 1px solid gray;
 
