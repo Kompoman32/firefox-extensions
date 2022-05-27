@@ -13,6 +13,17 @@ var defaultOptionsValues = {
   previewBackgroundColor: "#15202b",
   previewBackgroundOpacity: 0.86328125,
 
+  colorPost: true,
+  colors: {
+    double: "#b5b5b5",
+    triple: "#deb8e1",
+    quadruple: "#f5f982",
+    quintuple: "#82f98f",
+    sextuple: "#ee8b99",
+    septuple: "#ee8b99",
+    noncuple: "#ee8b99",
+  },
+
   links: [],
 
   autoSave: false,
@@ -48,8 +59,7 @@ function consoleGroupEnd() {
 }
 
 (async () => {
-
-  [...document.querySelectorAll("img")].forEach(x => {
+  [...document.querySelectorAll("img")].forEach((x) => {
     x.setAttribute("loading", "lazy");
   });
 
@@ -67,7 +77,9 @@ function consoleGroupEnd() {
 
     const isThreadPage = new RegExp("/.+/res/*/").test(location.pathname);
     const threadGroup = location.pathname.substring(0, location.pathname.substr(1).indexOf("/") + 2);
-    const currentThreadId = isThreadPage ? +location.pathname.substring(location.pathname.indexOf('res/')+4).replace('.html', '') : null;
+    const currentThreadId = isThreadPage
+      ? +location.pathname.substring(location.pathname.indexOf("res/") + 4).replace(".html", "")
+      : null;
 
     let { toggled, intervalTimeout } = settings;
 
@@ -86,13 +98,12 @@ function consoleGroupEnd() {
       static toggler = null;
       static settingsPageButton = null;
 
-      static threadName =  threadGroup;
-      static isThreadPage =  isThreadPage;
+      static threadName = threadGroup;
+      static isThreadPage = isThreadPage;
       static currentThreadId = currentThreadId;
 
       static setOptions(options) {
-        browser.storage.sync.set(options)
-        .catch(() => {
+        browser.storage.sync.set(options).catch(() => {
           consoleError("Toggled sync error", toggledValue);
           clearInterval(MainClass.interval);
         });
@@ -110,18 +121,18 @@ function consoleGroupEnd() {
 
         MainClass.setOptions({ toggled: true });
 
-        const form = document.querySelector('#posts-form');
+        const form = document.querySelector("#posts-form");
 
         if (form) {
-          form.removeEventListener('click', MainClass.savePostMenuListener);
-          form.addEventListener('click', MainClass.savePostMenuListener);
+          form.removeEventListener("click", MainClass.savePostMenuListener);
+          form.addEventListener("click", MainClass.savePostMenuListener);
         }
 
         setTimeout(() => {
           if (!!location.hash) {
-            location = location
+            location = location;
           }
-        }, 100)
+        }, 100);
       }
 
       static stop() {
@@ -133,28 +144,29 @@ function consoleGroupEnd() {
 
         MainClass.setOptions({ toggled: false });
 
-        const form = document.querySelector('#posts-form');
+        const form = document.querySelector("#posts-form");
 
         if (form) {
-          form.removeEventListener('click', MainClass.savePostMenuListener);
+          form.removeEventListener("click", MainClass.savePostMenuListener);
 
-          const menu = document.querySelector('#ABU-select');
+          const menu = document.querySelector("#ABU-select");
 
           if (!!menu) {
-            let el = menu.querySelector('div.splitter');
+            let el = menu.querySelector("div.splitter");
             if (!!el) {
-              el.remove()
+              el.remove();
             }
-            
-            el = menu.querySelector('a.save-link');
+
+            el = menu.querySelector("a.save-link");
             if (!!el) {
-              el.remove()
+              el.remove();
             }
           }
         }
       }
 
       static render() {
+        console.log(MainClass.settings.intervalTimeout);
         consoleGroup("KD -", "Render");
         MainClass.updateThreads();
         MainClass.updatePosts();
@@ -274,15 +286,21 @@ function consoleGroupEnd() {
 
       static updatePosts() {
         const posts = [...document.querySelectorAll(".post:not([data-post-updated]):not(.post_preview)")];
+        const postsInPreview = [...document.querySelectorAll(".post:not([data-post-updated]).post_preview")];
 
         consoleGroup("Posts");
-        consoleLog("Posts updated: ", posts.length);
-        if (posts.length === 0) {
+        consoleLog("Posts updated: ", posts.length + postsInPreview.length);
+        if (posts.length === 0 && postsInPreview.length === 0) {
           consoleGroupEnd();
           return;
         }
 
         posts.forEach((post) => MainClass.updatePost(post));
+        postsInPreview.forEach((post) => {
+          MainClass.addPostNbleClass(post);
+
+          post.dataset.postUpdated = true;
+        });
 
         consoleGroupEnd();
       }
@@ -339,7 +357,44 @@ function consoleGroupEnd() {
           aLink.classList.add("webm");
         });
 
+        MainClass.addPostNbleClass(post);
+
         post.dataset.postUpdated = true;
+      }
+
+      static addPostNbleClass(post) {
+        let postHeader = post.querySelector(".post__details");
+
+        if (post.classList.contains("post_type_oppost")) {
+          postHeader = post.parentElement.previousElementSibling;
+        }
+
+        const num = postHeader.querySelector(".post__reflink").id;
+        const character = num[num.length - 1];
+
+        let count = 1;
+
+        for (let i = num.length - 2; i > -1; i--, count++) {
+          if (num[i] !== character) {
+            break;
+          }
+        }
+
+        const postClass = [
+          undefined,
+          undefined,
+          "double",
+          "triple",
+          "quadruple",
+          "quintuple",
+          "sextuple",
+          "septuple",
+          "noncuple",
+        ][count];
+
+        if (postClass) {
+          post.classList.add(postClass);
+        }
       }
 
       static derender() {
@@ -531,25 +586,46 @@ function consoleGroupEnd() {
         const settingsStyle = document.head.querySelector("#kd-settings-style") || document.createElement("style");
         settingsStyle.id = "kd-settings-style";
 
-        settingsStyle.innerText = `
-          body.kd-toggle .post:not(.post_preview) .post__image-link img {
-            max-height: ${MainClass.settings.maxHeight}px;
-          }
-    
-        `;
+        const color =
+          MainClass.settings.previewBackgroundColor +
+          Math.round(Math.min(Math.max(MainClass.settings.previewBackgroundOpacity, 0), 1) * 255).toString(16);
+
+        let text = "";
+
+        text += `:root {
+            --kd-max-image-height: ${MainClass.settings.maxHeight}px;
+            --kd-modal-bg: ${color};`;
+
+        if (MainClass.settings.colorPost) {
+          text +=
+            "" +
+            `--kd-double-color: ${MainClass.settings.colors.double};
+          --kd-triple-color: ${MainClass.settings.colors.triple};
+          --kd-quadruple-color: ${MainClass.settings.colors.quadruple};
+          --kd-quintuple-color: ${MainClass.settings.colors.quintuple};
+          --kd-sextuple-color: ${MainClass.settings.colors.sextuple};
+          --kd-septuple-color: ${MainClass.settings.colors.septuple};
+          --kd-noncuple-color: ${MainClass.settings.colors.noncuple};`;
+        }
+
+        text += `}`;
 
         if (MainClass.settings.previewBackground) {
-          const color =
-            MainClass.settings.previewBackgroundColor +
-            Math.round(Math.min(Math.max(MainClass.settings.previewBackgroundOpacity, 0), 1) * 255).toString(16);
-
-          settingsStyle.innerText += `
+          text += `
+          
           body.kd-toggle .mv {
             position: fixed;
-            background: ${color};
-          }
-          `;
+            background: var(--kd-modal-bg);
+          }`;
         }
+
+        text = text.replaceAll("\n", "");
+
+        while (text.includes("  ")) {
+          text = text.replaceAll("  ", " ");
+        }
+
+        settingsStyle.innerText = text;
 
         document.head.insertAdjacentElement("beforeend", settingsStyle);
       }
@@ -572,6 +648,10 @@ function consoleGroupEnd() {
                 newSettings.previewBackgroundColor !== currentSettings.previewBackgroundColor;
               const previewBackgroundOpacityChanged =
                 newSettings.previewBackgroundOpacity !== currentSettings.previewBackgroundOpacity;
+              const colorPostChanged = newSettings.colorPost !== currentSettings.colorPost;
+              const someColorChanged = Object.keys(newSettings.colors).some(
+                (key) => newSettings.colors[key] !== currentSettings.colors[key]
+              );
               const toggledChanged = newSettings.toggled !== currentSettings.toggled;
               const intervalTimeoutChanged = newSettings.intervalTimeout !== currentSettings.intervalTimeout;
 
@@ -597,7 +677,9 @@ function consoleGroupEnd() {
                 maxHeightChanged ||
                 previewBackgroundChanged ||
                 previewBackgroundColorChanged ||
-                previewBackgroundOpacityChanged
+                previewBackgroundOpacityChanged ||
+                colorPostChanged ||
+                someColorChanged
               ) {
                 MainClass.setupStyleBySettings();
               }
@@ -616,14 +698,14 @@ function consoleGroupEnd() {
               }
 
               break;
-            
+
             case "redirect":
               location = message.data;
               break;
             case "savedLinksUpdated":
               MainClass.settings.links = message.data;
               break;
-            
+
             default:
               break;
           }
@@ -631,51 +713,52 @@ function consoleGroupEnd() {
       }
 
       static savePostMenuListener(e) {
-        const menu = document.querySelector('#ABU-select');
+        const menu = document.querySelector("#ABU-select");
 
         if (!menu) {
           return;
         }
 
-        let splitter = menu.querySelector('div.splitter');
+        let splitter = menu.querySelector("div.splitter");
         if (!splitter) {
-          splitter = document.createElement('div');
-          splitter.classList.add('splitter');
-        };
+          splitter = document.createElement("div");
+          splitter.classList.add("splitter");
+        }
 
         menu.appendChild(splitter);
 
-        const postLink = e.target.parentElement.parentElement.querySelector('.post__reflink')
+        const postLink = e.target.parentElement.parentElement.querySelector(".post__reflink");
 
-        let a = menu.querySelector('a.save-link');
+        let a = menu.querySelector("a.save-link");
         if (!a) {
-          a = document.createElement('a');
-          a.classList.add('save-link');
-          a.href = '#';
-          a.innerText = 'Сохранить ссылку';
+          a = document.createElement("a");
+          a.classList.add("save-link");
+          a.href = "#";
+          a.innerText = "Сохранить ссылку";
 
-          a.addEventListener('click', (e) => {
+          a.addEventListener("click", (e) => {
             MainClass.savePostLink(e, postLink);
           });
-        };
+        }
 
         menu.appendChild(a);
 
-        const saveBottom = MainClass.currentThreadId === +postLink.id || e.target.parentElement.parentElement.classList.contains('post__details__oppost');
+        const saveBottom =
+          MainClass.currentThreadId === +postLink.id ||
+          e.target.parentElement.parentElement.classList.contains("post__details__oppost");
 
         if (saveBottom) {
-            a = menu.querySelector('a.save-bottom');
-            if (!a) {
-              a = document.createElement('a');
-            a.classList.add('save-bottom');
-            a.href = '#';
+          a = menu.querySelector("a.save-bottom");
+          if (!a) {
+            a = document.createElement("a");
+            a.classList.add("save-bottom");
+            a.href = "#";
             a.innerText = `Сохранить #bottom`;
 
-            a.addEventListener('click', (e) => {
-              MainClass.savePostLink(e, postLink, true)
+            a.addEventListener("click", (e) => {
+              MainClass.savePostLink(e, postLink, true);
             });
-          };
-          
+          }
         }
 
         menu.appendChild(a);
@@ -688,29 +771,33 @@ function consoleGroupEnd() {
           return;
         }
 
-        let defaultPostName = MainClass.currentThreadId === +postLink.id || saveBottom 
-          ? postLink.parentElement.parentElement.querySelector('.post__title').innerText.trim()
-          : `Пост №${postLink.id} в ${MainClass.threadName}`;
+        let defaultPostName =
+          MainClass.currentThreadId === +postLink.id || saveBottom
+            ? postLink.parentElement.parentElement.querySelector(".post__title").innerText.trim()
+            : `Пост №${postLink.id} в ${MainClass.threadName}`;
         defaultPostName = defaultPostName || document.head.querySelector("title").innerText.trim();
-        
+
         const name = window.prompt("Название ссылки", defaultPostName);
 
         if (name === null) {
           return;
         }
 
-        let link = MainClass.currentThreadId === +postLink.id || saveBottom ? postLink.pathname : `${postLink.pathname}#${postLink.id}`;
+        let link =
+          MainClass.currentThreadId === +postLink.id || saveBottom
+            ? postLink.pathname
+            : `${postLink.pathname}#${postLink.id}`;
         link = saveBottom ? link + `#bottom` : link;
 
         const newLink = {
           link,
-          name
-        }
+          name,
+        };
 
         MainClass.settings.links.push(newLink);
 
         MainClass.setOptions({
-          links: MainClass.settings.links
+          links: MainClass.settings.links,
         });
 
         browser.runtime.sendMessage({ action: "savedLinksUpdated", data: MainClass.settings.links });

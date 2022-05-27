@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="./color-picker.css" />
     <script src="./color-picker.js"></script>
     <link href="./options.css" rel="stylesheet" type="text/css" />
-    <script src="./options.js"></script>
   </head>
 
   <body>
@@ -93,6 +92,87 @@
           <tr class="splitter">
             <td colspan="2"></td>
           </tr>
+
+          <tr class="section-colors-toggler">
+            <td>
+              <label>Use roll posts header highlights</label>
+            </td>
+            <td><input type="checkbox" id="post-color" name="colorPost" /></td>
+          </tr>
+
+          <tr class="section-colors collapsed">
+            <td colspan="2" class="roll-colors">
+              <div class="collapser collapsed">Colors </div>
+            </td>
+          </tr>
+
+          <tr class="section-colors">
+            <td colspan="2">
+              <div class="wrapper">
+                <div>
+                  <h3>Дабл</h3>
+                  <div id="post-color-double-picker"></div>
+                  <input type="color" id="post-color-double" style="display: none" name="color.double" />
+                </div>
+
+                <div>
+                  <h3>Трипл</h3>
+                  <div id="post-color-triple-picker"></div>
+                  <input type="color" id="post-color-triple" style="display: none" name="color.triple" />
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr class="section-colors">
+            <td colspan="2">
+              <div class="wrapper">
+                <div>
+                  <h3>Квадрипл</h3>
+                  <div id="post-color-quadruple-picker"></div>
+                  <input type="color" id="post-color-quadruple" style="display: none" name="color.quadruple" />
+                </div>
+
+                <div>
+                  <h3>Квинтипл</h3>
+                  <div id="post-color-quintuple-picker"></div>
+                  <input type="color" id="post-color-quintuple" style="display: none" name="color.quintuple" />
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr class="section-colors">
+            <td colspan="2">
+              <div class="wrapper">
+                <div>
+                  <h3>Секстипл</h3>
+                  <div id="post-color-sextuple-picker"></div>
+                  <input type="color" id="post-color-sextuple" style="display: none" name="color.sextuple" />
+                </div>
+
+                <div>
+                  <h3>Севентипл</h3>
+                  <div id="post-color-septuple-picker"></div>
+                  <input type="color" id="post-color-septuple" style="display: none" name="color.septuple" />
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr class="section-colors">
+            <td colspan="2">
+              <div class="wrapper">
+                <div>
+                  <h3>Найнтипл</h3>
+                  <div id="post-color-noncuple-picker"></div>
+                  <input type="color" id="post-color-noncuple" style="display: none" name="color.noncuple" />
+                </div>
+              </div>
+            </td>
+          </tr>
+
+
+          <tr class="splitter">
+            <td colspan="2"></td>
+          </tr>
           <tr>
             <td>
               <label>Run GIF</label>
@@ -148,7 +228,7 @@
           <tr class="splitter">
             <td colspan="2"></td>
           </tr>
-          <tr>
+          <tr class="buttons">
             <td>
               <input type="checkbox" id="auto-save" name="autoSave" />
               <label for="auto-save">Auto save</label>

@@ -1,5 +1,5 @@
 :root {
-  --post-margin: 100px;
+  --kd-post-margin: 100px;
 }
 
 #kd-toggler .nm__switcher {
@@ -34,19 +34,19 @@ body.kd-toggle .thread {
   flex-wrap: wrap;
   width: 100%;
 
-  padding-left: var(--post-margin);
+  padding-left: var(--kd-post-margin);
 }
 
 body.kd-toggle .thread > div {
-  width: calc(100% + var(--post-margin));
-  max-width: calc(100% + var(--post-margin));
+  width: calc(100% + var(--kd-post-margin));
+  max-width: calc(100% + var(--kd-post-margin));
 }
 
 body.kd-toggle .thread .thread__oppost,
 body.kd-toggle .post__details__oppost {
-  width: calc(100% + var(--post-margin));
+  width: calc(100% + var(--kd-post-margin));
 
-  margin-left: calc(var(--post-margin) * -1);
+  margin-left: calc(var(--kd-post-margin) * -1);
 }
 
 body.kd-toggle .thread .thread__missed {
@@ -54,7 +54,7 @@ body.kd-toggle .thread .thread__missed {
 }
 
 body.kd-toggle .thread .thread__post {
-  width: calc(100% - var(--post-margin));
+  width: calc(100% - var(--kd-post-margin));
 }
 
 body.kd-toggle .post:not(.post_preview) {
@@ -196,11 +196,51 @@ body.kd-toggle #kd-toggler:not(.toggled) + .settings {
 
 body.kd-toggle #ABU-select .splitter {
   border-bottom: 1px solid var(--theme_default_alttext);
-  
+
   margin-top: 3px;
   margin-bottom: 3px;
 }
 
 body.kd-toggle.hide-plashque #plashque {
   display: none;
+}
+
+body.kd-toggle .post:not(.post_preview) .post__image-link img {
+  max-height: var(--kd-max-image-height);
+}
+
+body.kd-toggle .post .post__details {
+  display: flex;
+}
+
+body.kd-toggle .post .post__details .post__detailpart:first-of-type > * {
+  padding-right: 4px;
+}
+
+body.kd-toggle .post.double .post__details * {
+  background-color: var(--kd-double-color);
+}
+
+body.kd-toggle .post.triple .post__details * {
+  background-color: var(--kd-triple-color);
+}
+
+body.kd-toggle .post.quadruple .post__details * {
+  background-color: var(--kd-quadruple-color);
+}
+
+body.kd-toggle .post.quintuple .post__details * {
+  background-color: var(--kd-quintuple-color);
+}
+
+body.kd-toggle .post.sextuple .post__details * {
+  background-color: var(--kd-sextuple-color);
+}
+
+body.kd-toggle .post.septuple .post__details * {
+  background-color: var(--kd-septuple-color);
+}
+
+body.kd-toggle .post.noncuple .post__details * {
+  background-color: var(--kd-noncuple-color);
 }

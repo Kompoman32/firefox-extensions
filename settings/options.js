@@ -14,6 +14,17 @@ var defaultOptionsValues = {
   previewBackgroundColor: "#15202b",
   previewBackgroundOpacity: 0.86328125,
 
+  colorPost: true,
+  colors: {
+    double: "#b5b5b5",
+    triple: "#deb8e1",
+    quadruple: "#f5f982",
+    quintuple: "#82f98f",
+    sextuple: "#ee8b99",
+    septuple: "#ee8b99",
+    noncuple: "#ee8b99",
+  },
+
   links: [],
 
   autoSave: false,
@@ -39,6 +50,14 @@ function formSerializer(form) {
     if (!el || el.name === "") {
       continue;
     }
+
+    if (el.name.startsWith("color.")) {
+      const field = el.name.substring(6);
+      res.colors = res.colors || {};
+      res.colors[field] = el.value;
+      continue;
+    }
+
     switch (el.nodeName) {
       case "INPUT":
         switch (el.type) {
@@ -132,22 +151,22 @@ function restoreOptions() {
       if (autoSave) {
         browser.runtime.sendMessage({ action: "savedLinksUpdated", data: globalLinks });
         setSettings({
-          links: globalLinks
+          links: globalLinks,
         });
       }
-    }
-    
-    links.forEach(x => {
-      const tr =  document.createElement('tr');
-      tr.classList.add('links');
+    };
+
+    links.forEach((x) => {
+      const tr = document.createElement("tr");
+      tr.classList.add("links");
 
       /** LINK **/
       {
-        const td = document.createElement('td');
-        const link = document.createElement('a');
+        const td = document.createElement("td");
+        const link = document.createElement("a");
         link.href = `https://2ch.hk${x.link}`;
         link.innerText = x.link;
-        link.addEventListener('click',(e) => {
+        link.addEventListener("click", (e) => {
           e.preventDefault();
 
           browser.runtime.sendMessage({ action: "redirect", data: link.href });
@@ -155,12 +174,11 @@ function restoreOptions() {
 
         td.appendChild(link);
 
-
-        const editLink = document.createElement('div');
-        editLink.classList.add('pen');
-        editLink.title = 'Редактировать'
-        editLink.addEventListener('click',(e) => {
-          const newLink = window.prompt('Новая ссылка - https://2ch.hk<#ССЫЛКА#>', x.link);
+        const editLink = document.createElement("div");
+        editLink.classList.add("pen");
+        editLink.title = "Редактировать";
+        editLink.addEventListener("click", (e) => {
+          const newLink = window.prompt("Новая ссылка - https://2ch.hk<#ССЫЛКА#>", x.link);
 
           if (newLink === null) {
             return;
@@ -180,18 +198,18 @@ function restoreOptions() {
 
       /** NAME **/
       {
-        const td = document.createElement('td');
+        const td = document.createElement("td");
 
-        const name = document.createElement('span');
+        const name = document.createElement("span");
         name.innerText = x.name;
 
         td.appendChild(name);
 
-        const editName = document.createElement('div');
-        editName.classList.add('pen');
-        editName.title = 'Редактировать'
-        editName.addEventListener('click',(e) => {
-          const newName = window.prompt('Новое имя', x.name);
+        const editName = document.createElement("div");
+        editName.classList.add("pen");
+        editName.title = "Редактировать";
+        editName.addEventListener("click", (e) => {
+          const newName = window.prompt("Новое имя", x.name);
 
           if (newName === null) {
             return;
@@ -208,19 +226,18 @@ function restoreOptions() {
       }
       /** NAME **/
 
-
       /** DELETE **/
       {
-        const td = document.createElement('td');
-        td.innerText = 'X';
-        td.title = 'Удалить';
-        td.addEventListener('click', () => {
-          globalLinks = globalLinks.filter(l => l !== x);
+        const td = document.createElement("td");
+        td.innerText = "X";
+        td.title = "Удалить";
+        td.addEventListener("click", () => {
+          globalLinks = globalLinks.filter((l) => l !== x);
 
           saveLinks();
 
           tr.remove();
-        })
+        });
         tr.appendChild(td);
       }
 
@@ -249,6 +266,15 @@ function restoreOptions() {
     document.querySelector("#preview-background-color").value = result.previewBackgroundColor;
     document.querySelector("#preview-background-opacity").value = result.previewBackgroundOpacity;
     document.querySelector("#preview-background-opacity-value").value = result.previewBackgroundOpacity;
+
+    document.querySelector("#post-color").checked = result.colorPost;
+    document.querySelector("#post-color-double").value = result.colors.double;
+    document.querySelector("#post-color-triple").value = result.colors.triple;
+    document.querySelector("#post-color-quadruple").value = result.colors.quadruple;
+    document.querySelector("#post-color-quintuple").value = result.colors.quintuple;
+    document.querySelector("#post-color-sextuple").value = result.colors.sextuple;
+    document.querySelector("#post-color-septuple").value = result.colors.septuple;
+    document.querySelector("#post-color-noncuple").value = result.colors.noncuple;
 
     globalLinks = result.links || [];
     setupLinks(globalLinks);
@@ -286,6 +312,7 @@ function restoreOptions() {
 
     setDisabled("section-preview");
     setDisabled("section-b");
+    setDisabled("section-colors");
 
     let el;
 
@@ -295,6 +322,8 @@ function restoreOptions() {
       dom: document.getElementById("preview-background-color-picker"),
       value: document.getElementById("preview-background-color").value,
     });
+
+    document.getElementById(`preview-background-color`)._picker = previewBackgroundColorPicker;
 
     const setBackgroundPreview = () => {
       const color =
@@ -359,6 +388,53 @@ function restoreOptions() {
 
     /*----------------------BACKGROUND-PREVIEW----------------------*/
 
+    /*----------------------POST-COLORS----------------------*/
+
+    ["double", "triple", "quadruple", "quintuple", "sextuple", "septuple", "noncuple"].map((name) => {
+      const domEl = document.getElementById(`post-color-${name}-picker`);
+      const valEl = document.getElementById(`post-color-${name}`);
+
+      const picker = new ColorPicker({
+        dom: domEl,
+        value: valEl.value,
+      });
+
+      valEl._picker = picker;
+
+      picker.addEventListener("change", (e) => {
+        valEl.value = picker.value;
+      });
+    });
+
+    el = document.querySelector(`.roll-colors .collapser`);
+    el &&
+      el.addEventListener("click", (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const collapsed = e.target.classList.contains("collapsed");
+
+        setTimeout(() => {
+          if (collapsed) {
+            e.target.classList.remove("collapsed");
+            e.target.parentElement.parentElement.classList.remove("collapsed");
+          } else {
+            e.target.classList.add("collapsed");
+            e.target.parentElement.parentElement.classList.add("collapsed");
+          }
+        });
+      });
+
+    el = document.querySelector(`.section-colors-toggler input`);
+    el &&
+      el.addEventListener("change", (e) => {
+        if (!e.target.checked) {
+          document.querySelector(`.roll-colors .collapser`).classList.add("collapsed");
+          document.querySelector(`.roll-colors .collapser`).parentElement.parentElement.classList.add("collapsed");
+        }
+      });
+
+    /*----------------------POST-COLORS----------------------*/
+
     /*----------------------LINKS-----------------------------------*/
 
     el = document.querySelector(`.links .collapser`);
@@ -381,7 +457,6 @@ function restoreOptions() {
       });
 
     /*----------------------LINKS-----------------------------------*/
-    
 
     el = document.getElementById(`auto-save`);
     el &&
@@ -395,8 +470,11 @@ function restoreOptions() {
       });
 
     [...document.querySelectorAll("[name]")].forEach((control) => {
-      const event = control.id === "preview-background-opacity" ? "change" : "change";
-      control.addEventListener(event, () => {
+      if (!!control._picker) {
+        control = control._picker;
+      }
+
+      control.addEventListener("change", () => {
         if (autoSave) {
           saveOptions();
         }
@@ -422,13 +500,12 @@ function setLoader(completed = false) {
 
 setLoader(false);
 
-
 let DOMContentLoadedTimeout;
 document.addEventListener("DOMContentLoaded", () => {
-  clearTimeout(DOMContentLoadedTimeout)
+  clearTimeout(DOMContentLoadedTimeout);
   setTimeout(() => {
     restoreOptions();
-  }, 100)
+  }, 100);
 });
 var form = document.querySelector("form");
 form && form.addEventListener("submit", saveOptions);
