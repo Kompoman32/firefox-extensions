@@ -5,6 +5,8 @@ var defaultOptionsValues = {
   bTitles: true,
   bTitlesSize: 47,
 
+  titleToBottom: false,
+
   showPlashque: true,
 
   runGif: true,
@@ -197,7 +199,7 @@ function consoleGroupEnd() {
 
       static updateThread(thread, updateGeneratedTitle = false) {
         const missedPostCount = thread.querySelector(".thread__missed");
-        const postOppost = thread.querySelector(".post_type_oppost .post__details");
+        const postOppost = thread.querySelector(".post_type_oppost .post__details, .post__details__oppost");
 
         if (!!postOppost) {
           postOppost.classList.add("post__details__oppost");
@@ -267,7 +269,14 @@ function consoleGroupEnd() {
 
           if (!isThreadPage) {
             const a = document.createElement("a");
-            a.href = postOppost.querySelector(".post__reflink").href;
+            let href = postOppost.querySelector(".post__reflink").href;
+            href = href.substring(0, href.lastIndexOf("#"));
+
+            if (MainClass.settings.titleToBottom) {
+              href = href + "#bottom";
+            }
+
+            a.href = href;
             a.innerText = title.innerText;
             a.classList.add("post__title");
             if (title.classList.contains("post__title__generated")) {
@@ -642,6 +651,7 @@ function consoleGroupEnd() {
               const bTitlesChanged = newSettings.bTitles !== currentSettings.bTitles;
               const bTitlesSizeChanged = newSettings.bTitlesSize !== currentSettings.bTitlesSize;
               const showPlashqueChanged = newSettings.showPlashque !== currentSettings.showPlashque;
+              const titleToBottomChanged = newSettings.titleToBottom !== currentSettings.titleToBottom;
               const runGifChanged = newSettings.runGif !== currentSettings.runGif;
               const previewBackgroundChanged = newSettings.previewBackground !== currentSettings.previewBackground;
               const previewBackgroundColorChanged =
@@ -657,11 +667,11 @@ function consoleGroupEnd() {
 
               MainClass.settings = newSettings;
 
-              if (bTitlesChanged || bTitlesSizeChanged) {
+              if (titleToBottomChanged || bTitlesChanged || bTitlesSizeChanged) {
                 const threads = [...document.querySelectorAll(".thread")];
 
                 threads.forEach((thread) => {
-                  MainClass.updateThread(thread, true);
+                  MainClass.updateThread(thread, !titleToBottomChanged);
                 });
               }
 

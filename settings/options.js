@@ -3,6 +3,8 @@ var defaultOptionsValues = {
   // Reversed (if true => replace)
   thumbImages: true,
 
+  titleToBottom: false,
+
   bTitles: true,
   bTitlesSize: 47,
 
@@ -254,6 +256,8 @@ function restoreOptions() {
 
     document.querySelector("#max-height").value = result.maxHeight;
     document.querySelector("#thumb-images").checked = result.thumbImages;
+
+    document.querySelector("#title-to-bottom").checked = result.titleToBottom;
 
     document.querySelector("#b-titles").checked = result.bTitles;
     document.querySelector("#b-titles-size").value = result.bTitlesSize;
