@@ -33,7 +33,13 @@ var defaultOptionsValues = {
 
 var defaultLocalOptionsValues = {
   links: [],
+  collapsedThreads: {
+    b: [],
+    all: [],
+  },
 };
+
+var bTimeExpires = 3 * 24 * 60 * 60 * 1000;
 
 function consoleLog(...args) {
   if (localStorage.getItem("kd-debug")) {
@@ -82,6 +88,7 @@ function consoleGroupEnd() {
 
     const isThreadPage = new RegExp("/.+/res/*/").test(location.pathname);
     const threadGroup = location.pathname.substring(0, location.pathname.substr(1).indexOf("/") + 2);
+    const isBThread = threadGroup === "/b/";
     const currentThreadId = isThreadPage
       ? +location.pathname.substring(location.pathname.indexOf("res/") + 4).replace(".html", "")
       : null;
@@ -215,6 +222,8 @@ function consoleGroupEnd() {
         if (!!postOppost) {
           postOppost.classList.add("post__details__oppost");
 
+          const threadId = +thread.querySelector(".post__reflink")?.id;
+
           thread.insertAdjacentElement("afterbegin", postOppost);
 
           if (!!missedPostCount) {
@@ -224,6 +233,22 @@ function consoleGroupEnd() {
           if (!isThreadPage) {
             const collapser = postOppost.querySelector(".collapser") || document.createElement("span");
             collapser.classList.add("collapser");
+
+            let isCollapsed = false;
+
+            if (isFinite(threadId)) {
+              const checkArr = isBThread
+                ? MainClass.localSettings.collapsedThreads.b
+                : MainClass.localSettings.collapsedThreads.all;
+              isCollapsed = checkArr.some((x) => x.id === threadId);
+            }
+
+            if (isCollapsed) {
+              thread.classList.add("collapsed");
+            } else {
+              thread.classList.remove("collapsed");
+            }
+
             collapser.innerText = thread.classList.contains("collapsed") ? "˄" : "˅";
 
             collapser.removeEventListener("click", MainClass.collapseThreadClick);
@@ -234,7 +259,6 @@ function consoleGroupEnd() {
 
           let title = updateGeneratedTitle ? undefined : postOppost.querySelector(".post__title");
 
-          const isBThread = threadGroup === "/b/";
           const isBThreadTitlesEnabled = MainClass.settings.bTitles;
 
           if (isBThread && !isBThreadTitlesEnabled) {
@@ -584,6 +608,7 @@ function consoleGroupEnd() {
       static collapseThreadClick(e) {
         const collapser = e.target;
         const thread = collapser.parentElement.parentElement;
+        const threadId = +thread.querySelector(".post__reflink")?.id;
 
         if (!!thread) {
           const collapse = !thread.classList.contains("collapsed");
@@ -594,8 +619,37 @@ function consoleGroupEnd() {
             }
 
             thread.classList.add("collapsed");
+
+            const arr = isBThread
+              ? MainClass.localSettings.collapsedThreads.b
+              : MainClass.localSettings.collapsedThreads.all;
+            if (isFinite(threadId) && arr.every((x) => x.id !== threadId)) {
+              const obj = {
+                id: threadId,
+              };
+
+              if (isBThread) {
+                obj.date = +new Date();
+              }
+
+              arr.push(obj);
+              MainClass.setLocalOptions(MainClass.localSettings);
+            }
           } else {
             thread.classList.remove("collapsed");
+
+            if (isFinite(threadId)) {
+              const arr = isBThread
+                ? MainClass.localSettings.collapsedThreads.b
+                : MainClass.localSettings.collapsedThreads.all;
+              const index = arr.find((x) => x.id === threadId);
+
+              if (index > -1) {
+                arr.splice(index, 1);
+
+                MainClass.setLocalOptions(MainClass.localSettings);
+              }
+            }
           }
 
           collapser.innerText = collapse ? "˄" : "˅";

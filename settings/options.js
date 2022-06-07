@@ -34,6 +34,10 @@ var defaultOptionsValues = {
 
 var defaultLocalOptionsValues = {
   links: [],
+  collapsedThreads: {
+    b: [],
+    all: [],
+  },
 };
 
 var globalLinks = [];
