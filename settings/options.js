@@ -27,11 +27,13 @@ var defaultOptionsValues = {
     noncuple: "#ee8b99",
   },
 
-  links: [],
-
   autoSave: false,
   toggled: true,
   intervalTimeout: 5000,
+};
+
+var defaultLocalOptionsValues = {
+  links: [],
 };
 
 var globalLinks = [];
@@ -137,6 +139,21 @@ function setSettings(settings) {
     .catch(onError);
 }
 
+function setLocalSettings(settings) {
+  function onError(error) {
+    setLoader(true);
+    console.log(`Error: ${error}`);
+  }
+
+  browser.storage.local
+    .set(settings)
+    .then(() => {
+      browser.runtime.sendMessage({ action: "localSettingsUpdated", data: settings });
+      setLoader(true);
+    })
+    .catch(onError);
+}
+
 function saveOptions(e = { target: document.querySelector("form") }) {
   e.preventDefault && e.preventDefault();
 
@@ -150,12 +167,10 @@ function restoreOptions() {
     let table = document.querySelector(`.links table`);
 
     const saveLinks = () => {
-      if (autoSave) {
-        browser.runtime.sendMessage({ action: "savedLinksUpdated", data: globalLinks });
-        setSettings({
-          links: globalLinks,
-        });
-      }
+      browser.runtime.sendMessage({ action: "savedLinksUpdated", data: globalLinks });
+      setLocalSettings({
+        links: globalLinks,
+      });
     };
 
     links.forEach((x) => {
@@ -284,12 +299,14 @@ function restoreOptions() {
     setupLinks(globalLinks);
 
     autoSave = result.autoSave;
-    document.querySelector("#auto-save").checked = autoSave;
+    document.querySelectorAll(".auto-save").forEach((x) => (x.checked = autoSave));
+
+    const saveButtons = document.querySelectorAll(`.save-button`);
 
     if (autoSave) {
-      document.getElementById(`save-button`).parentElement.classList.add("disabled");
+      saveButtons.forEach((x) => x.parentElement.classList.add("disabled"));
     } else {
-      document.getElementById(`save-button`).parentElement.classList.remove("disabled");
+      saveButtons.forEach((x) => x.parentElement.classList.remove("disabled"));
     }
 
     setListeners(result);
@@ -441,37 +458,65 @@ function restoreOptions() {
 
     /*----------------------LINKS-----------------------------------*/
 
-    el = document.querySelector(`.links .collapser`);
-    el &&
-      el.addEventListener("click", (e) => {
-        e.stopPropagation();
-        e.preventDefault();
+    // el = document.querySelector(`.links .collapser`);
+    // el &&
+    //   el.addEventListener("click", (e) => {
+    //     e.stopPropagation();
+    //     e.preventDefault();
 
-        const element = e.target.parentElement.parentElement;
+    //     const element = e.target.parentElement.parentElement;
 
-        const collapsed = element.classList.contains("collapsed");
+    //     const collapsed = element.classList.contains("collapsed");
 
-        setTimeout(() => {
-          if (collapsed) {
-            element.classList.remove("collapsed");
-          } else {
-            element.classList.add("collapsed");
-          }
-        });
-      });
+    //     setTimeout(() => {
+    //       if (collapsed) {
+    //         element.classList.remove("collapsed");
+    //       } else {
+    //         element.classList.add("collapsed");
+    //       }
+    //     });
+    //   });
 
     /*----------------------LINKS-----------------------------------*/
 
-    el = document.getElementById(`auto-save`);
+    el = document.querySelectorAll(`.auto-save`);
     el &&
-      el.addEventListener("change", (e) => {
-        autoSave = e.target.checked;
-        if (autoSave) {
-          document.getElementById(`save-button`).parentElement.classList.add("disabled");
-        } else {
-          document.getElementById(`save-button`).parentElement.classList.remove("disabled");
-        }
-      });
+      el.forEach((x) =>
+        x.addEventListener("change", (e) => {
+          autoSave = e.target.checked;
+          const saveButtons = document.querySelectorAll(`.save-button`);
+          if (autoSave) {
+            saveButtons.forEach((x) => x.parentElement.classList.add("disabled"));
+          } else {
+            saveButtons.forEach((x) => x.parentElement.classList.remove("disabled"));
+          }
+        })
+      );
+
+    /*----------------------TABS-----------------------------------*/
+
+    el = document.querySelectorAll(`.tabs div.tab`);
+    el &&
+      el.forEach((x) =>
+        x.addEventListener("click", (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          if (e.target.classList.contains("selected")) {
+            return;
+          }
+
+          document.querySelectorAll(`.tabs div.tab`).forEach((x) => x.classList.remove("selected"));
+          const tab = [...e.target.classList].find((x) => x !== "tab");
+          e.target.classList.add("selected");
+
+          setTimeout(() => {
+            document.querySelectorAll(`table.tab`).forEach((x) => x.classList.remove("selected"));
+            document.querySelector(`table.tab.${tab}`).classList.add("selected");
+          });
+        })
+      );
+
+    /*----------------------TABS-----------------------------------*/
 
     [...document.querySelectorAll("[name]")].forEach((control) => {
       if (!!control._picker) {
@@ -492,7 +537,15 @@ function restoreOptions() {
   }
 
   const getting = browser.storage.sync.get(defaultOptionsValues);
-  getting.then(setCurrentChoice, onError);
+  getting
+    .then((settings) => {
+      return browser.storage.local.get(defaultLocalOptionsValues).then((localSettings) => {
+        return { settings, localSettings };
+      });
+    }, onError)
+    .then(({ settings, localSettings }) => {
+      setCurrentChoice({ ...settings, ...localSettings });
+    });
 }
 
 function setLoader(completed = false) {

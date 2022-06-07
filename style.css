@@ -122,6 +122,7 @@ body.kd-toggle .post__details__oppost {
   display: flex;
   align-items: baseline;
 }
+
 body.kd-toggle .post__details__oppost > * {
   margin-right: 4px;
 }

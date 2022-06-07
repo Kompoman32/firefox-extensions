@@ -15,7 +15,11 @@
       <div id="loader" class="loader" data-completed="false">
         <div><div></div></div>
       </div>
-      <table>
+      <div class="tabs">
+        <div class="tab options selected">Опции</div>
+        <div class="tab links">Ссылки</div>
+      </div>
+      <table class="tab options selected">
         <thead></thead>
         <tbody>
           <tr>
@@ -217,13 +221,20 @@
           <tr class="splitter">
             <td colspan="2"></td>
           </tr>
-
-          <tr class="links">
-            <td colspan="2">
-              <div class="collapser">Links </div>
+          <tr class="buttons">
+            <td>
+              <input type="checkbox" id="auto-save1" class="auto-save" name="autoSave" />
+              <label for="auto-save1">Auto save</label>
+            </td>
+            <td>
+              <button class="save-button" type="submit">Save</button>
             </td>
           </tr>
-
+        </tbody>
+      </table>
+      <table class="tab links">
+        <thead></thead>
+        <tbody>
           <tr class="links">
             <td colspan="2">
               <table>
@@ -231,16 +242,13 @@
             </td>
           </tr>
 
-          <tr class="splitter">
-            <td colspan="2"></td>
-          </tr>
           <tr class="buttons">
             <td>
-              <input type="checkbox" id="auto-save" name="autoSave" />
-              <label for="auto-save">Auto save</label>
+              <input type="checkbox" id="auto-save2" class="auto-save" name="autoSave" />
+              <label for="auto-save2">Auto save</label>
             </td>
             <td>
-              <button id="save-button" type="submit">Save</button>
+              <button class="save-button" type="submit">Save</button>
             </td>
           </tr>
         </tbody>

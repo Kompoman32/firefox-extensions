@@ -86,6 +86,11 @@ input[type="number"] {
   max-width: 70px;
 }
 
+input[type="checkbox"],
+label[for] {
+  cursor: pointer;
+}
+
 tr.disabled,
 td.disabled {
   opacity: 0.5;
@@ -99,7 +104,7 @@ td {
 
 td.background-preview,
 tr.links td {
-  width: 300px;
+  width: 500px;
 }
 
 td.background-preview,
@@ -229,7 +234,49 @@ tr.buttons {
   position: sticky;
   bottom: 0;
 
+  z-index: 1;
+
   background-color: white;
+}
+
+.tabs {
+  display: flex;
+  flex-direction: row;
+
+  justify-items: flex-start;
+}
+
+table.tab:not(.selected) {
+  display: none;
+}
+
+.tabs {
+  background-color: white;
+
+  border-bottom: 1px solid black;
+
+  margin-bottom: 5px;
+
+  position: sticky;
+  top: 0;
+}
+
+.tabs .tab {
+  display: block;
+
+  cursor: pointer;
+
+  padding: 5px;
+
+  border: 1px solid black;
+  border-left: none;
+  border-bottom: none;
+}
+
+.tabs .tab.selected {
+  cursor: initial;
+
+  background-color: lightgray;
 }
 
 div.pen {

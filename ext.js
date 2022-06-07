@@ -26,11 +26,13 @@ var defaultOptionsValues = {
     noncuple: "#ee8b99",
   },
 
-  links: [],
-
   autoSave: false,
   toggled: true,
   intervalTimeout: 5000,
+};
+
+var defaultLocalOptionsValues = {
+  links: [],
 };
 
 function consoleLog(...args) {
@@ -72,6 +74,7 @@ function consoleGroupEnd() {
     }
 
     const settings = await browser.storage.sync.get(defaultOptionsValues);
+    const localSettings = await browser.storage.local.get(defaultLocalOptionsValues);
 
     if (!settings) {
       return;
@@ -93,6 +96,7 @@ function consoleGroupEnd() {
 
     class MainClass {
       static settings = {};
+      static localSettings = {};
 
       static toggled = toggled;
       static interval = null;
@@ -106,11 +110,18 @@ function consoleGroupEnd() {
 
       static setOptions(options) {
         browser.storage.sync.set(options).catch(() => {
-          consoleError("Toggled sync error", toggledValue);
           clearInterval(MainClass.interval);
         });
 
         browser.runtime.sendMessage({ action: "settingsUpdated", data: MainClass.settings });
+      }
+
+      static setLocalOptions(options) {
+        browser.storage.local.set(options).catch(() => {
+          clearInterval(MainClass.interval);
+        });
+
+        browser.runtime.sendMessage({ action: "localSettingsUpdated", data: MainClass.localSettings });
       }
 
       static start() {
@@ -713,7 +724,7 @@ function consoleGroupEnd() {
               location = message.data;
               break;
             case "savedLinksUpdated":
-              MainClass.settings.links = message.data;
+              MainClass.localSettings.links = message.data;
               break;
 
             default:
@@ -804,10 +815,10 @@ function consoleGroupEnd() {
           name,
         };
 
-        MainClass.settings.links.push(newLink);
+        MainClass.localSettings.links.push(newLink);
 
-        MainClass.setOptions({
-          links: MainClass.settings.links,
+        MainClass.setLocalOptions({
+          links: MainClass.localSettings.links,
         });
 
         browser.runtime.sendMessage({ action: "savedLinksUpdated", data: MainClass.settings.links });
@@ -815,6 +826,15 @@ function consoleGroupEnd() {
     }
 
     MainClass.settings = settings;
+    MainClass.localSettings = localSettings;
+
+    if (settings.links && settings.links.length) {
+      localSettings.links = [...settings.links, ...localSettings.links];
+      settings.links = [];
+
+      MainClass.setOptions(settings);
+      MainClass.setLocalOptions(localSettings);
+    }
 
     MainClass.setupTopBar();
     MainClass.setupStyleBySettings();
