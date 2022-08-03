@@ -89,6 +89,7 @@ function consoleGroupEnd() {
     const isThreadPage = new RegExp("/.+/res/*/").test(location.pathname);
     const threadGroup = location.pathname.substring(0, location.pathname.substr(1).indexOf("/") + 2);
     const isBThread = threadGroup === "/b/";
+    const isBeta = new RegExp("beta.2ch.hk").test(location.hostname);
     const currentThreadId = isThreadPage
       ? +location.pathname.substring(location.pathname.indexOf("res/") + 4).replace(".html", "")
       : null;
@@ -191,6 +192,9 @@ function consoleGroupEnd() {
         MainClass.updateThreads();
         MainClass.updatePosts();
         document.body.classList.add("kd-toggle");
+        if (isBeta) {
+          document.body.classList.add("beta");
+        }
 
         if (!MainClass.settings.showPlashque) {
           document.body.classList.add("hide-plashque");
@@ -409,6 +413,10 @@ function consoleGroupEnd() {
       static addPostNbleClass(post) {
         let postHeader = post.querySelector(".post__details");
 
+        if (!postHeader) {
+          return;
+        }
+
         if (post.classList.contains("post_type_oppost")) {
           postHeader = post.parentElement.previousElementSibling;
         }
@@ -571,13 +579,20 @@ function consoleGroupEnd() {
           </span>
           `;
 
-        document.querySelector(".header__adminbar .adminbar__boards").appendChild(extensionSettingsEl);
+        if (isBeta) {
+          document.querySelector(".header__opts").appendChild(extensionSettingsEl);
+        } else {
+          document.querySelector(".header__adminbar .adminbar__boards").appendChild(extensionSettingsEl);
+        }
 
         const toggler = extensionSettingsEl.querySelector("#kd-toggler");
 
         if (MainClass.toggled) {
           toggler.classList.add("toggled");
           document.body.classList.add("kd-toggle");
+          if (isBeta) {
+            document.body.classList.add("beta");
+          }
         } else {
           toggler.classList.remove("toggled");
           document.body.classList.remove("kd-toggle");

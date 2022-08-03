@@ -80,6 +80,8 @@ body.kd-toggle .post:not(.post_preview) .post__images figure.post__image {
 }
 
 body.kd-toggle .post:not(.post_preview) .post__image-link {
+  display: block;
+
   overflow: auto;
   max-width: 100%;
 }
@@ -155,8 +157,7 @@ body.kd-toggle .post.post_preview {
   z-index: 999 !important;
 }
 
-body.kd-toggle .thread.collapsed .thread__oppost,
-body.kd-toggle .thread.collapsed .thread__post {
+body.kd-toggle .thread.collapsed > *:not(.post__details__oppost) {
   display: none;
 }
 
@@ -216,6 +217,10 @@ body.kd-toggle .post .post__details {
 
 body.kd-toggle .post .post__details .post__detailpart:first-of-type > * {
   padding-right: 4px;
+}
+
+body.kd-toggle .post .post__details .post__detailpart:last-child {
+  display: block;
 }
 
 body.kd-toggle .post.double .post__details * {
