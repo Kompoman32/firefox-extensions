@@ -135,6 +135,7 @@ function consoleGroupEnd() {
       static start() {
         clearInterval(MainClass.interval);
         MainClass.render();
+        MainClass.setupListeners();
         MainClass.interval = setInterval(MainClass.render, intervalTimeout);
 
         MainClass.toggled = true;
@@ -453,6 +454,7 @@ function consoleGroupEnd() {
         consoleGroup("KD -", "DeRender");
         MainClass.deUpdateThreads();
         MainClass.deUpdatePosts();
+        MainClass.deSetupListeners();
         document.body.classList.remove("kd-toggle");
         document.body.classList.remove("hide-plashque");
         consoleGroupEnd();
@@ -719,7 +721,7 @@ function consoleGroupEnd() {
         document.head.insertAdjacentElement("beforeend", settingsStyle);
       }
 
-      static setupListeners() {
+      static setupCoreListeners() {
         browser.runtime.onMessage.addListener((message) => {
           switch (message.action) {
             case "settingsUpdated":
@@ -800,6 +802,70 @@ function consoleGroupEnd() {
               break;
           }
         });
+      }
+
+      static setupListeners() {
+        document.body.addEventListener("keydown", MainClass.keydownBodyListener);
+        document.body.addEventListener("keyup", MainClass.keyupBodyListener);
+      }
+
+      static deSetupListeners() {
+        document.body.removeEventListener("keydown", MainClass.keydownBodyListener);
+        document.body.removeEventListener("keyup", MainClass.keyupBodyListener);
+      }
+
+      static keydownBodyListener(event) {
+        const previewVideo = document.querySelector("#js-mv-main video");
+
+        const arrowKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
+
+        if (!!previewVideo && event.shiftKey && arrowKeys.includes(event.key)) {
+          event.preventDefault();
+          event.stopPropagation();
+          event.stopImmediatePropagation();
+          event.cancelBubble = true;
+
+          const volume = (forward) => {
+            const increaseVolume = 0.1 * (forward ? 1 : -1);
+            previewVideo.volume += increaseVolume;
+          };
+
+          const time = (more) => {
+            const duration = previewVideo.duration;
+            const skipTime = Math.min(duration / 10, 15) * (more ? 1 : -1);
+            previewVideo.currentTime += skipTime;
+          };
+
+          switch (event.key) {
+            case "ArrowUp":
+              volume(true);
+              break;
+            case "ArrowDown":
+              volume(false);
+              break;
+            case "ArrowRight":
+              time(true);
+              break;
+            case "ArrowLeft":
+              time(false);
+              break;
+
+            default:
+              break;
+          }
+        }
+      }
+      static keyupBodyListener(event) {
+        const previewVideo = document.querySelector("#js-mv-main video");
+
+        const arrowKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
+
+        if (!!previewVideo && event.shiftKey && arrowKeys.includes(event.key)) {
+          event.preventDefault();
+          event.stopPropagation();
+          event.stopImmediatePropagation();
+          event.cancelBubble = true;
+        }
       }
 
       static savePostMenuListener(e) {
@@ -907,7 +973,7 @@ function consoleGroupEnd() {
 
     MainClass.setupTopBar();
     MainClass.setupStyleBySettings();
-    MainClass.setupListeners();
+    MainClass.setupCoreListeners();
 
     setTimeout(() => {
       MainClass.setToggled(MainClass.toggled);
