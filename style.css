@@ -203,6 +203,7 @@ body.kd-toggle #ABU-select .splitter {
   margin-bottom: 3px;
 }
 
+body.kd-toggle.hide-plashque #js-plashque,
 body.kd-toggle.hide-plashque #plashque {
   display: none;
 }
