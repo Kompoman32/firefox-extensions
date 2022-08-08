@@ -90,9 +90,14 @@ function consoleGroupEnd() {
     const threadGroup = location.pathname.substring(0, location.pathname.substr(1).indexOf("/") + 2);
     const isBThread = threadGroup === "/b/";
     const isBeta = new RegExp("beta.2ch.hk").test(location.hostname);
+    const isMuon = document.getElementById("SwitchStyles") && document.getElementById("SwitchStyles").value === "muon";
     const currentThreadId = isThreadPage
       ? +location.pathname.substring(location.pathname.indexOf("res/") + 4).replace(".html", "")
       : null;
+
+    if (isMuon) {
+      document.body.parentElement.classList.add("muon");
+    }
 
     let { toggled, intervalTimeout } = settings;
 
@@ -700,15 +705,17 @@ function consoleGroupEnd() {
           --kd-quintuple-color: ${MainClass.settings.colors.quintuple};
           --kd-sextuple-color: ${MainClass.settings.colors.sextuple};
           --kd-septuple-color: ${MainClass.settings.colors.septuple};
-          --kd-noncuple-color: ${MainClass.settings.colors.noncuple};`;
+          --kd-noncuple-color: ${MainClass.settings.colors.noncuple}; \n`;
         }
+
+        text += `--kd-muon-background: #211F1A url('https://${location.host}/static/img/muon_bg.jpg') repeat`;
 
         text += `}`;
 
         if (MainClass.settings.previewBackground) {
           text += `
           
-          hrml.kd-toggle body .mv {
+          html.kd-toggle body .mv {
             position: fixed;
             background: var(--kd-modal-bg);
           }`;
@@ -806,6 +813,17 @@ function consoleGroupEnd() {
               break;
           }
         });
+
+        const switchStyleSelect = document.getElementById("SwitchStyles");
+        if (switchStyleSelect) {
+          switchStyleSelect.addEventListener("change", (e) => {
+            if (switchStyleSelect.value === "muon") {
+              document.body.parentElement.classList.add("muon");
+            } else {
+              document.body.parentElement.classList.remove("muon");
+            }
+          });
+        }
       }
 
       static setupListeners() {

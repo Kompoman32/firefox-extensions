@@ -125,6 +125,14 @@ html.kd-toggle body .post__details__oppost {
   align-items: baseline;
 }
 
+html.kd-toggle.muon body .post__details__oppost,
+html.kd-toggle.muon body .header__opts_sticky,
+html.kd-toggle.muon body .bb__tabs .bb__tab,
+html.kd-toggle.muon body #up-nav-arrow,
+html.kd-toggle.muon body #down-nav-arrow {
+  background: var(--kd-muon-background);
+}
+
 html.kd-toggle body .post__details__oppost > * {
   margin-right: 4px;
 }
@@ -140,6 +148,12 @@ html.kd-toggle body #js-mv-main {
 html.kd-toggle body #up-nav-arrow,
 html.kd-toggle body #down-nav-arrow {
   z-index: 983 !important;
+
+  border: 1px solid var(--theme_default_btnborder);
+  border-radius: 10px;
+
+  height: 42px;
+  width: 42px;
 }
 
 html.kd-toggle body .mv {
