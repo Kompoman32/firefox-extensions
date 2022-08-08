@@ -581,10 +581,12 @@ function consoleGroupEnd() {
           </span>
           `;
 
-        if (isBeta) {
-          document.querySelector(".header__opts").appendChild(extensionSettingsEl);
-        } else {
-          document.querySelector(".header__adminbar .adminbar__boards").appendChild(extensionSettingsEl);
+        // no beta || beta
+        const header =
+          document.querySelector(".header__adminbar .adminbar__boards") || document.querySelector(".header__opts");
+
+        if (header) {
+          header.appendChild(extensionSettingsEl);
         }
 
         const toggler = extensionSettingsEl.querySelector("#kd-toggler");
