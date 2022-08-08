@@ -192,13 +192,13 @@ function consoleGroupEnd() {
         consoleGroup("KD -", "Render");
         MainClass.updateThreads();
         MainClass.updatePosts();
-        document.body.classList.add("kd-toggle");
+        document.body.parentElement.classList.add("kd-toggle");
         if (isBeta) {
-          document.body.classList.add("beta");
+          document.body.parentElement.classList.add("beta");
         }
 
         if (!MainClass.settings.showPlashque) {
-          document.body.classList.add("hide-plashque");
+          document.body.parentElement.classList.add("hide-plashque");
         }
 
         consoleGroupEnd();
@@ -455,8 +455,8 @@ function consoleGroupEnd() {
         MainClass.deUpdateThreads();
         MainClass.deUpdatePosts();
         MainClass.deSetupListeners();
-        document.body.classList.remove("kd-toggle");
-        document.body.classList.remove("hide-plashque");
+        document.body.parentElement.classList.remove("kd-toggle");
+        document.body.parentElement.classList.remove("hide-plashque");
         consoleGroupEnd();
       }
 
@@ -591,15 +591,17 @@ function consoleGroupEnd() {
 
         const toggler = extensionSettingsEl.querySelector("#kd-toggler");
 
-        if (MainClass.toggled) {
-          toggler.classList.add("toggled");
-          document.body.classList.add("kd-toggle");
-          if (isBeta) {
-            document.body.classList.add("beta");
+        if (toggler) {
+          if (MainClass.toggled) {
+            toggler.classList.add("toggled");
+            document.body.classList.add("kd-toggle");
+            if (isBeta) {
+              document.body.classList.add("beta");
+            }
+          } else {
+            toggler.classList.remove("toggled");
+            document.body.classList.remove("kd-toggle");
           }
-        } else {
-          toggler.classList.remove("toggled");
-          document.body.classList.remove("kd-toggle");
         }
 
         MainClass.toggler = toggler;
@@ -706,7 +708,7 @@ function consoleGroupEnd() {
         if (MainClass.settings.previewBackground) {
           text += `
           
-          body.kd-toggle .mv {
+          hrml.kd-toggle body .mv {
             position: fixed;
             background: var(--kd-modal-bg);
           }`;

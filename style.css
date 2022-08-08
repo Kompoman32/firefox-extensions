@@ -21,7 +21,7 @@ html {
   scroll-behavior: smooth;
 }
 
-body.kd-toggle .thread {
+html.kd-toggle body .thread {
   border-bottom: 1px solid gray;
 
   margin-bottom: 10px;
@@ -37,33 +37,33 @@ body.kd-toggle .thread {
   padding-left: var(--kd-post-margin);
 }
 
-body.kd-toggle .thread > div {
+html.kd-toggle body .thread > div {
   width: calc(100% + var(--kd-post-margin));
   max-width: calc(100% + var(--kd-post-margin));
 }
 
-body.kd-toggle .thread .thread__oppost,
-body.kd-toggle .post__details__oppost {
+html.kd-toggle body .thread .thread__oppost,
+html.kd-toggle body .post__details__oppost {
   width: calc(100% + var(--kd-post-margin));
 
   margin-left: calc(var(--kd-post-margin) * -1);
 }
 
-body.kd-toggle .thread .thread__missed {
+html.kd-toggle body .thread .thread__missed {
   display: inline-block;
 }
 
-body.kd-toggle .thread .thread__post {
+html.kd-toggle body .thread .thread__post {
   width: calc(100% - var(--kd-post-margin));
 }
 
-body.kd-toggle .post:not(.post_preview) {
+html.kd-toggle body .post:not(.post_preview) {
   width: 100%;
 
   max-width: unset;
 }
 
-body.kd-toggle .post.post_type_oppost:not(.post_preview) .post__images {
+html.kd-toggle body .post.post_type_oppost:not(.post_preview) .post__images {
   float: left;
   display: flex;
   flex-direction: row;
@@ -73,13 +73,13 @@ body.kd-toggle .post.post_type_oppost:not(.post_preview) .post__images {
   width: 100%;
 }
 
-body.kd-toggle .post:not(.post_preview) .post__images figure.post__image {
+html.kd-toggle body .post:not(.post_preview) .post__images figure.post__image {
   display: inline-block;
   vertical-align: top;
   max-width: 100%;
 }
 
-body.kd-toggle .post:not(.post_preview) .post__image-link {
+html.kd-toggle body .post:not(.post_preview) .post__image-link {
   display: block;
 
   overflow: auto;
@@ -90,11 +90,11 @@ body.kd-toggle .post:not(.post_preview) .post__image-link {
   display: none;
 }
 
-body.kd-toggle .post:not(.post_preview) .post__image-link.webm {
+html.kd-toggle body .post:not(.post_preview) .post__image-link.webm {
   position: relative;
 }
 
-body.kd-toggle .post:not(.post_preview) .post__image-link.webm div {
+html.kd-toggle body .post:not(.post_preview) .post__image-link.webm div {
   display: block;
 
   position: absolute;
@@ -107,13 +107,13 @@ body.kd-toggle .post:not(.post_preview) .post__image-link.webm div {
   text-transform: uppercase;
 }
 
-body.kd-toggle .post:not(.post_preview) .post__image-link img {
+html.kd-toggle body .post:not(.post_preview) .post__image-link img {
   /* max-height: 700px; */
   max-width: 100%;
   width: unset;
 }
 
-body.kd-toggle .post__details__oppost {
+html.kd-toggle body .post__details__oppost {
   position: sticky;
   top: calc(1rem - 10px);
 
@@ -125,24 +125,24 @@ body.kd-toggle .post__details__oppost {
   align-items: baseline;
 }
 
-body.kd-toggle .post__details__oppost > * {
+html.kd-toggle body .post__details__oppost > * {
   margin-right: 4px;
 }
 
-body.kd-toggle .post__details__oppost .post__title {
+html.kd-toggle body .post__details__oppost .post__title {
   font-size: 24px;
 }
 
-body.kd-toggle #js-mv-main {
+html.kd-toggle body #js-mv-main {
   z-index: 984 !important;
 }
 
-body.kd-toggle #up-nav-arrow,
-body.kd-toggle #down-nav-arrow {
+html.kd-toggle body #up-nav-arrow,
+html.kd-toggle body #down-nav-arrow {
   z-index: 983 !important;
 }
 
-body.kd-toggle .mv {
+html.kd-toggle body .mv {
   /* position: fixed; */
   top: 0;
   left: 0;
@@ -153,15 +153,15 @@ body.kd-toggle .mv {
   /* background: #15202bdd; */
 }
 
-body.kd-toggle .post.post_preview {
+html.kd-toggle body .post.post_preview {
   z-index: 999 !important;
 }
 
-body.kd-toggle .thread.collapsed > *:not(.post__details__oppost) {
+html.kd-toggle body .thread.collapsed > *:not(.post__details__oppost) {
   display: none;
 }
 
-body.kd-toggle .thread .post__details__oppost .collapser {
+html.kd-toggle body .thread .post__details__oppost .collapser {
   font-size: 1rem;
   width: 1.5rem;
 
@@ -177,77 +177,77 @@ body.kd-toggle .thread .post__details__oppost .collapser {
   cursor: pointer;
 }
 
-body.kd-toggle #qr,
-body.kd-toggle #settings-window,
-body.kd-toggle .bb.desktop,
-body.kd-toggle .mv {
+html.kd-toggle body #qr,
+html.kd-toggle body #settings-window,
+html.kd-toggle body .bb.desktop,
+html.kd-toggle body .mv {
   z-index: 998 !important;
 }
 
-body.kd-toggle #settings-window .settings__header span {
+html.kd-toggle body #settings-window .settings__header span {
   font-family: "Courier New", Courier, monospace;
 }
 
-body.kd-toggle #kd-settings .settings {
+html.kd-toggle body #kd-settings .settings {
   cursor: pointer;
 }
 
-body.kd-toggle #kd-toggler:not(.toggled) + .settings {
+html.kd-toggle body #kd-toggler:not(.toggled) + .settings {
   display: none;
 }
 
-body.kd-toggle #ABU-select .splitter {
+html.kd-toggle body #ABU-select .splitter {
   border-bottom: 1px solid var(--theme_default_alttext);
 
   margin-top: 3px;
   margin-bottom: 3px;
 }
 
-body.kd-toggle.hide-plashque #js-plashque,
-body.kd-toggle.hide-plashque #plashque {
+html.kd-toggle.hide-plashque #js-plashque,
+html.kd-toggle.hide-plashque #plashque {
   display: none;
 }
 
-body.kd-toggle .post:not(.post_preview) .post__image-link img {
+html.kd-toggle body .post:not(.post_preview) .post__image-link img {
   max-height: var(--kd-max-image-height);
 }
 
-body.kd-toggle .post .post__details {
+html.kd-toggle body .post .post__details {
   display: flex;
 }
 
-body.kd-toggle .post .post__details .post__detailpart:first-of-type > * {
+html.kd-toggle body .post .post__details .post__detailpart:first-of-type > * {
   padding-right: 4px;
 }
 
-body.kd-toggle .post .post__details .post__detailpart:last-child {
+html.kd-toggle body .post .post__details .post__detailpart:last-child {
   display: block;
 }
 
-body.kd-toggle .post.double .post__details * {
+html.kd-toggle body .post.double .post__details * {
   background-color: var(--kd-double-color);
 }
 
-body.kd-toggle .post.triple .post__details * {
+html.kd-toggle body .post.triple .post__details * {
   background-color: var(--kd-triple-color);
 }
 
-body.kd-toggle .post.quadruple .post__details * {
+html.kd-toggle body .post.quadruple .post__details * {
   background-color: var(--kd-quadruple-color);
 }
 
-body.kd-toggle .post.quintuple .post__details * {
+html.kd-toggle body .post.quintuple .post__details * {
   background-color: var(--kd-quintuple-color);
 }
 
-body.kd-toggle .post.sextuple .post__details * {
+html.kd-toggle body .post.sextuple .post__details * {
   background-color: var(--kd-sextuple-color);
 }
 
-body.kd-toggle .post.septuple .post__details * {
+html.kd-toggle body .post.septuple .post__details * {
   background-color: var(--kd-septuple-color);
 }
 
-body.kd-toggle .post.noncuple .post__details * {
+html.kd-toggle body .post.noncuple .post__details * {
   background-color: var(--kd-noncuple-color);
 }
