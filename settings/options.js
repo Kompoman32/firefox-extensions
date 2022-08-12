@@ -12,6 +12,8 @@ var defaultOptionsValues = {
 
   runGif: true,
 
+  previewBlockClicks: false,
+
   previewBackground: true,
   previewBackgroundColor: "#15202b",
   previewBackgroundOpacity: 0.86328125,
@@ -284,6 +286,8 @@ function restoreOptions() {
     document.querySelector("#show-plashque").checked = result.showPlashque;
 
     document.querySelector("#run-gif").checked = result.runGif;
+
+    document.querySelector("#preview-block-clicks").checked = result.previewBlockClicks;
 
     document.querySelector("#preview-background").checked = result.previewBackground;
     document.querySelector("#preview-background-color").value = result.previewBackgroundColor;

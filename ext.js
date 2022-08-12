@@ -11,6 +11,8 @@ var defaultOptionsValues = {
 
   runGif: true,
 
+  previewBlockClicks: false,
+
   previewBackground: true,
   previewBackgroundColor: "#15202b",
   previewBackgroundOpacity: 0.86328125,
@@ -746,6 +748,7 @@ function consoleGroupEnd() {
               const showPlashqueChanged = newSettings.showPlashque !== currentSettings.showPlashque;
               const titleToBottomChanged = newSettings.titleToBottom !== currentSettings.titleToBottom;
               const runGifChanged = newSettings.runGif !== currentSettings.runGif;
+              const previewBlockClicksChanged = newSettings.previewBlockClicks !== currentSettings.previewBlockClicks;
               const previewBackgroundChanged = newSettings.previewBackground !== currentSettings.previewBackground;
               const previewBackgroundColorChanged =
                 newSettings.previewBackgroundColor !== currentSettings.previewBackgroundColor;
@@ -829,11 +832,13 @@ function consoleGroupEnd() {
       static setupListeners() {
         document.body.addEventListener("keydown", MainClass.keydownBodyListener);
         document.body.addEventListener("keyup", MainClass.keyupBodyListener);
+        document.body.addEventListener("click", MainClass.clickBodyListener);
       }
 
       static deSetupListeners() {
         document.body.removeEventListener("keydown", MainClass.keydownBodyListener);
         document.body.removeEventListener("keyup", MainClass.keyupBodyListener);
+        document.body.removeEventListener("click", MainClass.clickBodyListener);
       }
 
       static keydownBodyListener(event) {
@@ -887,6 +892,18 @@ function consoleGroupEnd() {
           event.stopPropagation();
           event.stopImmediatePropagation();
           event.cancelBubble = true;
+        }
+      }
+
+      static clickBodyListener(event) {
+        const modal = document.querySelector("body > .mv");
+
+        if (MainClass.settings.previewBlockClicks && modal) {
+          if (modal.contains(event.target) && event.target !== modal) {
+            event.preventDefault();
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+          }
         }
       }
 
