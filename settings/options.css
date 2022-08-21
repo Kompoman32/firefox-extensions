@@ -186,16 +186,14 @@ table.tab:not(.selected) {
   border-bottom: 1px solid gray;
 }
 
-.buttons {
+/* .buttons {
   position: sticky;
   bottom: 0;
-
-  display: none;
 
   z-index: 1;
 
   background-color: white;
-}
+} */
 
 div.collapser {
   top: 0;

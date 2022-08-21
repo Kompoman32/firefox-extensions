@@ -29,7 +29,7 @@ var defaultOptionsValues = {
     noncuple: "#ee8b99",
   },
 
-  autoSave: false,
+  autoSave: true,
   toggled: true,
   intervalTimeout: 5000,
 };
@@ -44,7 +44,7 @@ var defaultLocalOptionsValues = {
 
 var globalLinks = [];
 
-var autoSave = false;
+var autoSave = true;
 
 function formSerializer(form) {
   if (!form || form.nodeName !== "FORM") {
