@@ -14,7 +14,9 @@
   background-color: #fff;
   display: block;
   min-width: 128px;
+  max-width: 128px;
   min-height: 128px;
+  max-height: 128px;
   position: relative;
 }
 .color-picker > .color-picker-right-bar {

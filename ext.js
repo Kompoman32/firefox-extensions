@@ -11,11 +11,11 @@ var defaultOptionsValues = {
 
   runGif: true,
 
-  previewBlockClicks: false,
+  popupBlockClicks: false,
 
-  previewBackground: true,
-  previewBackgroundColor: "#15202b",
-  previewBackgroundOpacity: 0.86328125,
+  popupBackground: true,
+  popupBackgroundColor: "#15202b",
+  popupBackgroundOpacity: 0.86328125,
 
   colorPost: true,
   colors: {
@@ -314,18 +314,18 @@ function consoleGroupEnd() {
       }
 
       static updatePosts() {
-        const posts = [...document.querySelectorAll(".post:not([data-post-updated]):not(.post_preview)")];
-        const postsInPreview = [...document.querySelectorAll(".post:not([data-post-updated]).post_preview")];
+        const posts = [...document.querySelectorAll(".post:not([data-post-updated]):not(.post_popup)")];
+        const postsInPopup = [...document.querySelectorAll(".post:not([data-post-updated]).post_popup")];
 
         consoleGroup("Posts");
-        consoleLog("Posts updated: ", posts.length + postsInPreview.length);
-        if (posts.length === 0 && postsInPreview.length === 0) {
+        consoleLog("Posts updated: ", posts.length + postsInPopup.length);
+        if (posts.length === 0 && postsInPopup.length === 0) {
           consoleGroupEnd();
           return;
         }
 
         posts.forEach((post) => MainClass.updatePost(post));
-        postsInPreview.forEach((post) => {
+        postsInPopup.forEach((post) => {
           MainClass.addPostNbleClass(post);
 
           post.dataset.postUpdated = true;
@@ -475,7 +475,7 @@ function consoleGroupEnd() {
       }
 
       static deUpdatePosts() {
-        const posts = [...document.querySelectorAll(".post[data-post-updated]:not(.post_preview)")];
+        const posts = [...document.querySelectorAll(".post[data-post-updated]:not(.post_popup)")];
 
         consoleGroup("Posts");
         consoleLog("Posts deUpdated: ", posts.length);
@@ -665,8 +665,8 @@ function consoleGroupEnd() {
         settingsStyle.id = "kd-settings-style";
 
         const color =
-          MainClass.settings.previewBackgroundColor +
-          Math.round(Math.min(Math.max(MainClass.settings.previewBackgroundOpacity, 0), 1) * 255).toString(16);
+          MainClass.settings.popupBackgroundColor +
+          Math.round(Math.min(Math.max(MainClass.settings.popupBackgroundOpacity, 0), 1) * 255).toString(16);
 
         let text = "";
 
@@ -690,7 +690,7 @@ function consoleGroupEnd() {
 
         text += `}`;
 
-        if (MainClass.settings.previewBackground) {
+        if (MainClass.settings.popupBackground) {
           text += `
           
           html.kd-toggle body .mv {
@@ -724,12 +724,12 @@ function consoleGroupEnd() {
               const showPlashqueChanged = newSettings.showPlashque !== currentSettings.showPlashque;
               const titleToBottomChanged = newSettings.titleToBottom !== currentSettings.titleToBottom;
               const runGifChanged = newSettings.runGif !== currentSettings.runGif;
-              const previewBlockClicksChanged = newSettings.previewBlockClicks !== currentSettings.previewBlockClicks;
-              const previewBackgroundChanged = newSettings.previewBackground !== currentSettings.previewBackground;
-              const previewBackgroundColorChanged =
-                newSettings.previewBackgroundColor !== currentSettings.previewBackgroundColor;
-              const previewBackgroundOpacityChanged =
-                newSettings.previewBackgroundOpacity !== currentSettings.previewBackgroundOpacity;
+              const popupBlockClicksChanged = newSettings.popupBlockClicks !== currentSettings.popupBlockClicks;
+              const popupBackgroundChanged = newSettings.popupBackground !== currentSettings.popupBackground;
+              const popupBackgroundColorChanged =
+                newSettings.popupBackgroundColor !== currentSettings.popupBackgroundColor;
+              const popupBackgroundOpacityChanged =
+                newSettings.popupBackgroundOpacity !== currentSettings.popupBackgroundOpacity;
               const colorPostChanged = newSettings.colorPost !== currentSettings.colorPost;
               const someColorChanged = Object.keys(newSettings.colors).some(
                 (key) => newSettings.colors[key] !== currentSettings.colors[key]
@@ -748,7 +748,7 @@ function consoleGroupEnd() {
               }
 
               if (runGifChanged || thumbImagesChanged) {
-                const posts = [...document.querySelectorAll(".post:not(.post_preview)")];
+                const posts = [...document.querySelectorAll(".post:not(.post_popup)")];
 
                 posts.forEach((post) => {
                   MainClass.updatePost(post, runGifChanged);
@@ -757,9 +757,9 @@ function consoleGroupEnd() {
 
               if (
                 maxHeightChanged ||
-                previewBackgroundChanged ||
-                previewBackgroundColorChanged ||
-                previewBackgroundOpacityChanged ||
+                popupBackgroundChanged ||
+                popupBackgroundColorChanged ||
+                popupBackgroundOpacityChanged ||
                 colorPostChanged ||
                 someColorChanged
               ) {
@@ -818,11 +818,11 @@ function consoleGroupEnd() {
       }
 
       static keydownBodyListener(event) {
-        const previewVideo = document.querySelector("#js-mv-main video");
+        const popupVideo = document.querySelector("#js-mv-main video");
 
         const arrowKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
 
-        if (!!previewVideo && event.shiftKey && arrowKeys.includes(event.key)) {
+        if (!!popupVideo && event.shiftKey && arrowKeys.includes(event.key)) {
           event.preventDefault();
           event.stopPropagation();
           event.stopImmediatePropagation();
@@ -830,13 +830,13 @@ function consoleGroupEnd() {
 
           const volume = (forward) => {
             const increaseVolume = 0.1 * (forward ? 1 : -1);
-            previewVideo.volume += increaseVolume;
+            popupVideo.volume += increaseVolume;
           };
 
           const time = (more) => {
-            const duration = previewVideo.duration;
+            const duration = popupVideo.duration;
             const skipTime = Math.min(duration / 10, 15) * (more ? 1 : -1);
-            previewVideo.currentTime += skipTime;
+            popupVideo.currentTime += skipTime;
           };
 
           switch (event.key) {
@@ -859,11 +859,11 @@ function consoleGroupEnd() {
         }
       }
       static keyupBodyListener(event) {
-        const previewVideo = document.querySelector("#js-mv-main video");
+        const popupVideo = document.querySelector("#js-mv-main video");
 
         const arrowKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
 
-        if (!!previewVideo && event.shiftKey && arrowKeys.includes(event.key)) {
+        if (!!popupVideo && event.shiftKey && arrowKeys.includes(event.key)) {
           event.preventDefault();
           event.stopPropagation();
           event.stopImmediatePropagation();
@@ -874,7 +874,7 @@ function consoleGroupEnd() {
       static clickBodyListener(event) {
         const modal = document.querySelector("body > .mv");
 
-        if (MainClass.settings.previewBlockClicks && modal) {
+        if (MainClass.settings.popupBlockClicks && modal) {
           if (modal.contains(event.target) && event.target !== modal) {
             event.preventDefault();
             event.stopPropagation();

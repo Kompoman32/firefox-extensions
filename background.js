@@ -6,7 +6,7 @@ browser.runtime.onMessage.addListener(function (message) {
     case "savedLinksUpdated":
       browser.tabs.query({}).then((tabs) => {
         tabs.forEach((tab) => {
-          browser.tabs.sendMessage(tab.id, { action: message.action, data: message.data });
+          browser.tabs.sendMessage(tab.id, { action: message.action, data: message.data }).catch(() => {});
         });
       });
       break;

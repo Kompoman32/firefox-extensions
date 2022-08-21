@@ -17,6 +17,7 @@
       </div>
       <div class="tabs">
         <div class="tab options selected">Опции</div>
+        <div class="tab popup">Попап</div>
         <div class="tab links">Ссылки</div>
       </div>
       <table class="tab options selected">
@@ -26,7 +27,7 @@
             <td>
               <label>Render check posts timeout</label>
             </td>
-            <td>
+            <td class="flex">
               <input type="number" id="interval-timeout" name="intervalTimeout" step="1" min="100" required />ms
             </td>
           </tr>
@@ -38,7 +39,7 @@
             <td>
               <label>Max image height</label>
             </td>
-            <td>
+            <td class="flex">
               <input type="number" id="max-height" name="maxHeight" step="0.01" min="1" required />px
             </td>
           </tr>
@@ -66,68 +67,12 @@
           <tr class="splitter">
             <td colspan="2"></td>
           </tr>
-          
-          <tr>
-            <td>
-              <label>Block hiding preview on click</label>
-            </td>
-            <td><input type="checkbox" id="preview-block-clicks" name="previewBlockClicks" /></td>
-          </tr>
-          
-          <tr class="splitter">
-            <td colspan="2"></td>
-          </tr>
 
-          <tr class="section-preview-toggler">
-            <td>
-              <label>Add background on image/video preview<br />(reply preview not working)</label>
-            </td>
-            <td><input type="checkbox" id="preview-background" name="previewBackground" /></td>
-          </tr>
-          <tr class="section-preview">
-            <td>
-              <label>Preview background color</label>
-            </td>
-            <td>
-              <div id="preview-background-color-picker"></div>
-              <input type="color" id="preview-background-color" style="display: none" name="previewBackgroundColor" />
-            </td>
-          </tr>
-          <tr class="section-preview">
-            <td>
-              <label>Preview background transparency</label>
-            </td>
-            <td class="flex-column">
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                id="preview-background-opacity"
-                name="previewBackgroundOpacity"
-              />
-              <input type="number" id="preview-background-opacity-value" min="0" max="1" step="0.01" />
-            </td>
-          </tr>
-
-          <tr class="section-preview">
-            <td colspan="2" class="background-preview">
-              <div class="collapser collapsed">Preview </div>
-              <img class="back" src="./images/background-preview-back.jpg"></div>
-              <div class="preview"></div>
-              <img class="front" src="./images/background-preview-front.jpg"></div>
-            </td>
-          </tr>
-
-          <tr class="splitter">
-            <td colspan="2"></td>
-          </tr>
-
-          <tr class="section-colors-toggler">
+          <tr class="section-colors-toggler" data-section="colors">
             <td>
               <label>Use roll posts header highlights</label>
             </td>
-            <td><input type="checkbox" id="post-color" name="colorPost" /></td>
+            <td><input class="section-toggler" data-collapse-section="colors" type="checkbox" id="post-color" name="colorPost" /></td>
           </tr>
 
           <tr class="section-colors collapsed">
@@ -218,7 +163,7 @@
             <td>
               <label>Show titles on /b/</label>
             </td>
-            <td><input type="checkbox" id="b-titles" name="bTitles" /></td>
+            <td><input class="section-toggler" type="checkbox" id="b-titles" name="bTitles" /></td>
           </tr>
           <tr class="section-b">
             <td>
@@ -232,38 +177,85 @@
           <tr class="splitter">
             <td colspan="2"></td>
           </tr>
-          <tr class="buttons">
+        </tbody>
+      </table>
+      <table class="tab popup">
+        <thead></thead>
+        <tbody>
+          <tr class="section-popup-toggler">
             <td>
-              <input type="checkbox" id="auto-save1" class="auto-save" name="autoSave" />
-              <label for="auto-save1">Auto save</label>
+              <label>Add background on image/video popup<br />(reply popup not working)</label>
+            </td>
+            <td><input class="section-toggler" data-collapse-section="popup" type="checkbox" id="popup-background" name="popupBackground" /></td>
+          </tr>
+          <tr class="section-popup">
+            <td>
+              <label>Popup background color</label>
             </td>
             <td>
-              <button class="save-button" type="submit">Save</button>
+              <div id="popup-background-color-picker"></div>
+              <input type="color" id="popup-background-color" style="display: none" name="popupBackgroundColor" />
             </td>
+          </tr>
+          <tr class="section-popup">
+            <td>
+              <label>Popup background transparency</label>
+            </td>
+            <td class="flex-column">
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                id="popup-background-opacity"
+                name="popupBackgroundOpacity"
+              />
+              <input type="number" id="popup-background-opacity-value" min="0" max="1" step="0.01" />
+            </td>
+          </tr>
+
+          <tr class="section-popup">
+            <td colspan="2" class="background-popup">
+              <div class="collapser collapsed">Popup </div>
+              <img class="back" src="./images/background-preview-back.jpg"></div>
+              <div class="popup"></div>
+              <img class="front" src="./images/background-preview-front.jpg"></div>
+            </td>
+          </tr>
+
+                    
+          <tr class="splitter">
+            <td colspan="2"></td>
+          </tr>
+          
+          <tr>
+            <td>
+              <label>Blocking hiding popup on click</label>
+            </td>
+            <td><input type="checkbox" id="popup-block-clicks" name="popupBlockClicks" /></td>
           </tr>
         </tbody>
       </table>
       <table class="tab links">
         <thead></thead>
         <tbody>
-          <tr class="links">
+          <tr>
             <td colspan="2">
               <table>
               </table>
             </td>
           </tr>
-
-          <tr class="buttons">
-            <td>
-              <input type="checkbox" id="auto-save2" class="auto-save" name="autoSave" />
-              <label for="auto-save2">Auto save</label>
-            </td>
-            <td>
-              <button class="save-button" type="submit">Save</button>
-            </td>
-          </tr>
         </tbody>
       </table>
+      <div class="buttons">
+        <td>
+          <input type="checkbox" id="auto-save" class="auto-save" name="autoSave" />
+          <label for="auto-save">Auto save</label>
+        </td>
+        <td>
+          <button class="save-button" type="submit">Save</button>
+        </td>
+      </div>
     </form>
 
     <script src="options.js"></script>

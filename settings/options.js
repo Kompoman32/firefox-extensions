@@ -12,11 +12,11 @@ var defaultOptionsValues = {
 
   runGif: true,
 
-  previewBlockClicks: false,
+  popupBlockClicks: false,
 
-  previewBackground: true,
-  previewBackgroundColor: "#15202b",
-  previewBackgroundOpacity: 0.86328125,
+  popupBackground: true,
+  popupBackgroundColor: "#15202b",
+  popupBackgroundOpacity: 0.86328125,
 
   colorPost: true,
   colors: {
@@ -170,7 +170,7 @@ function saveOptions(e = { target: document.querySelector("form") }) {
 
 function restoreOptions() {
   function setupLinks(links) {
-    let table = document.querySelector(`.links table`);
+    let table = document.querySelector(`.links.tab table`);
 
     const saveLinks = () => {
       browser.runtime.sendMessage({ action: "savedLinksUpdated", data: globalLinks });
@@ -287,12 +287,12 @@ function restoreOptions() {
 
     document.querySelector("#run-gif").checked = result.runGif;
 
-    document.querySelector("#preview-block-clicks").checked = result.previewBlockClicks;
+    document.querySelector("#popup-block-clicks").checked = result.popupBlockClicks;
 
-    document.querySelector("#preview-background").checked = result.previewBackground;
-    document.querySelector("#preview-background-color").value = result.previewBackgroundColor;
-    document.querySelector("#preview-background-opacity").value = result.previewBackgroundOpacity;
-    document.querySelector("#preview-background-opacity-value").value = result.previewBackgroundOpacity;
+    document.querySelector("#popup-background").checked = result.popupBackground;
+    document.querySelector("#popup-background-color").value = result.popupBackgroundColor;
+    document.querySelector("#popup-background-opacity").value = result.popupBackgroundOpacity;
+    document.querySelector("#popup-background-opacity-value").value = result.popupBackgroundOpacity;
 
     document.querySelector("#post-color").checked = result.colorPost;
     document.querySelector("#post-color-double").value = result.colors.double;
@@ -304,115 +304,125 @@ function restoreOptions() {
     document.querySelector("#post-color-noncuple").value = result.colors.noncuple;
 
     globalLinks = result.links || [];
+    console.log(globalLinks);
     setupLinks(globalLinks);
 
     autoSave = result.autoSave;
-    document.querySelectorAll(".auto-save").forEach((x) => (x.checked = autoSave));
+    document.querySelector(".auto-save").checked = autoSave;
 
-    const saveButtons = document.querySelectorAll(`.save-button`);
+    const saveButton = document.querySelector(`.save-button`);
 
     if (autoSave) {
-      saveButtons.forEach((x) => x.parentElement.classList.add("disabled"));
+      saveButton.parentElement.classList.add("disabled");
     } else {
-      saveButtons.forEach((x) => x.parentElement.classList.remove("disabled"));
+      saveButton.parentElement.classList.remove("disabled");
     }
 
     setListeners(result);
   }
 
   function setListeners(settings) {
-    function setDisabled(section) {
-      const el = document.querySelector(`.${section}-toggler input`);
+    function setSectionToggler(section) {
+      const el = document.querySelector(`.section-${section}-toggler input`);
 
-      const func = function (e) {
+      const func = function () {
         const checked = this.checked;
-        document.querySelectorAll(`.${section}`).forEach((e) => {
+        document.querySelectorAll(`.section-${section}`).forEach((e) => {
           if (checked) {
             e.classList.remove("disabled");
           } else {
             e.classList.add("disabled");
           }
         });
+
+        const collapsers = document.querySelectorAll(`.section-${this.dataset.collapseSection} .collapser`);
+        if (collapsers.length) {
+          collapsers.forEach((x) => {
+            x.classList.add("collapsed");
+            x.parentElement.parentElement.classList.add("collapsed");
+          });
+        }
       };
 
       func.call(el);
       el.addEventListener("change", func.bind(el));
     }
 
-    setDisabled("section-preview");
-    setDisabled("section-b");
-    setDisabled("section-colors");
+    setSectionToggler("popup");
+    setSectionToggler("b");
+    setSectionToggler("colors");
 
     let el;
 
-    /*----------------------BACKGROUND-PREVIEW----------------------*/
+    /*----------------------COLLAPSERS----------------------*/
 
-    const previewBackgroundColorPicker = new ColorPicker({
-      dom: document.getElementById("preview-background-color-picker"),
-      value: document.getElementById("preview-background-color").value,
-    });
-
-    document.getElementById(`preview-background-color`)._picker = previewBackgroundColorPicker;
-
-    const setBackgroundPreview = () => {
-      const color =
-        document.getElementById("preview-background-color").value +
-        Math.round(
-          Math.min(Math.max(document.getElementById(`preview-background-opacity`).value, 0), 1) * 255
-        ).toString(16);
-
-      document.querySelector("td.background-preview .preview").style.backgroundColor = color;
-    };
-
-    setBackgroundPreview();
-
-    previewBackgroundColorPicker.addEventListener("change", (e) => {
-      document.getElementById("preview-background-color").value = previewBackgroundColorPicker.value;
-      setBackgroundPreview();
-    });
-
-    el = document.querySelector(`.background-preview .collapser`);
+    el = document.querySelectorAll(`.collapser`);
     el &&
-      el.addEventListener("click", (e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        const collapsed = e.target.classList.contains("collapsed");
+      el.forEach((x) => {
+        x.addEventListener("click", (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          const collapsed = e.target.classList.contains("collapsed");
 
-        setTimeout(() => {
-          if (collapsed) {
-            e.target.classList.remove("collapsed");
-          } else {
-            e.target.classList.add("collapsed");
-          }
+          setTimeout(() => {
+            if (collapsed) {
+              e.target.classList.remove("collapsed");
+              e.target.parentElement.parentElement.classList.remove("collapsed");
+            } else {
+              e.target.classList.add("collapsed");
+              e.target.parentElement.parentElement.classList.add("collapsed");
+            }
+          });
         });
       });
 
-    el = document.querySelector(`.section-preview-toggler input`);
-    el &&
-      el.addEventListener("change", (e) => {
-        if (!e.target.checked) {
-          document.querySelector(`.background-preview .collapser`).classList.add("collapsed");
-        }
-      });
-    el = document.getElementById(`preview-background-opacity`);
+    /*----------------------COLLAPSERS----------------------*/
+
+    /*----------------------BACKGROUND-PREVIEW----------------------*/
+
+    const popupBackgroundColorPicker = new ColorPicker({
+      dom: document.getElementById("popup-background-color-picker"),
+      value: document.getElementById("popup-background-color").value,
+    });
+
+    document.getElementById(`popup-background-color`)._picker = popupBackgroundColorPicker;
+
+    const setBackgroundPopup = () => {
+      const color =
+        document.getElementById("popup-background-color").value +
+        Math.round(Math.min(Math.max(document.getElementById(`popup-background-opacity`).value, 0), 1) * 255).toString(
+          16
+        );
+
+      document.querySelector("td.background-popup .popup").style.backgroundColor = color;
+    };
+
+    setBackgroundPopup();
+
+    popupBackgroundColorPicker.addEventListener("change", (e) => {
+      document.getElementById("popup-background-color").value = popupBackgroundColorPicker.value;
+      setBackgroundPopup();
+    });
+
+    el = document.getElementById(`popup-background-opacity`);
     el &&
       el.addEventListener("input", (e) => {
-        let _el = document.getElementById(`preview-background-opacity-value`);
+        let _el = document.getElementById(`popup-background-opacity-value`);
         _el && (_el.value = e.target.value);
 
-        setBackgroundPreview();
+        setBackgroundPopup();
       });
 
-    el = document.getElementById(`preview-background-opacity-value`);
+    el = document.getElementById(`popup-background-opacity-value`);
     el &&
       el.addEventListener("change", (e) => {
         if (!e.target.validity.valid) {
           return;
         }
-        let _el = document.getElementById(`preview-background-opacity`);
+        let _el = document.getElementById(`popup-background-opacity`);
         _el && (_el.value = e.target.value);
 
-        setBackgroundPreview();
+        setBackgroundPopup();
       });
 
     /*----------------------BACKGROUND-PREVIEW----------------------*/
@@ -435,71 +445,23 @@ function restoreOptions() {
       });
     });
 
-    el = document.querySelector(`.roll-colors .collapser`);
-    el &&
-      el.addEventListener("click", (e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        const collapsed = e.target.classList.contains("collapsed");
-
-        setTimeout(() => {
-          if (collapsed) {
-            e.target.classList.remove("collapsed");
-            e.target.parentElement.parentElement.classList.remove("collapsed");
-          } else {
-            e.target.classList.add("collapsed");
-            e.target.parentElement.parentElement.classList.add("collapsed");
-          }
-        });
-      });
-
-    el = document.querySelector(`.section-colors-toggler input`);
-    el &&
-      el.addEventListener("change", (e) => {
-        if (!e.target.checked) {
-          document.querySelector(`.roll-colors .collapser`).classList.add("collapsed");
-          document.querySelector(`.roll-colors .collapser`).parentElement.parentElement.classList.add("collapsed");
-        }
-      });
-
     /*----------------------POST-COLORS----------------------*/
 
     /*----------------------LINKS-----------------------------------*/
 
-    // el = document.querySelector(`.links .collapser`);
-    // el &&
-    //   el.addEventListener("click", (e) => {
-    //     e.stopPropagation();
-    //     e.preventDefault();
-
-    //     const element = e.target.parentElement.parentElement;
-
-    //     const collapsed = element.classList.contains("collapsed");
-
-    //     setTimeout(() => {
-    //       if (collapsed) {
-    //         element.classList.remove("collapsed");
-    //       } else {
-    //         element.classList.add("collapsed");
-    //       }
-    //     });
-    //   });
-
     /*----------------------LINKS-----------------------------------*/
 
-    el = document.querySelectorAll(`.auto-save`);
+    el = document.querySelector(`.auto-save`);
     el &&
-      el.forEach((x) =>
-        x.addEventListener("change", (e) => {
-          autoSave = e.target.checked;
-          const saveButtons = document.querySelectorAll(`.save-button`);
-          if (autoSave) {
-            saveButtons.forEach((x) => x.parentElement.classList.add("disabled"));
-          } else {
-            saveButtons.forEach((x) => x.parentElement.classList.remove("disabled"));
-          }
-        })
-      );
+      el.addEventListener("change", (e) => {
+        autoSave = e.target.checked;
+        const saveButton = document.querySelector(`.save-button`);
+        if (autoSave) {
+          saveButton.parentElement.classList.add("disabled");
+        } else {
+          saveButton.parentElement.classList.remove("disabled");
+        }
+      });
 
     /*----------------------TABS-----------------------------------*/
 
