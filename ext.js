@@ -150,13 +150,6 @@ function consoleGroupEnd() {
 
         MainClass.setOptions({ toggled: true });
 
-        const form = document.querySelector("#posts-form");
-
-        if (form) {
-          form.removeEventListener("click", MainClass.savePostMenuListener);
-          form.addEventListener("click", MainClass.savePostMenuListener);
-        }
-
         setTimeout(() => {
           if (!!location.hash) {
             location = location;
@@ -172,26 +165,6 @@ function consoleGroupEnd() {
         MainClass.settings.toggled = false;
 
         MainClass.setOptions({ toggled: false });
-
-        const form = document.querySelector("#posts-form");
-
-        if (form) {
-          form.removeEventListener("click", MainClass.savePostMenuListener);
-
-          const menu = document.querySelector("#ABU-select");
-
-          if (!!menu) {
-            let el = menu.querySelector("div.splitter");
-            if (!!el) {
-              el.remove();
-            }
-
-            el = menu.querySelector("a.save-link");
-            if (!!el) {
-              el.remove();
-            }
-          }
-        }
       }
 
       static render() {
@@ -414,6 +387,7 @@ function consoleGroupEnd() {
         });
 
         MainClass.addPostNbleClass(post);
+        MainClass.updatePostMenu(post);
 
         post.dataset.postUpdated = true;
       }
@@ -562,6 +536,8 @@ function consoleGroupEnd() {
 
           aLink.classList.remove("webm");
         });
+
+        MainClass.updatePostMenu(post);
 
         delete post.dataset.postUpdated;
       }
@@ -907,7 +883,59 @@ function consoleGroupEnd() {
         }
       }
 
-      static savePostMenuListener(e) {
+      static updatePostMenu(post) {
+        if (!post) {
+          return;
+        }
+
+        if (post.classList.contains("post_type_oppost")) {
+          post = post.parentElement;
+        }
+
+        let button = post.querySelector('[*|href="#icon__addmenu"]');
+        button = button && button.parentElement;
+
+        if (!button) {
+          return;
+        }
+
+        button.removeEventListener("click", MainClass.savePostMenuListener);
+        button.addEventListener("click", MainClass.savePostMenuListener);
+      }
+
+      static deupdatePostMenu(post) {
+        let button = post.querySelector('[*|href="#icon__addmenu"]');
+
+        if (!button) {
+          return;
+        }
+
+        button.removeEventListener("click", MainClass.savePostMenuListener);
+
+        const menu = document.querySelector("#ABU-select");
+
+        if (!menu) {
+          return;
+        }
+
+        let el = menu.querySelector("div.splitter");
+        if (!!el) {
+          el.remove();
+        }
+
+        el = menu.querySelector("a.save-link");
+        if (!!el) {
+          el.remove();
+        }
+      }
+
+      static async savePostMenuListener(e) {
+        await new Promise((r) => {
+          setTimeout(() => {
+            r();
+          }, 50);
+        });
+
         const menu = document.querySelector("#ABU-select");
 
         if (!menu) {
