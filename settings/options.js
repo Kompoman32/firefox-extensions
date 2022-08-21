@@ -307,16 +307,16 @@ function restoreOptions() {
     console.log(globalLinks);
     setupLinks(globalLinks);
 
-    autoSave = result.autoSave;
-    document.querySelector(".auto-save").checked = autoSave;
+    // autoSave = result.autoSave;
+    // document.querySelector(".auto-save").checked = autoSave;
 
-    const saveButton = document.querySelector(`.save-button`);
+    // const saveButton = document.querySelector(`.save-button`);
 
-    if (autoSave) {
-      saveButton.parentElement.classList.add("disabled");
-    } else {
-      saveButton.parentElement.classList.remove("disabled");
-    }
+    // if (autoSave) {
+    //   saveButton.parentElement.classList.add("disabled");
+    // } else {
+    //   saveButton.parentElement.classList.remove("disabled");
+    // }
 
     setListeners(result);
   }
@@ -451,17 +451,17 @@ function restoreOptions() {
 
     /*----------------------LINKS-----------------------------------*/
 
-    el = document.querySelector(`.auto-save`);
-    el &&
-      el.addEventListener("change", (e) => {
-        autoSave = e.target.checked;
-        const saveButton = document.querySelector(`.save-button`);
-        if (autoSave) {
-          saveButton.parentElement.classList.add("disabled");
-        } else {
-          saveButton.parentElement.classList.remove("disabled");
-        }
-      });
+    // el = document.querySelector(`.auto-save`);
+    // el &&
+    //   el.addEventListener("change", (e) => {
+    //     autoSave = e.target.checked;
+    //     const saveButton = document.querySelector(`.save-button`);
+    //     if (autoSave) {
+    //       saveButton.parentElement.classList.add("disabled");
+    //     } else {
+    //       saveButton.parentElement.classList.remove("disabled");
+    //     }
+    //   });
 
     /*----------------------TABS-----------------------------------*/
 
