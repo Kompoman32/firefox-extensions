@@ -16,6 +16,9 @@ var defaultOptionsValues = {
   popupBackground: true,
   popupBackgroundColor: "#15202b",
   popupBackgroundOpacity: 0.86328125,
+  popupBackground_img: true,
+  popupBackground_vid: true,
+  popupBackground_gif: true,
 
   colorPost: true,
   colors: {
@@ -168,7 +171,7 @@ function consoleGroupEnd() {
       }
 
       static render() {
-        console.log(MainClass.settings.intervalTimeout);
+        consoleLog(MainClass.settings.intervalTimeout);
         consoleGroup("KD -", "Render");
         MainClass.updateThreads();
         MainClass.updatePosts();
@@ -692,11 +695,33 @@ function consoleGroupEnd() {
 
         if (MainClass.settings.popupBackground) {
           text += `
-          
           html.kd-toggle body .mv {
             position: fixed;
             background: var(--kd-modal-bg);
-          }`;
+          }
+          `;
+        }
+
+        if (!MainClass.settings.popupBackground_img) {
+          text += `
+          html.kd-toggle body .mv.img {
+            position: unset;
+          }
+          `;
+        }
+        if (!MainClass.settings.popupBackground_gif) {
+          text += `
+          html.kd-toggle body .mv.gif {
+            position: unset;
+          }
+          `;
+        }
+        if (!MainClass.settings.popupBackground_vid) {
+          text += `
+          html.kd-toggle body .mv.vid {
+            position: unset;
+          }
+          `;
         }
 
         text = text.replaceAll("\n", "");
@@ -726,6 +751,11 @@ function consoleGroupEnd() {
               const runGifChanged = newSettings.runGif !== currentSettings.runGif;
               const popupBlockClicksChanged = newSettings.popupBlockClicks !== currentSettings.popupBlockClicks;
               const popupBackgroundChanged = newSettings.popupBackground !== currentSettings.popupBackground;
+              const popupBackgroundImgChanged = newSettings.popupBackground_img !== currentSettings.popupBackground_img;
+              const popupBackgroundGifChanged = newSettings.popupBackground_gif !== currentSettings.popupBackground_gif;
+              const popupBackgroundVidChanged = newSettings.popupBackground_vid !== currentSettings.popupBackground_vid;
+              const popupBackgroundMediaChanged =
+                popupBackgroundImgChanged || popupBackgroundGifChanged || popupBackgroundVidChanged;
               const popupBackgroundColorChanged =
                 newSettings.popupBackgroundColor !== currentSettings.popupBackgroundColor;
               const popupBackgroundOpacityChanged =
@@ -758,6 +788,7 @@ function consoleGroupEnd() {
               if (
                 maxHeightChanged ||
                 popupBackgroundChanged ||
+                popupBackgroundMediaChanged ||
                 popupBackgroundColorChanged ||
                 popupBackgroundOpacityChanged ||
                 colorPostChanged ||
@@ -881,6 +912,39 @@ function consoleGroupEnd() {
             event.stopImmediatePropagation();
           }
         }
+
+        setTimeout(() => {
+          const mvMain = modal.querySelector("#js-mv-main");
+
+          if (!mvMain) {
+            return;
+          }
+
+          let mediaInfo = mvMain.dataset.mediainfo || "";
+          mediaInfo = mediaInfo.substring(0, mediaInfo.indexOf(" "));
+
+          const img = document.querySelector(`[data-title="${mediaInfo}"`);
+
+          if (!img) {
+            return;
+          }
+
+          let mediaClass = "";
+
+          if (img.dataset.type === "4") {
+            mediaClass = "gif";
+          } else {
+            if (img.parentElement.classList.contains("webm")) {
+              mediaClass = "vid";
+            } else {
+              mediaClass = "img";
+            }
+          }
+
+          ["img", "gif", "vid"].forEach((x) => modal.classList.remove(x));
+
+          modal.classList.add(mediaClass);
+        }, 4);
       }
 
       static updatePostMenu(post) {

@@ -176,6 +176,10 @@ table.tab:not(.selected) {
   display: flex;
 }
 
+.flex-end {
+  justify-content: flex-end;
+}
+
 .flex-column {
   display: flex;
   flex-direction: column;

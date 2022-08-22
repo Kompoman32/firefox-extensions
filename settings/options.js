@@ -17,6 +17,9 @@ var defaultOptionsValues = {
   popupBackground: true,
   popupBackgroundColor: "#15202b",
   popupBackgroundOpacity: 0.86328125,
+  popupBackground_img: true,
+  popupBackground_vid: true,
+  popupBackground_gif: true,
 
   colorPost: true,
   colors: {
@@ -273,35 +276,31 @@ function restoreOptions() {
   function setCurrentChoice(result) {
     setLoader(true);
 
-    document.querySelector("#interval-timeout").value = result.intervalTimeout;
-
-    document.querySelector("#max-height").value = result.maxHeight;
-    document.querySelector("#thumb-images").checked = result.thumbImages;
-
-    document.querySelector("#title-to-bottom").checked = result.titleToBottom;
-
-    document.querySelector("#b-titles").checked = result.bTitles;
-    document.querySelector("#b-titles-size").value = result.bTitlesSize;
-
-    document.querySelector("#show-plashque").checked = result.showPlashque;
-
-    document.querySelector("#run-gif").checked = result.runGif;
-
-    document.querySelector("#popup-block-clicks").checked = result.popupBlockClicks;
-
-    document.querySelector("#popup-background").checked = result.popupBackground;
-    document.querySelector("#popup-background-color").value = result.popupBackgroundColor;
-    document.querySelector("#popup-background-opacity").value = result.popupBackgroundOpacity;
     document.querySelector("#popup-background-opacity-value").value = result.popupBackgroundOpacity;
 
-    document.querySelector("#post-color").checked = result.colorPost;
-    document.querySelector("#post-color-double").value = result.colors.double;
-    document.querySelector("#post-color-triple").value = result.colors.triple;
-    document.querySelector("#post-color-quadruple").value = result.colors.quadruple;
-    document.querySelector("#post-color-quintuple").value = result.colors.quintuple;
-    document.querySelector("#post-color-sextuple").value = result.colors.sextuple;
-    document.querySelector("#post-color-septuple").value = result.colors.septuple;
-    document.querySelector("#post-color-noncuple").value = result.colors.noncuple;
+    [...Object.keys(result), ...Object.keys(result.colors)].forEach((key) => {
+      const control = document.querySelector(`[name="${key}"`);
+
+      if (!control) {
+        return;
+      }
+
+      switch (control.tagName) {
+        case "INPUT": {
+          switch (control.type) {
+            case "color":
+            case "range":
+            case "number":
+              control.value = result[key];
+              break;
+            case "checkbox":
+              control.checked = result[key];
+              break;
+          }
+          break;
+        }
+      }
+    });
 
     globalLinks = result.links || [];
     console.log(globalLinks);
