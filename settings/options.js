@@ -278,7 +278,7 @@ function restoreOptions() {
 
     document.querySelector("#popup-background-opacity-value").value = result.popupBackgroundOpacity;
 
-    [...Object.keys(result), ...Object.keys(result.colors)].forEach((key) => {
+    [...Object.keys(result)].forEach((key) => {
       const control = document.querySelector(`[name="${key}"`);
 
       if (!control) {
@@ -300,6 +300,16 @@ function restoreOptions() {
           break;
         }
       }
+    });
+
+    [...Object.keys(result.colors)].forEach((key) => {
+      const control = document.querySelector(`[name="color.${key}"`);
+
+      if (!control) {
+        return;
+      }
+
+      control.value = result.colors[key];
     });
 
     globalLinks = result.links || [];
