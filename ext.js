@@ -314,8 +314,8 @@ function consoleGroupEnd() {
       }
 
       static updatePosts() {
-        const posts = [...document.querySelectorAll(".post:not([data-post-updated]):not(.post_popup)")];
-        const postsInPopup = [...document.querySelectorAll(".post:not([data-post-updated]).post_popup")];
+        const posts = [...document.querySelectorAll(".post:not([data-post-updated]):not(.post_preview)")];
+        const postsInPopup = [...document.querySelectorAll(".post:not([data-post-updated]).post_preview")];
 
         consoleGroup("Posts");
         consoleLog("Posts updated: ", posts.length + postsInPopup.length);
@@ -475,7 +475,7 @@ function consoleGroupEnd() {
       }
 
       static deUpdatePosts() {
-        const posts = [...document.querySelectorAll(".post[data-post-updated]:not(.post_popup)")];
+        const posts = [...document.querySelectorAll(".post[data-post-updated]:not(.post_preview)")];
 
         consoleGroup("Posts");
         consoleLog("Posts deUpdated: ", posts.length);
@@ -748,7 +748,7 @@ function consoleGroupEnd() {
               }
 
               if (runGifChanged || thumbImagesChanged) {
-                const posts = [...document.querySelectorAll(".post:not(.post_popup)")];
+                const posts = [...document.querySelectorAll(".post:not(.post_preview)")];
 
                 posts.forEach((post) => {
                   MainClass.updatePost(post, runGifChanged);
