@@ -1,4 +1,6 @@
 var defaultOptionsValues = {
+  lang: "ru",
+
   maxHeight: 700,
   // Reversed (if true => replace)
   thumbImages: true,
@@ -28,6 +30,7 @@ var defaultOptionsValues = {
     quintuple: "#82f98f",
     sextuple: "#ee8b99",
     septuple: "#ee8b99",
+    octuple: "#ee8b99",
     noncuple: "#ee8b99",
   },
 
@@ -443,6 +446,7 @@ function getContrastColor(colorHex, threshold = 128) {
           "quintuple",
           "sextuple",
           "septuple",
+          "octuple",
           "noncuple",
         ][count];
 
@@ -710,6 +714,8 @@ function getContrastColor(colorHex, threshold = 128) {
           --kd-sextuple-back-color: ${MainClass.settings.colors.sextuple};
           --kd-septuple-color: ${getContrastColor(MainClass.settings.colors.septuple)};
           --kd-septuple-back-color: ${MainClass.settings.colors.septuple};
+          --kd-octuple-color: ${getContrastColor(MainClass.settings.colors.octuple)};
+          --kd-octuple-back-color: ${MainClass.settings.colors.octuple};
           --kd-noncuple-color: ${getContrastColor(MainClass.settings.colors.noncuple)};
           --kd-noncuple-back-color: ${MainClass.settings.colors.noncuple};
           `;

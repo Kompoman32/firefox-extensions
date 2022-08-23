@@ -134,9 +134,50 @@ table.tab > tbody > tr > td:not([colspan]) {
   border-bottom: 1px solid #f0f0f0;
 }
 
+.tabs-langs {
+  display: flex;
+  flex-direction: row;
+
+  justify-content: space-between;
+}
+
+.langs .lang {
+  display: block;
+
+  cursor: pointer;
+
+  padding: 5px;
+
+  border-left: 1px solid black;
+}
+
+.langs .lang.selected {
+  cursor: initial;
+
+  background-color: lightgray;
+}
+
+.langs {
+  display: flex;
+  flex-direction: row;
+
+  justify-items: flex-start;
+
+  background-color: white;
+
+  border-bottom: 1px solid black;
+
+  margin-bottom: 5px;
+
+  position: sticky;
+  top: 0;
+}
+
 .tabs {
   display: flex;
   flex-direction: row;
+
+  flex: 1 1 0;
 
   justify-items: flex-start;
 
@@ -157,9 +198,7 @@ table.tab > tbody > tr > td:not([colspan]) {
 
   padding: 5px;
 
-  border: 1px solid black;
-  border-left: none;
-  border-bottom: none;
+  border-right: 1px solid black;
 }
 
 .tabs .tab.selected {
@@ -293,6 +332,10 @@ tr.section-colors td .wrapper h3 {
 }
 
 /* LINKS */
+
+.tab.links th {
+  text-align: center;
+}
 
 .tab.links td {
   width: 500px;

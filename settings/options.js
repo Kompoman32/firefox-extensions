@@ -1,4 +1,6 @@
 var defaultOptionsValues = {
+  lang: "ru",
+
   maxHeight: 700,
   // Reversed (if true => replace)
   thumbImages: true,
@@ -29,6 +31,7 @@ var defaultOptionsValues = {
     quintuple: "#82f98f",
     sextuple: "#ee8b99",
     septuple: "#ee8b99",
+    octuple: "#ee8b99",
     noncuple: "#ee8b99",
   },
 
@@ -166,7 +169,8 @@ function setLocalSettings(settings) {
 function saveOptions(e = { target: document.querySelector("form") }) {
   e.preventDefault && e.preventDefault();
 
-  const form = formSerializer(e.target);
+  let form = formSerializer(e.target);
+  form.lang = I18N.lang;
 
   setSettings(form);
 }
@@ -273,6 +277,27 @@ function restoreOptions() {
     });
   }
 
+  function setupLabelsByLanguage(lang) {
+    document.querySelectorAll(".langs div.lang").forEach((x) => x.classList.remove("selected"));
+    const langEl = document.querySelector(`.langs div.lang.${lang}`);
+
+    if (langEl) {
+      langEl.classList.add("selected");
+    }
+
+    I18N.setLanguage(lang);
+
+    document.querySelectorAll("[data-i18n]").forEach((element) => {
+      const line = I18N.getLine(element.dataset.i18n);
+
+      if (line === null) {
+        return;
+      }
+
+      element.innerHTML = line;
+    });
+  }
+
   function setCurrentChoice(result) {
     setLoader(true);
 
@@ -313,7 +338,7 @@ function restoreOptions() {
     });
 
     globalLinks = result.links || [];
-    console.log(globalLinks);
+    // console.log(globalLinks);
     setupLinks(globalLinks);
 
     // autoSave = result.autoSave;
@@ -326,6 +351,8 @@ function restoreOptions() {
     // } else {
     //   saveButton.parentElement.classList.remove("disabled");
     // }
+
+    setupLabelsByLanguage(result.lang);
 
     setListeners(result);
   }
@@ -438,7 +465,7 @@ function restoreOptions() {
 
     /*----------------------POST-COLORS----------------------*/
 
-    ["double", "triple", "quadruple", "quintuple", "sextuple", "septuple", "noncuple"].map((name) => {
+    ["double", "triple", "quadruple", "quintuple", "sextuple", "septuple", "octuple", "noncuple"].map((name) => {
       const domEl = document.getElementById(`post-color-${name}-picker`);
       const valEl = document.getElementById(`post-color-${name}`);
 
@@ -492,6 +519,23 @@ function restoreOptions() {
             document.querySelectorAll(`table.tab`).forEach((x) => x.classList.remove("selected"));
             document.querySelector(`table.tab.${tab}`).classList.add("selected");
           });
+        })
+      );
+
+    el = document.querySelectorAll(`.langs div.lang`);
+    el &&
+      el.forEach((x) =>
+        x.addEventListener("click", (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          if (e.target.classList.contains("selected")) {
+            return;
+          }
+
+          const lang = [...e.target.classList].find((x) => x !== "lang");
+
+          setupLabelsByLanguage(lang);
+          saveOptions();
         })
       );
 

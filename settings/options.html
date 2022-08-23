@@ -7,6 +7,9 @@
     <title>Kompoman32's for 2ch.hk</title>
     <link rel="stylesheet" href="./color-picker.css" />
     <script src="./color-picker.js"></script>
+    <script src="./i18n/en.js"></script>
+    <script src="./i18n/ru.js"></script>
+    <script src="./i18n/i18n.js"></script>
     <link href="./options.css" rel="stylesheet" type="text/css" />
   </head>
 
@@ -15,17 +18,23 @@
       <div id="loader" class="loader" data-completed="false">
         <div><div></div></div>
       </div>
-      <div class="tabs">
-        <div class="tab options selected">Опции</div>
-        <div class="tab popup">Попап</div>
-        <div class="tab links">Ссылки</div>
+      <div class="tabs-langs">
+        <div class="tabs">
+          <div class="tab options selected" data-i18n="tab.common">Common</div>
+          <div class="tab popup" data-i18n="tab.popup">Popup</div>
+          <div class="tab links" data-i18n="tab.links">Links</div>
+        </div>
+        <div class="langs">
+          <div class="lang ru selected">RU</div>
+          <div class="lang en">EN</div>
+        </div>
       </div>
       <table class="tab options selected">
         <thead></thead>
         <tbody>
           <tr>
             <td>
-              <label>Render check posts timeout</label>
+              <label data-i18n="common.render-timeout">Render check posts timeout</label>
             </td>
             <td class="flex">
               <input type="number" id="interval-timeout" name="intervalTimeout" step="1" min="100" required />ms
@@ -37,7 +46,7 @@
           </tr>
           <tr>
             <td>
-              <label>Max image height</label>
+              <label data-i18n="common.image-height">Max image height</label>
             </td>
             <td class="flex">
               <input type="number" id="max-height" name="maxHeight" step="0.01" min="1" required />px
@@ -45,21 +54,21 @@
           </tr>
           <tr>
             <td>
-              <label>Replace thumb images with full-sized images<br />(slow loading)</label>
+              <label data-i18n="common.thumb-replace">Replace thumb images with full-sized images<br />(slow loading)</label>
             </td>
             <td><input type="checkbox" id="thumb-images" name="thumbImages" /></td>
           </tr>
 
           <tr>
             <td>
-              <label>Title link go to #bottom</label>
+              <label data-i18n="common.title-to-bottom">Title link go to #bottom</label>
             </td>
             <td><input type="checkbox" id="title-to-bottom" name="titleToBottom" /></td>
           </tr>
 
           <tr>
             <td>
-              <label>Run GIF</label>
+              <label data-i18n="common.run-gif">Run GIF</label>
             </td>
             <td><input type="checkbox" id="run-gif" name="runGif" /></td>
           </tr>
@@ -70,14 +79,14 @@
 
           <tr class="section-colors-toggler" data-section="colors">
             <td>
-              <label>Use roll posts header highlights</label>
+              <label data-i18n="common.nble-highlight">Use posts header highlights</label>
             </td>
             <td><input class="section-toggler" data-collapse-section="colors" type="checkbox" id="post-color" name="colorPost" /></td>
           </tr>
 
           <tr class="section-colors collapsed">
             <td colspan="2" class="roll-colors">
-              <div class="collapser collapsed">Colors </div>
+              <div class="collapser collapsed" data-i18n="common.nble-highlight-colors-label">Colors</div>
             </td>
           </tr>
 
@@ -85,13 +94,13 @@
             <td colspan="2">
               <div class="wrapper">
                 <div>
-                  <h3>Дабл</h3>
+                  <h3 data-i18n="common.nble-highlight-colors.double">Double</h3>
                   <div id="post-color-double-picker"></div>
                   <input type="color" id="post-color-double" style="display: none" name="color.double" />
                 </div>
 
                 <div>
-                  <h3>Трипл</h3>
+                  <h3 data-i18n="common.nble-highlight-colors.triple">Triple</h3>
                   <div id="post-color-triple-picker"></div>
                   <input type="color" id="post-color-triple" style="display: none" name="color.triple" />
                 </div>
@@ -102,13 +111,13 @@
             <td colspan="2">
               <div class="wrapper">
                 <div>
-                  <h3>Квадрипл</h3>
+                  <h3 data-i18n="common.nble-highlight-colors.quadruple">Quadruple</h3>
                   <div id="post-color-quadruple-picker"></div>
                   <input type="color" id="post-color-quadruple" style="display: none" name="color.quadruple" />
                 </div>
 
                 <div>
-                  <h3>Квинтипл</h3>
+                  <h3 data-i18n="common.nble-highlight-colors.quintuple">Quintuple</h3>
                   <div id="post-color-quintuple-picker"></div>
                   <input type="color" id="post-color-quintuple" style="display: none" name="color.quintuple" />
                 </div>
@@ -119,13 +128,13 @@
             <td colspan="2">
               <div class="wrapper">
                 <div>
-                  <h3>Секстипл</h3>
+                  <h3 data-i18n="common.nble-highlight-colors.sextuple">Sextuple</h3>
                   <div id="post-color-sextuple-picker"></div>
                   <input type="color" id="post-color-sextuple" style="display: none" name="color.sextuple" />
                 </div>
 
                 <div>
-                  <h3>Севентипл</h3>
+                  <h3 data-i18n="common.nble-highlight-colors.septuple">Septuple</h3>
                   <div id="post-color-septuple-picker"></div>
                   <input type="color" id="post-color-septuple" style="display: none" name="color.septuple" />
                 </div>
@@ -136,7 +145,12 @@
             <td colspan="2">
               <div class="wrapper">
                 <div>
-                  <h3>Найнтипл</h3>
+                  <h3 data-i18n="common.nble-highlight-colors.octuple">Octuple</h3>
+                  <div id="post-color-octuple-picker"></div>
+                  <input type="color" id="post-color-octuple" style="display: none" name="color.octuple" />
+                </div>
+                <div>
+                  <h3 data-i18n="common.nble-highlight-colors.noncuple">Noncuple</h3>
                   <div id="post-color-noncuple-picker"></div>
                   <input type="color" id="post-color-noncuple" style="display: none" name="color.noncuple" />
                 </div>
@@ -144,14 +158,13 @@
             </td>
           </tr>
 
-
           <tr class="splitter">
             <td colspan="2"></td>
           </tr>
 
           <tr>
             <td>
-              <label>Show plashque in top with 2ch-news</label>
+              <label data-i18n="common.show-plashque">Show plashque in top with 2ch-news</label>
             </td>
             <td><input type="checkbox" id="show-plashque" name="showPlashque" /></td>
           </tr>
@@ -159,15 +172,16 @@
           <tr class="splitter">
             <td colspan="2"></td>
           </tr>
+
           <tr class="section-b-toggler">
             <td>
-              <label>Show titles on /b/</label>
+              <label data-i18n="common.b.show">Show titles on /b/</label>
             </td>
             <td><input class="section-toggler" type="checkbox" id="b-titles" name="bTitles" /></td>
           </tr>
           <tr class="section-b">
             <td>
-              <label>/b/ titles max symbols</label>
+              <label data-i18n="common.b.max-symbols">/b/ titles max symbols</label>
             </td>
             <td>
               <input type="number" id="b-titles-size" name="bTitlesSize" step="1" min="1" required />
@@ -184,13 +198,13 @@
         <tbody>
           <tr class="section-popup-toggler">
             <td>
-              <label>Add background on image/video popup<br />(reply popup not working)</label>
+              <label data-i18n="popup.show-background">Add background on image/video popup<br />(reply popup not working)</label>
             </td>
             <td><input class="section-toggler" data-collapse-section="popup" type="checkbox" id="popup-background" name="popupBackground" /></td>
           </tr>
           <tr class="section-popup">
             <td>
-              <label>Popup background color</label>
+              <label data-i18n="popup.background.color">Popup background color</label>
             </td>
             <td>
               <div id="popup-background-color-picker"></div>
@@ -199,7 +213,7 @@
           </tr>
           <tr class="section-popup">
             <td>
-              <label>Popup background transparency</label>
+              <label data-i18n="popup.background.transparency">Popup background transparency</label>
             </td>
             <td class="flex-column">
               <input
@@ -216,7 +230,7 @@
 
           <tr class="section-popup">
             <td colspan="2" class="background-popup">
-              <div class="collapser collapsed">Popup </div>
+              <div class="collapser collapsed" data-i18n="popup.background.preview">Popup preview</div>
               <img class="back" src="./images/background-preview-back.jpg"></div>
               <div class="popup"></div>
               <img class="front" src="./images/background-preview-front.jpg"></div>
@@ -224,24 +238,22 @@
           </tr>
           
           <tr class="section-popup">
-            <td colspan="2">
+            <td colspan="2" data-i18n="popup.background.depend-on">
               Background on:
             </td>
           </tr>
           <tr class="section-popup">
-            <td class="flex flex-end">Image</td>
+            <td class="flex flex-end" data-i18n="popup.background.depend-on-img">Image</td>
             <td><input type="checkbox" id="popup-background-img" name="popupBackground_img" /></td>
           </tr>
           <tr class="section-popup">
-            <td class="flex flex-end">GIF</td>
+            <td class="flex flex-end" data-i18n="popup.background.depend-on-gif">GIF</td>
             <td><input type="checkbox" id="popup-background-gif" name="popupBackground_gif" /></td>
           </tr>
           <tr class="section-popup">
-            <td class="flex flex-end">Video</td>
+            <td class="flex flex-end" data-i18n="popup.background.depend-on-video">Video</td>
             <td><input type="checkbox" id="popup-background-vid" name="popupBackground_vid" /></td>
           </tr>
-            
-
                     
           <tr class="splitter">
             <td colspan="2"></td>
@@ -249,14 +261,20 @@
           
           <tr>
             <td>
-              <label>Blocking hiding popup on click</label>
+              <label data-i18n="popup.block-click">Blocking hiding popup on click</label>
             </td>
             <td><input type="checkbox" id="popup-block-clicks" name="popupBlockClicks" /></td>
           </tr>
         </tbody>
       </table>
       <table class="tab links">
-        <thead></thead>
+        <thead>
+          <tr>
+            <th data-i18n="links.th-link">Link</th>
+            <th data-i18n="links.th-name">Name</th>
+            <th></th>
+          </tr>
+        </thead>
         <tbody>
           <tr>
             <td colspan="2">
@@ -277,6 +295,6 @@
       </div> -->
     </form>
 
-    <script src="options.js"></script>
+    <script src="./options.js"></script>
   </body>
 </html>

@@ -268,6 +268,11 @@ html.kd-toggle body .post.septuple .post__details * {
   background-color: var(--kd-septuple-back-color);
 }
 
+html.kd-toggle body .post.octuple .post__details * {
+  color: var(--kd-octuple-color);
+  background-color: var(--kd-octuple-back-color);
+}
+
 html.kd-toggle body .post.noncuple .post__details * {
   color: var(--kd-noncuple-color);
   background-color: var(--kd-noncuple-back-color);
