@@ -295,7 +295,7 @@ function getContrastColor(colorHex, threshold = 128) {
 
               titleText = titleText.trim();
 
-              title.innerText = titleText;
+              title.innerText = titleText || `ТРЕД №${threadId}`;
 
               title.title = postText;
             }
