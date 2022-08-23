@@ -239,29 +239,36 @@ html.kd-toggle body .post .post__details .post__detailpart:last-child {
 }
 
 html.kd-toggle body .post.double .post__details * {
-  background-color: var(--kd-double-color);
+  color: var(--kd-double-color);
+  background-color: var(--kd-double-back-color);
 }
 
 html.kd-toggle body .post.triple .post__details * {
-  background-color: var(--kd-triple-color);
+  color: var(--kd-triple-color);
+  background-color: var(--kd-triple-back-color);
 }
 
 html.kd-toggle body .post.quadruple .post__details * {
-  background-color: var(--kd-quadruple-color);
+  color: var(--kd-quadruple-color);
+  background-color: var(--kd-quadruple-back-color);
 }
 
 html.kd-toggle body .post.quintuple .post__details * {
-  background-color: var(--kd-quintuple-color);
+  color: var(--kd-quintuple-color);
+  background-color: var(--kd-quintuple-back-color);
 }
 
 html.kd-toggle body .post.sextuple .post__details * {
-  background-color: var(--kd-sextuple-color);
+  color: var(--kd-sextuple-color);
+  background-color: var(--kd-sextuple-back-color);
 }
 
 html.kd-toggle body .post.septuple .post__details * {
-  background-color: var(--kd-septuple-color);
+  color: var(--kd-septuple-color);
+  background-color: var(--kd-septuple-back-color);
 }
 
 html.kd-toggle body .post.noncuple .post__details * {
-  background-color: var(--kd-noncuple-color);
+  color: var(--kd-noncuple-color);
+  background-color: var(--kd-noncuple-back-color);
 }

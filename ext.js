@@ -73,6 +73,23 @@ function consoleGroupEnd() {
   }
 }
 
+function getContrastColor(colorHex, threshold = 128) {
+  if (!colorHex) {
+    return "#000";
+  }
+
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(colorHex);
+
+  if (!result) {
+    return "#000";
+  }
+
+  return (parseInt(result[1], 16) * 299 + parseInt(result[2], 16) * 587 + parseInt(result[3], 16) * 114) / 1000 >=
+    threshold
+    ? "#000"
+    : "#fff";
+}
+
 (async () => {
   [...document.querySelectorAll("img")].forEach((x) => {
     x.setAttribute("loading", "lazy");
@@ -673,23 +690,32 @@ function consoleGroupEnd() {
 
         let text = "";
 
-        text += `:root {
+        text += `
+          :root {
             --kd-max-image-height: ${MainClass.settings.maxHeight}px;
-            --kd-modal-bg: ${color};`;
+            --kd-modal-bg: ${color};
+            `;
 
         if (MainClass.settings.colorPost) {
-          text +=
-            "" +
-            `--kd-double-color: ${MainClass.settings.colors.double};
-          --kd-triple-color: ${MainClass.settings.colors.triple};
-          --kd-quadruple-color: ${MainClass.settings.colors.quadruple};
-          --kd-quintuple-color: ${MainClass.settings.colors.quintuple};
-          --kd-sextuple-color: ${MainClass.settings.colors.sextuple};
-          --kd-septuple-color: ${MainClass.settings.colors.septuple};
-          --kd-noncuple-color: ${MainClass.settings.colors.noncuple}; \n`;
+          text += `
+          --kd-double-color: ${getContrastColor(MainClass.settings.colors.double)};
+          --kd-double-back-color: ${MainClass.settings.colors.double};
+          --kd-triple-color: ${getContrastColor(MainClass.settings.colors.triple)};
+          --kd-triple-back-color: ${MainClass.settings.colors.triple};
+          --kd-quadruple-color: ${getContrastColor(MainClass.settings.colors.quadruple)};
+          --kd-quadruple-back-color: ${MainClass.settings.colors.quadruple};
+          --kd-quintuple-color: ${getContrastColor(MainClass.settings.colors.quintuple)};
+          --kd-quintuple-back-color: ${MainClass.settings.colors.quintuple};
+          --kd-sextuple-color: ${getContrastColor(MainClass.settings.colors.sextuple)};
+          --kd-sextuple-back-color: ${MainClass.settings.colors.sextuple};
+          --kd-septuple-color: ${getContrastColor(MainClass.settings.colors.septuple)};
+          --kd-septuple-back-color: ${MainClass.settings.colors.septuple};
+          --kd-noncuple-color: ${getContrastColor(MainClass.settings.colors.noncuple)};
+          --kd-noncuple-back-color: ${MainClass.settings.colors.noncuple};
+          `;
         }
 
-        text += `--kd-muon-background: #211F1A url('https://${location.host}/static/img/muon_bg.jpg') repeat`;
+        text += `--kd-muon-background: #211F1A url('https://${location.host}/static/img/muon_bg.jpg') repeat;`;
 
         text += `}`;
 
@@ -729,6 +755,13 @@ function consoleGroupEnd() {
         while (text.includes("  ")) {
           text = text.replaceAll("  ", " ");
         }
+
+        text = text
+          .replaceAll("; ", ";")
+          .replaceAll(/\s*{\s*/g, "{")
+          .replaceAll(/\s*}\s*/g, "}")
+          .replaceAll(/\s*:\s*/g, ":")
+          .replaceAll(/\s*,\s*/g, ",");
 
         settingsStyle.innerText = text;
 
