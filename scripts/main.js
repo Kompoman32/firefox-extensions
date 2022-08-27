@@ -442,22 +442,16 @@ class MainClass_Render {
   }
 
   static updatePost(post, updateRunGif = true) {
-    const postsImgs = [...post.querySelectorAll(".post__image-link img:not(.post__file-webm)")];
-    const postsImgsVideos = [...post.querySelectorAll(".post__image-link img.post__file-webm")];
+    MainClass_Render.updatePostImages(post);
+    MainClass_Render.updatePostVideos(post, updateRunGif);
 
-    if (updateRunGif) {
-      const gifs = post.querySelectorAll(`.post__image-link img[data-type="4"]`);
-      if (!MainClass_Base.settings.runGif) {
-        postsImgsVideos.push(...gifs);
-      } else {
-        gifs.forEach((gif) => {
-          const title = gif.parentElement.querySelector(".video-ext");
-          if (title) {
-            title.remove();
-          }
-        });
-      }
-    }
+    MainClass_Render.addPostNbleClass(post);
+    MainClass_Render.updatePostMenu(post);
+
+    post.dataset.postUpdated = true;
+  }
+  static updatePostImages(post) {
+    const postsImgs = [...post.querySelectorAll(".post__image-link img:not(.post__file-webm)")];
 
     postsImgs.forEach((x) => {
       x.dataset.thumbHeight = x.height;
@@ -478,8 +472,25 @@ class MainClass_Render {
         x.src = srcToChange;
       }
     });
+  }
+  static updatePostVideos(post, updateRunGif) {
+    const postsVideos = [...post.querySelectorAll(".post__image-link img.post__file-webm")];
 
-    postsImgsVideos.forEach((x) => {
+    if (updateRunGif) {
+      const gifs = post.querySelectorAll(`.post__image-link img[data-type="4"]`);
+      if (!MainClass_Base.settings.runGif) {
+        postsVideos.push(...gifs);
+      } else {
+        gifs.forEach((gif) => {
+          const title = gif.parentElement.querySelector(".video-ext");
+          if (title) {
+            title.remove();
+          }
+        });
+      }
+    }
+
+    postsVideos.forEach((x) => {
       const aLink = x.parentElement;
 
       const title = x.dataset.title || "";
@@ -492,11 +503,6 @@ class MainClass_Render {
 
       aLink.classList.add("webm");
     });
-
-    MainClass_Render.addPostNbleClass(post);
-    MainClass_Render.updatePostMenu(post);
-
-    post.dataset.postUpdated = true;
   }
 
   static updatePostMenu(post) {
@@ -650,8 +656,14 @@ class MainClass_Derender {
       }
     }
 
+    MainClass_Derender.deUpdatePostImages(post);
+    MainClass_Derender.deUpdatePostVideos(post);
+    MainClass_Derender.deupdatePostMenu(post);
+
+    delete post.dataset.postUpdated;
+  }
+  static deUpdatePostImages(post) {
     const postsImgs = [...post.querySelectorAll(".post__image-link img:not(.post__file-webm)")];
-    const postsImgsVideos = [...post.querySelectorAll(".post__image-link img.post__file-webm")];
 
     postsImgs.forEach((x) => {
       if (!x.dataset.thumbSrc) {
@@ -666,6 +678,9 @@ class MainClass_Derender {
 
       // x.src = x.dataset.thumbSrc;
     });
+  }
+  static deUpdatePostVideos(post) {
+    const postsImgsVideos = [...post.querySelectorAll(".post__image-link img.post__file-webm")];
 
     postsImgsVideos.forEach((x) => {
       const aLink = x.parentElement;
@@ -674,10 +689,6 @@ class MainClass_Derender {
 
       aLink.classList.remove("webm");
     });
-
-    MainClass_Derender.deupdatePostMenu(post);
-
-    delete post.dataset.postUpdated;
   }
 
   static deupdatePostMenu(post) {
