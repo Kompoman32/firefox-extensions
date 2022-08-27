@@ -277,3 +277,56 @@ html.kd-toggle body .post.noncuple .post__details * {
   color: var(--kd-noncuple-color);
   background-color: var(--kd-noncuple-back-color);
 }
+
+html.kd-toggle body .post > .duplicate-collapser {
+  font-size: 12px;
+
+  display: flex;
+  align-items: center;
+}
+
+html.kd-toggle body .post > .duplicate-collapser > * {
+  border-bottom: 1px solid;
+  color: var(--theme_default_text);
+}
+
+html.kd-toggle body .post > .duplicate-collapser .collapser {
+  display: flex;
+
+  padding-left: 5px;
+
+  cursor: pointer;
+
+  user-select: none;
+}
+
+html.kd-toggle body .post > .duplicate-collapser .collapser:hover {
+  color: var(--theme_default_hover);
+}
+
+html.kd-toggle body .post > .duplicate-collapser .collapser .collapser-icon {
+  padding-left: 3px;
+  padding-right: 0;
+}
+
+html.kd-toggle body .post > .duplicate-collapser .collapser.collapsed .collapser-icon {
+  padding-left: 0;
+  padding-right: 3px;
+}
+
+html.kd-toggle body .post > .duplicate-collapser .collapser .collapser-icon {
+  display: block;
+  transform: translateY(0.4em) scale(1.4);
+}
+
+html.kd-toggle body .post > .duplicate-collapser .collapser.collapsed .collapser-icon {
+  transform: rotate(180deg) translateY(0.3em) scale(1.4);
+}
+
+html.kd-toggle body .post.duplicate {
+  opacity: 0.5;
+}
+
+html.kd-toggle body .post.duplicate.collapsed {
+  display: none;
+}

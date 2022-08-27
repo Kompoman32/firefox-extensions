@@ -445,6 +445,10 @@ class MainClass_Render {
     MainClass_Render.updatePostImages(post);
     MainClass_Render.updatePostVideos(post, updateRunGif);
 
+    if (MainClass_Base.isThreadPage) {
+      MainClass_Render.updateDuplicatePost(post);
+    }
+
     MainClass_Render.addPostNbleClass(post);
     MainClass_Render.updatePostMenu(post);
 
@@ -503,6 +507,99 @@ class MainClass_Render {
 
       aLink.classList.add("webm");
     });
+  }
+  static updateDuplicatePost(post) {
+    const previousPost = post.previousElementSibling;
+
+    if (
+      !previousPost ||
+      post.classList.contains("post_type_oppost") ||
+      previousPost.classList.contains("post_type_oppost") ||
+      !!post.querySelector(".post__images ")
+    ) {
+      return;
+    }
+
+    const currentText = post._dup_text || post.querySelector(".post__message ").innerText.toLocaleLowerCase();
+    const previousText =
+      previousPost._dup_text || previousPost.querySelector(".post__message ").innerText.toLocaleLowerCase();
+
+    post._dup_text = currentText;
+
+    const isDuplicate = currentText === previousText;
+
+    if (!isDuplicate) {
+      return;
+    }
+
+    post.classList.add("duplicate");
+
+    let dupParent = previousPost._dup_parent;
+
+    if (!dupParent) {
+      dupParent = previousPost;
+    }
+
+    post._dup_parent = dupParent;
+
+    MainClass_Render.updateParentDuplicateCollapser(dupParent);
+  }
+  static updateParentDuplicateCollapser(parentPost) {
+    const postDuplicates = [];
+
+    let nextSibling = parentPost.nextElementSibling;
+
+    while (nextSibling.classList.contains("duplicate")) {
+      postDuplicates.push(nextSibling);
+
+      nextSibling = nextSibling.nextElementSibling;
+    }
+
+    let duplicateCollapser = parentPost.querySelector(".duplicate-collapser") || document.createElement("div");
+
+    if (postDuplicates.length === 0) {
+      duplicateCollapser.remove();
+      return;
+    }
+
+    postDuplicates.forEach((x) => {
+      x.classList.add("collapsed");
+    });
+
+    parentPost._duplicates = postDuplicates;
+
+    duplicateCollapser.classList.add("duplicate-collapser");
+
+    parentPost.insertAdjacentElement("beforeend", duplicateCollapser);
+
+    const text = duplicateCollapser.querySelector(".text") || document.createElement("span");
+    text.innerText = `Есть дупликаты +${postDuplicates.length}`;
+    text.classList.add("text");
+
+    duplicateCollapser.appendChild(text);
+
+    let collapser = duplicateCollapser.querySelector(".collapser");
+
+    if (collapser) {
+      collapser.remove();
+    }
+
+    collapser = document.createElement("span");
+    collapser.classList.add("collapser");
+    collapser.classList.add("collapsed");
+
+    const collapserText = document.createElement("span");
+    collapserText.innerText = "развернуть";
+    collapser.appendChild(collapserText);
+
+    const collapserIcon = document.createElement("span");
+    collapserIcon.classList.add("collapser-icon");
+    collapserIcon.innerText = "^";
+    collapser.appendChild(collapserIcon);
+
+    collapser.addEventListener("click", MainClass_Events.parentDuplicateCollapserClick.bind(undefined, parentPost));
+
+    duplicateCollapser.appendChild(collapser);
   }
 
   static updatePostMenu(post) {
@@ -660,8 +757,29 @@ class MainClass_Derender {
     MainClass_Derender.deUpdatePostVideos(post);
     MainClass_Derender.deupdatePostMenu(post);
 
+    if (MainClass_Base.isThreadPage) {
+      MainClass_Derender.deUpdatePostDuplicates(post);
+    }
+
     delete post.dataset.postUpdated;
   }
+
+  static deUpdatePostDuplicates(post) {
+    post.classList.remove("duplicate");
+
+    if (post._dup_parent) {
+      MainClass_Derender.deUpdateParentDuplicateCollapser(post._dup_parent);
+    }
+  }
+
+  static deUpdateParentDuplicateCollapser(parentPost) {
+    const duplicateCollapser = parentPost.querySelector(".duplicate-collapser");
+
+    if (duplicateCollapser) {
+      duplicateCollapser.remove();
+    }
+  }
+
   static deUpdatePostImages(post) {
     const postsImgs = [...post.querySelectorAll(".post__image-link img:not(.post__file-webm)")];
 
@@ -1075,5 +1193,24 @@ class MainClass_Events {
     });
 
     browser.runtime.sendMessage({ action: "savedLinksUpdated", data: MainClass_Base.settings.links });
+  }
+
+  static parentDuplicateCollapserClick(parentPost, e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const isCollapsed = e.currentTarget.classList.contains("collapsed");
+
+    if (isCollapsed) {
+      e.currentTarget.classList.remove("collapsed");
+      (parentPost._duplicates || []).forEach((x) => {
+        x.classList.remove("collapsed");
+      });
+    } else {
+      e.currentTarget.classList.add("collapsed");
+      (parentPost._duplicates || []).forEach((x) => {
+        x.classList.add("collapsed");
+      });
+    }
   }
 }
