@@ -8,13 +8,13 @@
   "content_scripts": [
     {
       "matches": ["*://2ch.hk/*/*", "*://beta.2ch.hk/*/*", "*://2ch.life/*/*", "*://beta.2ch.life/*/*"],
-      "js": ["ext.js"],
+      "js": ["scripts/main.js", "scripts/ext.js"],
       "css": ["./style.css"],
       "run_at": "document_end"
     },
     {
       "matches": ["*://2ch.hk/", "*://beta.2ch.hk/", "*://2ch.life/", "*://beta.2ch.life/"],
-      "js": ["home.js"],
+      "js": ["scripts/home.js"],
       "css": [],
       "run_at": "document_end"
     }
