@@ -445,7 +445,7 @@ class MainClass_Render {
     MainClass_Render.updatePostImages(post);
     MainClass_Render.updatePostVideos(post, updateRunGif);
 
-    if (MainClass_Base.isThreadPage) {
+    if (MainClass_Base.isThreadPage && MainClass_Base.settings.collapseDuplicates) {
       MainClass_Render.updateDuplicatePost(post);
     }
 
@@ -918,6 +918,7 @@ class MainClass_Events {
           );
           const toggledChanged = newSettings.toggled !== currentSettings.toggled;
           const intervalTimeoutChanged = newSettings.intervalTimeout !== currentSettings.intervalTimeout;
+          const collapseDuplicatesChanged = newSettings.collapseDuplicates !== currentSettings.collapseDuplicates;
 
           MainClass_Base.settings = newSettings;
 
@@ -959,6 +960,18 @@ class MainClass_Events {
               document.body.classList.add("hide-plashque");
             } else {
               document.body.classList.remove("hide-plashque");
+            }
+          }
+
+          if (MainClass_Base.isThreadPage && collapseDuplicatesChanged) {
+            if (newSettings.collapseDuplicates) {
+              [...document.querySelectorAll(".post")].forEach((x) => {
+                MainClass_Render.updateDuplicatePost(x);
+              });
+            } else {
+              [...document.querySelectorAll(".post.duplicate")].forEach((x) => {
+                MainClass_Derender.deUpdatePostDuplicates(x);
+              });
             }
           }
 

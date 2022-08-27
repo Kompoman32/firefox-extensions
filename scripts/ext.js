@@ -34,6 +34,8 @@ var defaultOptionsValues = {
     noncuple: "#ee8b99",
   },
 
+  collapseDuplicates: true,
+
   autoSave: true,
   toggled: true,
   intervalTimeout: 5000,

@@ -22,6 +22,7 @@ var i18n_en_lang_lines = {
       octuple: "Octuple",
       noncuple: "Noncuple",
     },
+    "collapse-duplicates": "Collapse posts with duplicated text",
     "show-plashque": "Show plashque in top with 2ch-news",
     b: {
       show: "Show titles on /b/",
