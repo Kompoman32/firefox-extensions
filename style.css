@@ -230,6 +230,10 @@ html.kd-toggle body .post .post__details {
   display: flex;
 }
 
+html.kd-toggle body .post .post__details .post__detailpart {
+  height: 17.55px;
+}
+
 html.kd-toggle body .post .post__details .post__detailpart:first-of-type > * {
   padding-right: 4px;
 }
