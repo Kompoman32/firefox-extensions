@@ -57,7 +57,7 @@ class MainClass_Base {
       clearInterval(MainClass_Base.interval);
     });
 
-    browser.runtime.sendMessage({ action: "settingsUpdated", data: MainClass_Base.settings });
+    browser.runtime.sendMessage({ action: "settingsUpdated", data: { ...MainClass_Base.settings, ...options } });
   }
 
   static setLocalOptions(options) {
@@ -1078,57 +1078,10 @@ class MainClass_Events {
   }
 
   static keydownBodyListener(event) {
-    const popupVideo = document.querySelector("#js-mv-main video");
-
-    const arrowKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
-
-    if (!!popupVideo && event.shiftKey && arrowKeys.includes(event.key)) {
-      event.preventDefault();
-      event.stopPropagation();
-      event.stopImmediatePropagation();
-      event.cancelBubble = true;
-
-      const volume = (forward) => {
-        const increaseVolume = 0.1 * (forward ? 1 : -1);
-        popupVideo.volume += increaseVolume;
-      };
-
-      const time = (more) => {
-        const duration = popupVideo.duration;
-        const skipTime = Math.min(duration / 10, 15) * (more ? 1 : -1);
-        popupVideo.currentTime += skipTime;
-      };
-
-      switch (event.key) {
-        case "ArrowUp":
-          volume(true);
-          break;
-        case "ArrowDown":
-          volume(false);
-          break;
-        case "ArrowRight":
-          time(true);
-          break;
-        case "ArrowLeft":
-          time(false);
-          break;
-
-        default:
-          break;
-      }
-    }
+    MainClass_Shortcuts.shortcutsHandler(event, false);
   }
   static keyupBodyListener(event) {
-    const popupVideo = document.querySelector("#js-mv-main video");
-
-    const arrowKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
-
-    if (!!popupVideo && event.shiftKey && arrowKeys.includes(event.key)) {
-      event.preventDefault();
-      event.stopPropagation();
-      event.stopImmediatePropagation();
-      event.cancelBubble = true;
-    }
+    MainClass_Shortcuts.shortcutsHandler(event, true);
   }
   static clickBodyListener(event) {
     const modal = document.querySelector("body > .mv");
@@ -1301,6 +1254,112 @@ class MainClass_Events {
       (parentPost._duplicates || []).forEach((x) => {
         x.classList.add("collapsed");
       });
+    }
+  }
+}
+
+class MainClass_Shortcuts {
+  static shortcutsHandler(event, keyUp = true) {
+    if (keyUp) {
+      MainClass_Shortcuts.shortcutsHandlerKeyUp(event);
+    } else {
+      MainClass_Shortcuts.shortcutsHandlerKeyDown(event);
+    }
+  }
+
+  static shortcutsHandlerKeyDown(event) {
+    const ctrl = event.ctrlKey;
+    const shift = event.shiftKey;
+    const alt = event.altKey;
+    const key = event.key;
+
+    const arrowKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
+
+    const stopEvent = () => {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      event.cancelBubble = true;
+    };
+
+    switch (true) {
+      case shift && arrowKeys.includes(key) && !!document.querySelector("#js-mv-main video"): {
+        stopEvent();
+        MainClass_Shortcuts.videoShortcuts(event);
+      }
+    }
+  }
+
+  static shortcutsHandlerKeyUp(event) {
+    const ctrl = event.ctrlKey;
+    const shift = event.shiftKey;
+    const alt = event.altKey;
+    const key = event.key;
+
+    const arrowKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
+
+    const stopEvent = () => {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      event.cancelBubble = true;
+    };
+
+    switch (true) {
+      case alt && key === "p": {
+        stopEvent();
+        MainClass_Base.setOptions({ popupAnimate: !MainClass_Base.settings.popupAnimate });
+
+        return;
+      }
+      case alt && key === "b": {
+        stopEvent();
+        MainClass_Base.setOptions({ popupBackground: !MainClass_Base.settings.popupBackground });
+
+        return;
+      }
+      case alt && key === "h": {
+        stopEvent();
+        MainClass_Base.setOptions({ colorPost: !MainClass_Base.settings.colorPost });
+
+        return;
+      }
+      case shift && arrowKeys.includes(key) && !!document.querySelector("#js-mv-main video"): {
+        stopEvent();
+      }
+    }
+  }
+
+  static videoShortcuts(event) {
+    const popupVideo = document.querySelector("#js-mv-main video");
+
+    const volume = (forward) => {
+      const increaseVolume = 0.1 * (forward ? 1 : -1);
+      popupVideo.volume += increaseVolume;
+    };
+
+    const time = (more) => {
+      const duration = popupVideo.duration;
+      const skipTime = Math.min(duration / 10, 15) * (more ? 1 : -1);
+      popupVideo.currentTime += skipTime;
+    };
+
+    switch (event.key) {
+      case "ArrowUp":
+        volume(true);
+        break;
+      case "ArrowDown":
+        volume(false);
+        break;
+      case "ArrowRight":
+        time(true);
+        break;
+      case "ArrowLeft":
+        time(false);
+        break;
+
+      default:
+        break;
     }
   }
 }
