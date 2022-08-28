@@ -134,11 +134,14 @@ table.tab > tbody > tr > td:not([colspan]) {
   border-bottom: 1px solid #f0f0f0;
 }
 
-.tabs-langs {
+.tabs-wrapper {
   display: flex;
   flex-direction: row;
 
   justify-content: space-between;
+
+  position: sticky;
+  top: 0;
 }
 
 .langs .lang {
@@ -168,9 +171,6 @@ table.tab > tbody > tr > td:not([colspan]) {
   border-bottom: 1px solid black;
 
   margin-bottom: 5px;
-
-  position: sticky;
-  top: 0;
 }
 
 .tabs {
@@ -186,9 +186,6 @@ table.tab > tbody > tr > td:not([colspan]) {
   border-bottom: 1px solid black;
 
   margin-bottom: 5px;
-
-  position: sticky;
-  top: 0;
 }
 
 .tabs .tab {

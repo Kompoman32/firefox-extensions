@@ -1,3 +1,5 @@
+var animationValues = ["jumping", "circle", "rotating"];
+
 var defaultOptionsValues = {
   lang: "ru",
 
@@ -21,6 +23,10 @@ var defaultOptionsValues = {
   popupBackground_img: true,
   popupBackground_vid: true,
   popupBackground_gif: true,
+
+  popupAnimate: false,
+  popupAnimation: "jumping",
+  popupAnimationTime: 2,
 
   colorPost: true,
   colors: {

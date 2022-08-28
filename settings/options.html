@@ -18,7 +18,7 @@
       <div id="loader" class="loader" data-completed="false">
         <div><div></div></div>
       </div>
-      <div class="tabs-langs">
+      <div class="tabs-wrapper">
         <div class="tabs">
           <div class="tab options selected" data-i18n="tab.common">Common</div>
           <div class="tab popup" data-i18n="tab.popup">Popup</div>
@@ -212,13 +212,13 @@
       <table class="tab popup">
         <thead></thead>
         <tbody>
-          <tr class="section-popup-toggler">
+          <tr class="section-popup-background-toggler">
             <td>
               <label data-i18n="popup.show-background">Add background on image/video popup<br />(reply popup not working)</label>
             </td>
-            <td><input class="section-toggler" data-collapse-section="popup" type="checkbox" id="popup-background" name="popupBackground" /></td>
+            <td><input class="section-toggler" data-collapse-section="popup-background" type="checkbox" id="popup-background" name="popupBackground" /></td>
           </tr>
-          <tr class="section-popup">
+          <tr class="section-popup-background">
             <td>
               <label data-i18n="popup.background.color">Popup background color</label>
             </td>
@@ -227,7 +227,7 @@
               <input type="color" id="popup-background-color" style="display: none" name="popupBackgroundColor" />
             </td>
           </tr>
-          <tr class="section-popup">
+          <tr class="section-popup-background">
             <td>
               <label data-i18n="popup.background.transparency">Popup background transparency</label>
             </td>
@@ -239,12 +239,13 @@
                 step="0.01"
                 id="popup-background-opacity"
                 name="popupBackgroundOpacity"
+                data-value-input="popup-background-opacity-value"
               />
-              <input type="number" id="popup-background-opacity-value" min="0" max="1" step="0.01" />
+              <input type="number" id="popup-background-opacity-value" min="0" max="1" step="0.01" data-range-input="popup-background-opacity" />
             </td>
           </tr>
 
-          <tr class="section-popup">
+          <tr class="section-popup-background">
             <td colspan="2" class="background-popup">
               <div class="collapser collapsed" data-i18n="popup.background.preview">Popup preview</div>
               <img class="back" src="./images/background-preview-back.jpg"></div>
@@ -253,20 +254,20 @@
             </td>
           </tr>
           
-          <tr class="section-popup">
+          <tr class="section-popup-background">
             <td colspan="2" data-i18n="popup.background.depend-on">
               Background on:
             </td>
           </tr>
-          <tr class="section-popup">
+          <tr class="section-popup-background">
             <td class="flex flex-end" data-i18n="popup.background.depend-on-img">Image</td>
             <td><input type="checkbox" id="popup-background-img" name="popupBackground_img" /></td>
           </tr>
-          <tr class="section-popup">
+          <tr class="section-popup-background">
             <td class="flex flex-end" data-i18n="popup.background.depend-on-gif">GIF</td>
             <td><input type="checkbox" id="popup-background-gif" name="popupBackground_gif" /></td>
           </tr>
-          <tr class="section-popup">
+          <tr class="section-popup-background">
             <td class="flex flex-end" data-i18n="popup.background.depend-on-video">Video</td>
             <td><input type="checkbox" id="popup-background-vid" name="popupBackground_vid" /></td>
           </tr>
@@ -280,6 +281,48 @@
               <label data-i18n="popup.block-click">Blocking hiding popup on click</label>
             </td>
             <td><input type="checkbox" id="popup-block-clicks" name="popupBlockClicks" /></td>
+          </tr>
+
+          <tr class="splitter">
+            <td colspan="2"></td>
+          </tr>
+
+          <tr class="section-popup-animating-toggler">
+            <td>
+              <label data-i18n="popup.animate">Animate popup</label>
+            </td>
+            <td><input class="section-toggler" data-collapse-section="popup-animating" type="checkbox" id="popup-animate" name="popupAnimate" /></td>
+          </tr>
+          
+          <tr class="section-popup-animating">
+            <td>
+              <label data-i18n="popup.animation">Animation</label>
+            </td>
+            <td>
+              <select id="popup-animation" name="popupAnimation">
+                <option value="jumping" data-i18n="popup.animationOptions.jumping">Jumping</option>
+                <option value="circle" data-i18n="popup.animationOptions.circle">Circle</option>
+                <option value="rotating" data-i18n="popup.animationOptions.rotating">Rotation</option>
+              </select>
+            </td>
+          </tr>
+
+          <tr class="section-popup-animating">
+            <td>
+              <label data-i18n="popup.animationTime">Animation time</label>
+            </td>
+            <td class="flex-column">
+              <input
+                type="range"
+                min="0"
+                max="20"
+                step="0.01"
+                id="popup-animation-time"
+                name="popupAnimationTime"
+                data-value-input="popup-animation-time-value"
+              />
+              <input type="number" id="popup-animation-time-value" data-range-input="popup-animation-time" min="0" max="100" step="0.01" />
+            </td>
           </tr>
         </tbody>
       </table>

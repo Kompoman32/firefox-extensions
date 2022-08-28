@@ -41,6 +41,14 @@ var i18n_ru_lang_lines = {
       "depend-on-video": "Видео",
     },
     "block-click": "Блокировать скрытие Попапа<br/>при клике по нему",
+    animate: "Анимировать Попап",
+    animation: "Анимация",
+    animationTime: "Время анимации",
+    animationOptions: {
+      jumping: "Прыгающая",
+      circle: "Круговая",
+      rotating: "Вращающаяся",
+    },
   },
   links: {
     "th-link": "Ссылка",

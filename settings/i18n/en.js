@@ -41,6 +41,14 @@ var i18n_en_lang_lines = {
       "depend-on-video": "Video",
     },
     "block-click": "Blocking hiding popup on click",
+    animate: "Animate popup",
+    animation: "Animation",
+    animationTime: "Animation time",
+    animationOptions: {
+      jumping: "Jumping",
+      circle: "Circle",
+      rotating: "Rotating",
+    },
   },
   links: {
     "th-link": "Link",

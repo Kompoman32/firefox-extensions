@@ -330,3 +330,62 @@ html.kd-toggle body .post.duplicate {
 html.kd-toggle body .post.duplicate.collapsed {
   display: none;
 }
+
+@keyframes popup_jumping {
+  0% {
+    transform: rotate(0deg) translateX(-25vw) rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(90deg) translateX(0vw) rotate(-90deg);
+  }
+  50% {
+    transform: rotate(180deg) translateX(-25vw) rotate(-180deg);
+  }
+  75% {
+    transform: rotate(90deg) translateX(0vw) rotate(-90deg);
+  }
+
+  100% {
+    transform: rotate(0deg) translateX(-25vw) rotate(0deg);
+  }
+}
+
+@keyframes popup_circle {
+  0% {
+    transform: rotate(0deg) translateX(-15vw) rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg) translateX(-15vw) rotate(-360deg);
+  }
+}
+
+@keyframes popup_rotating {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+html.kd-toggle body .mv.animated .mv__main {
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+html.kd-toggle body .mv.animated.jumping .mv__main {
+  animation-name: popup_jumping;
+}
+html.kd-toggle body .mv.animated.circle .mv__main {
+  animation-name: popup_circle;
+}
+html.kd-toggle body .mv.animated.rotating .mv__main {
+  animation-name: popup_rotating;
+}
+
+html.kd-toggle body .mv.animated .mv__main.animation-paused {
+  animation-name: "unset";
+}

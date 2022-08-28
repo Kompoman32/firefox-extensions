@@ -1,3 +1,5 @@
+var animationValues = ["jumping", "circle", "rotating"];
+
 var defaultOptionsValues = {
   lang: "ru",
 
@@ -22,6 +24,10 @@ var defaultOptionsValues = {
   popupBackground_img: true,
   popupBackground_vid: true,
   popupBackground_gif: true,
+
+  popupAnimate: false,
+  popupAnimation: "jumping",
+  popupAnimationTime: 2,
 
   colorPost: true,
   colors: {
@@ -304,6 +310,7 @@ function restoreOptions() {
     setLoader(true);
 
     document.querySelector("#popup-background-opacity-value").value = result.popupBackgroundOpacity;
+    document.querySelector("#popup-animation-time-value").value = result.popupAnimationTime;
 
     [...Object.keys(result)].forEach((key) => {
       const control = document.querySelector(`[name="${key}"`);
@@ -324,6 +331,10 @@ function restoreOptions() {
               control.checked = result[key];
               break;
           }
+          break;
+        }
+        case "SELECT": {
+          control.value = result[key];
           break;
         }
       }
@@ -386,12 +397,14 @@ function restoreOptions() {
       el.addEventListener("change", func.bind(el));
     }
 
-    setSectionToggler("popup");
     setSectionToggler("b");
     setSectionToggler("colors");
+    setSectionToggler("popup-background");
+    setSectionToggler("popup-animating");
 
     let el;
 
+    //#region COLLAPSERS
     /*----------------------COLLAPSERS----------------------*/
 
     el = document.querySelectorAll(`.collapser`);
@@ -415,7 +428,9 @@ function restoreOptions() {
       });
 
     /*----------------------COLLAPSERS----------------------*/
+    //#endregion COLLAPSERS
 
+    //#region BACKGROUND-PREVIEW
     /*----------------------BACKGROUND-PREVIEW----------------------*/
 
     const popupBackgroundColorPicker = new ColorPicker({
@@ -443,28 +458,39 @@ function restoreOptions() {
     });
 
     el = document.getElementById(`popup-background-opacity`);
-    el &&
-      el.addEventListener("input", (e) => {
-        let _el = document.getElementById(`popup-background-opacity-value`);
-        _el && (_el.value = e.target.value);
-
-        setBackgroundPopup();
-      });
-
+    el._callback = () => {
+      setBackgroundPopup();
+    };
     el = document.getElementById(`popup-background-opacity-value`);
-    el &&
-      el.addEventListener("change", (e) => {
-        if (!e.target.validity.valid) {
-          return;
-        }
-        let _el = document.getElementById(`popup-background-opacity`);
-        _el && (_el.value = e.target.value);
+    el._callback = () => {
+      setBackgroundPopup();
+    };
 
-        setBackgroundPopup();
-      });
+    // el = document.getElementById(`popup-background-opacity`);
+    // el &&
+    //   el.addEventListener("input", (e) => {
+    //     let _el = document.getElementById(`popup-background-opacity-value`);
+    //     _el && (_el.value = e.target.value);
+
+    //     setBackgroundPopup();
+    //   });
+
+    // el = document.getElementById(`popup-background-opacity-value`);
+    // el &&
+    //   el.addEventListener("change", (e) => {
+    //     if (!e.target.validity.valid) {
+    //       return;
+    //     }
+    //     let _el = document.getElementById(`popup-background-opacity`);
+    //     _el && (_el.value = e.target.value);
+
+    //     setBackgroundPopup();
+    //   });
 
     /*----------------------BACKGROUND-PREVIEW----------------------*/
+    //#endregion BACKGROUND-PREVIEW
 
+    //#region POST-COLORS
     /*----------------------POST-COLORS----------------------*/
 
     ["double", "triple", "quadruple", "quintuple", "sextuple", "septuple", "octuple", "noncuple"].map((name) => {
@@ -484,22 +510,15 @@ function restoreOptions() {
     });
 
     /*----------------------POST-COLORS----------------------*/
+    //#endregion POST-COLORS
 
+    //#region LINKS
     /*----------------------LINKS-----------------------------------*/
 
     /*----------------------LINKS-----------------------------------*/
+    //#endregion LINKS
 
-    // el = document.querySelector(`.auto-save`);
-    // el &&
-    //   el.addEventListener("change", (e) => {
-    //     autoSave = e.target.checked;
-    //     const saveButton = document.querySelector(`.save-button`);
-    //     if (autoSave) {
-    //       saveButton.parentElement.classList.add("disabled");
-    //     } else {
-    //       saveButton.parentElement.classList.remove("disabled");
-    //     }
-    //   });
+    //#region TABS
 
     /*----------------------TABS-----------------------------------*/
 
@@ -542,6 +561,10 @@ function restoreOptions() {
       );
 
     /*----------------------TABS-----------------------------------*/
+    //#endregion
+
+    //#region POSTPROCESSING
+    /*----------------------POSTPROCESSING-----------------------------------*/
 
     [...document.querySelectorAll("[name]")].forEach((control) => {
       if (!!control._picker) {
@@ -554,6 +577,37 @@ function restoreOptions() {
         }
       });
     });
+
+    function setRangeToInput(e) {
+      let _el = document.getElementById(e.target.dataset.valueInput);
+      _el && (_el.value = e.target.value);
+
+      _el && typeof _el._callback === "function" && _el._callback();
+    }
+
+    function setInputToRange(e) {
+      if (!e.target.validity.valid) {
+        return;
+      }
+      let _el = document.getElementById(e.target.dataset.rangeInput);
+      _el && (_el.value = e.target.value);
+
+      _el && typeof _el._callback === "function" && _el._callback();
+
+      if (autoSave) {
+        saveOptions();
+      }
+    }
+
+    document.querySelectorAll('input[type="range"][data-value-input]').forEach((x) => {
+      x.addEventListener("input", setRangeToInput);
+    });
+    document.querySelectorAll("input[data-range-input]").forEach((x) => {
+      x.addEventListener("change", setInputToRange);
+    });
+
+    /*----------------------POSTPROCESSING-----------------------------------*/
+    //#endregion POSTPROCESSING
   }
 
   function onError(error) {

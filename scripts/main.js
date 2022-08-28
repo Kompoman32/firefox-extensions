@@ -136,6 +136,20 @@ class MainClass_Base {
   }
 
   static start() {
+    const modal = document.querySelector("body > .mv");
+
+    if (modal) {
+      if (MainClass_Base.settings.popupAnimate) {
+        modal.classList.add("animated");
+      }
+
+      animationValues.forEach((x) => {
+        modal.classList.remove(x);
+      });
+
+      modal.classList.add(MainClass_Base.settings.popupAnimation);
+    }
+
     clearInterval(MainClass_Base.interval);
     MainClass_Render.render();
     MainClass_Events.setupListeners();
@@ -251,6 +265,12 @@ class MainClass_Base {
       }
       `;
     }
+
+    text += `
+    html.kd-toggle body .mv.animated .mv__main {
+      animation-duration: ${MainClass_Base.settings.popupAnimationTime}s;
+    }
+    `;
 
     text = text.replaceAll("\n", "");
 
@@ -665,6 +685,16 @@ class MainClass_Render {
 
 class MainClass_Derender {
   static derender() {
+    const modal = document.querySelector("body > .mv");
+
+    if (modal) {
+      modal.classList.remove("animated");
+
+      animationValues.forEach((x) => {
+        modal.classList.remove(x);
+      });
+    }
+
     consoleGroup("KD -", "DeRender");
     MainClass_Derender.deUpdateThreads();
     MainClass_Derender.deUpdatePosts();
@@ -919,6 +949,9 @@ class MainClass_Events {
           const toggledChanged = newSettings.toggled !== currentSettings.toggled;
           const intervalTimeoutChanged = newSettings.intervalTimeout !== currentSettings.intervalTimeout;
           const collapseDuplicatesChanged = newSettings.collapseDuplicates !== currentSettings.collapseDuplicates;
+          const popupAnimateChanged = newSettings.popupAnimate !== currentSettings.popupAnimate;
+          const popupAnimationChanged = newSettings.popupAnimation !== currentSettings.popupAnimation;
+          const popupAnimationTimeChanged = newSettings.popupAnimationTime !== currentSettings.popupAnimationTime;
 
           MainClass_Base.settings = newSettings;
 
@@ -975,6 +1008,35 @@ class MainClass_Events {
             }
           }
 
+          const modal = document.querySelector("body > .mv");
+          const mvMain = document.querySelector("body > .mv .mv__main");
+
+          if (popupAnimateChanged && modal) {
+            if (newSettings.popupAnimate) {
+              modal.classList.add("animated");
+            } else {
+              modal.classList.remove("animated");
+            }
+          }
+
+          if (popupAnimationChanged && newSettings.popupAnimate && modal) {
+            animationValues.forEach((x) => {
+              modal.classList.remove(x);
+            });
+
+            if (MainClass_Base.toggled) {
+              modal.classList.add(newSettings.popupAnimation);
+            }
+          }
+
+          if (popupAnimationTimeChanged && mvMain) {
+            mvMain.classList.add("animation-paused");
+            MainClass_Base.setupStyleBySettings();
+            setTimeout(() => {
+              mvMain.classList.remove("animation-paused");
+            }, 50);
+          }
+
           break;
 
         case "redirect":
@@ -1006,6 +1068,8 @@ class MainClass_Events {
     document.body.addEventListener("keydown", MainClass_Events.keydownBodyListener);
     document.body.addEventListener("keyup", MainClass_Events.keyupBodyListener);
     document.body.addEventListener("click", MainClass_Events.clickBodyListener);
+    document.body.addEventListener("mousedown", MainClass_Events.mouseDownBodyListener);
+    document.body.addEventListener("mouseup", MainClass_Events.mouseUpBodyListener);
   }
   static deSetupListeners() {
     document.body.removeEventListener("keydown", MainClass_Events.keydownBodyListener);
@@ -1069,12 +1133,10 @@ class MainClass_Events {
   static clickBodyListener(event) {
     const modal = document.querySelector("body > .mv");
 
-    if (MainClass_Base.settings.popupBlockClicks && modal) {
-      if (modal.contains(event.target) && event.target !== modal) {
-        event.preventDefault();
-        event.stopPropagation();
-        event.stopImmediatePropagation();
-      }
+    if (MainClass_Base.settings.popupBlockClicks && modal && modal.contains(event.target) && event.target !== modal) {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
     }
 
     setTimeout(() => {
@@ -1109,6 +1171,21 @@ class MainClass_Events {
 
       modal.classList.add(mediaClass);
     }, 4);
+  }
+  static mouseDownBodyListener(event) {
+    const modal = document.querySelector("body > .mv .mv__main");
+
+    if (MainClass_Base.settings.popupAnimate && modal && modal.contains(event.target)) {
+      modal.classList.add("animation-paused");
+    }
+  }
+
+  static mouseUpBodyListener(event) {
+    const modal = document.querySelector("body > .mv .mv__main");
+
+    if (MainClass_Base.settings.popupAnimate && modal && modal.contains(event.target)) {
+      modal.classList.remove("animation-paused");
+    }
   }
 
   static async savePostMenuListener(e) {
