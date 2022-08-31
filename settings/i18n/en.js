@@ -3,6 +3,7 @@ var i18n_en_lang_lines = {
     common: "Common",
     popup: "Popup",
     links: "Links",
+    shortcuts: "Shortcuts",
   },
   common: {
     "render-timeout": "Render check posts timeout",
@@ -53,5 +54,10 @@ var i18n_en_lang_lines = {
   links: {
     "th-link": "Link",
     "th-name": "Name",
+  },
+  shortcuts: {
+    "popup-background": "Popup background on/off",
+    "popup-animating": "Popup animating on/off",
+    "nble-highlight": "Posts highlights double, triple, etc  on/off",
   },
 };

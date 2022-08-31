@@ -1,4 +1,5 @@
-/* ALL */
+/*#region  ALL */
+
 * {
   box-sizing: border-box;
 }
@@ -259,18 +260,18 @@ div.collapser.collapsed {
   position: static;
 }
 
-/* ALL */
+/*#endregion  ALL */
 
-/* MERGED */
+/*#region  MERGED */
 
 div.collapser.collapsed ~ *,
 tr.section-colors.collapsed ~ .section-colors {
   display: none;
 }
 
-/* MERGED */
+/*#endregion  MERGED */
 
-/* COMMON */
+/*#region  COMMON */
 
 td.background-popup {
   /* width: 500px; */
@@ -327,8 +328,9 @@ tr.section-colors td .wrapper > div {
 tr.section-colors td .wrapper h3 {
   margin: 0;
 }
+/*#endregion  COMMON */
 
-/* LINKS */
+/*#region  LINKS */
 
 .tab.links th {
   text-align: center;
@@ -365,4 +367,55 @@ tr.section-colors td .wrapper h3 {
   width: max-content;
 }
 
-/* LINKS */
+/*#endregion  LINKS */
+
+/*#region SHORTCUTS */
+
+.tab.shortcuts .shortcut .shortcut {
+  display: flex;
+  flex-direction: column;
+}
+
+.tab.shortcuts .shortcut .additionals {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.tab.shortcuts .shortcut .button {
+  display: flex;
+  flex-direction: row;
+
+  align-items: center;
+}
+.tab.shortcuts .shortcut .button input {
+  width: 60px;
+}
+
+.tab.shortcuts .shortcut .button div {
+  width: 20px;
+  height: 20px;
+
+  border: 1px solid black;
+
+  border-radius: 5px;
+
+  text-align: center;
+
+  margin-left: 5px;
+}
+
+.tab.shortcuts .shortcut .button input.disabled ~ div {
+  display: none;
+}
+
+.tab.shortcuts .shortcut .button .approve {
+  cursor: pointer;
+  color: green;
+}
+.tab.shortcuts .shortcut .button .cancel {
+  cursor: pointer;
+  color: red;
+}
+
+/*#endregion SHORTCUTS */

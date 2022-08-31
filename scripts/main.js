@@ -952,6 +952,7 @@ class MainClass_Events {
           const popupAnimateChanged = newSettings.popupAnimate !== currentSettings.popupAnimate;
           const popupAnimationChanged = newSettings.popupAnimation !== currentSettings.popupAnimation;
           const popupAnimationTimeChanged = newSettings.popupAnimationTime !== currentSettings.popupAnimationTime;
+          const popupChangeAnimationChanged = newSettings.popupChangeAnimation !== currentSettings.popupChangeAnimation;
 
           MainClass_Base.settings = newSettings;
 
@@ -1282,8 +1283,14 @@ class MainClass_Shortcuts {
       event.cancelBubble = true;
     };
 
+    const checkMatch = (shortcut) => {
+      return shortcut[0] === shift && shortcut[1] === ctrl && shortcut[2] === alt && shortcut[3] === key;
+    };
+
     switch (true) {
-      case shift && arrowKeys.includes(key) && !!document.querySelector("#js-mv-main video"): {
+      // stop event to control video
+      case arrowKeys.reduce((acc, x) => acc && checkMatch([true, false, false, key]), true) &&
+        !!document.querySelector("#js-mv-main video"): {
         stopEvent();
         MainClass_Shortcuts.videoShortcuts(event);
       }
@@ -1291,10 +1298,10 @@ class MainClass_Shortcuts {
   }
 
   static shortcutsHandlerKeyUp(event) {
-    const ctrl = event.ctrlKey;
     const shift = event.shiftKey;
+    const ctrl = event.ctrlKey;
     const alt = event.altKey;
-    const key = event.key;
+    const key = event.code;
 
     const arrowKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
 
@@ -1305,27 +1312,31 @@ class MainClass_Shortcuts {
       event.cancelBubble = true;
     };
 
+    const checkMatch = (shortcut) => {
+      return shortcut[0] === shift && shortcut[1] === ctrl && shortcut[2] === alt && shortcut[3] === key;
+    };
+
     switch (true) {
-      case alt && key === "p": {
+      case checkMatch(MainClass_Base.settings.shortcuts.popupAnimating): {
         stopEvent();
         MainClass_Base.setOptions({ popupAnimate: !MainClass_Base.settings.popupAnimate });
-
-        return;
+        break;
       }
-      case alt && key === "b": {
+      case checkMatch(MainClass_Base.settings.shortcuts.popupBackground): {
         stopEvent();
         MainClass_Base.setOptions({ popupBackground: !MainClass_Base.settings.popupBackground });
-
-        return;
+        break;
       }
-      case alt && key === "h": {
+      case checkMatch(MainClass_Base.settings.shortcuts.nbleHighlight): {
         stopEvent();
         MainClass_Base.setOptions({ colorPost: !MainClass_Base.settings.colorPost });
-
-        return;
+        break;
       }
-      case shift && arrowKeys.includes(key) && !!document.querySelector("#js-mv-main video"): {
+      // stop event to control video
+      case arrowKeys.reduce((acc, x) => acc && checkMatch([true, false, false, key]), true) &&
+        !!document.querySelector("#js-mv-main video"): {
         stopEvent();
+        break;
       }
     }
   }

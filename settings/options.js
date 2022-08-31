@@ -1,61 +1,3 @@
-var animationValues = ["jumping", "circle", "rotating"];
-
-var defaultOptionsValues = {
-  lang: "ru",
-
-  maxHeight: 700,
-  // Reversed (if true => replace)
-  thumbImages: true,
-
-  titleToBottom: false,
-
-  bTitles: true,
-  bTitlesSize: 47,
-
-  showPlashque: true,
-
-  runGif: true,
-
-  popupBlockClicks: false,
-
-  popupBackground: true,
-  popupBackgroundColor: "#15202b",
-  popupBackgroundOpacity: 0.86328125,
-  popupBackground_img: true,
-  popupBackground_vid: true,
-  popupBackground_gif: true,
-
-  popupAnimate: false,
-  popupAnimation: "jumping",
-  popupAnimationTime: 2,
-
-  colorPost: true,
-  colors: {
-    double: "#b5b5b5",
-    triple: "#deb8e1",
-    quadruple: "#f5f982",
-    quintuple: "#82f98f",
-    sextuple: "#ee8b99",
-    septuple: "#ee8b99",
-    octuple: "#ee8b99",
-    noncuple: "#ee8b99",
-  },
-
-  collapseDuplicates: true,
-
-  autoSave: true,
-  toggled: true,
-  intervalTimeout: 5000,
-};
-
-var defaultLocalOptionsValues = {
-  links: [],
-  collapsedThreads: {
-    b: [],
-    all: [],
-  },
-};
-
 var globalLinks = [];
 
 var autoSave = true;
@@ -152,7 +94,7 @@ function setSettings(settings) {
 
   browser.storage.sync
     .set(settings)
-    .then(() => {
+    .then((updatedSettungs) => {
       browser.runtime.sendMessage({ action: "settingsUpdated", data: settings });
       setLoader(true);
     })
@@ -179,6 +121,16 @@ function saveOptions(e = { target: document.querySelector("form") }) {
 
   let form = formSerializer(e.target);
   form.lang = I18N.lang;
+
+  form.shortcuts = {};
+
+  // shortcuts
+  document.querySelectorAll(".shortcut[name]").forEach((x) => {
+    const additional = [...x.querySelectorAll(".additionals input")].map((x) => x.checked);
+    const button = x.querySelector(".button input").value;
+
+    form.shortcuts[x.getAttribute("name")] = [...additional, button];
+  });
 
   setSettings(form);
 }
@@ -309,6 +261,8 @@ function restoreOptions() {
   function setCurrentChoice(result) {
     setLoader(true);
 
+    // result.shortcuts.popupBackground = [false, false, true, "KeyB"];
+
     document.querySelector("#popup-background-opacity-value").value = result.popupBackgroundOpacity;
     document.querySelector("#popup-animation-time-value").value = result.popupAnimationTime;
 
@@ -348,6 +302,34 @@ function restoreOptions() {
       }
 
       control.value = result.colors[key];
+    });
+
+    document.querySelectorAll(`.shortcut[name]`).forEach((shortcutEl) => {
+      const name = shortcutEl.getAttribute("name");
+
+      const shortcutValues = result.shortcuts[name] || defaultOptionsValues.shortcuts[name];
+
+      result.shortcuts[name] = shortcutValues;
+
+      if (!shortcutValues) {
+        return;
+      }
+
+      const shift = shortcutValues[0];
+      const ctrl = shortcutValues[1];
+      const alt = shortcutValues[2];
+      const keyCode = shortcutValues[3];
+
+      const shiftInput = shortcutEl.querySelector(".shift");
+      shiftInput.checked = shift;
+      const ctrlInput = shortcutEl.querySelector(".ctrl");
+      ctrlInput.checked = ctrl;
+      const altInput = shortcutEl.querySelector(".alt");
+      altInput.checked = alt;
+
+      const keyInput = shortcutEl.querySelector(".button input");
+      keyInput.value = keyCode;
+      keyInput._val = keyCode;
     });
 
     globalLinks = result.links || [];
@@ -563,12 +545,111 @@ function restoreOptions() {
     /*----------------------TABS-----------------------------------*/
     //#endregion
 
+    //#region SHORTCUTS
+    /*----------------------SHORTCUTS-----------------------------------*/
+
+    const shortcutsTd = [...document.querySelectorAll(".shortcut[name]")];
+    const shortcuts = shortcutsTd.map((s) => s.querySelector(".button input"));
+    const shortcutsAditionalKeys = shortcutsTd.reduce((acc, x) => {
+      acc.push(...x.querySelectorAll(".additionals input"));
+      return acc;
+    }, []);
+
+    function resetShortcuts(inputs = shortcuts) {
+      inputs.forEach((inp) => {
+        inp.value = inp._val;
+        inp.classList.add("disabled");
+      });
+    }
+
+    shortcutsAditionalKeys.forEach((inp) => {
+      inp.addEventListener("change", (e) => {
+        saveOptions();
+      });
+    });
+
+    shortcuts.forEach((inp) => {
+      const name = inp.parentElement.parentElement.getAttribute("name");
+      const shortcut = settings.shortcuts[name];
+      const [shift, ctrl, alt, code] = shortcut;
+
+      inp._val = code;
+
+      inp.parentElement.parentElement.querySelector("input.shift").checked = shift;
+      inp.parentElement.parentElement.querySelector("input.ctrl").checked = ctrl;
+      inp.parentElement.parentElement.querySelector("input.alt").checked = alt;
+
+      inp.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!e.target.classList.contains("disabled")) {
+          return;
+        }
+        resetShortcuts();
+
+        e.target.classList.remove("disabled");
+      });
+
+      const approveButton = inp.nextElementSibling;
+      const cancelButton = approveButton.nextElementSibling;
+
+      approveButton.addEventListener("click", (e) => {
+        inp._val = inp._new;
+        resetShortcuts();
+        saveOptions();
+      });
+      cancelButton.addEventListener("click", (e) => {
+        resetShortcuts();
+      });
+    });
+
+    // click to cancel
+    document.addEventListener("click", (e) => {
+      const stillEditing = shortcutsTd.some((td) => td.contains(e.target));
+
+      if (stillEditing) {
+        return;
+      }
+
+      resetShortcuts();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      const editingShortcuts = shortcuts.find((x) => x && !x.classList.contains("disabled"));
+
+      if (!editingShortcuts) {
+        return;
+      }
+
+      const blackedKeys = ["ShiftLeft", "ControlLeft", "AltLeft", "ShiftRight", "ControlRight", "AltRight"];
+
+      if (blackedKeys.includes(e.code)) {
+        return;
+      }
+
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      e.stopPropagation();
+
+      editingShortcuts.value = e.code;
+      editingShortcuts._new = e.code;
+    });
+
+    /*----------------------SHORTCUTS-----------------------------------*/
+    //#endregion SHORTCUTS
+
     //#region POSTPROCESSING
     /*----------------------POSTPROCESSING-----------------------------------*/
 
     [...document.querySelectorAll("[name]")].forEach((control) => {
       if (!!control._picker) {
         control = control._picker;
+      }
+
+      // shortcuts
+      if (control.tagName === "TD") {
+        return;
       }
 
       control.addEventListener("change", () => {

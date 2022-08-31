@@ -3,6 +3,7 @@ var i18n_ru_lang_lines = {
     common: "Общие",
     popup: "Попап",
     links: "Ссылки",
+    shortcuts: "Шорткаты",
   },
   common: {
     "render-timeout": "Время пересчёта рендера",
@@ -53,5 +54,10 @@ var i18n_ru_lang_lines = {
   links: {
     "th-link": "Ссылка",
     "th-name": "Название",
+  },
+  shortcuts: {
+    "popup-background": "Фон Попапа вкл/выкл",
+    "popup-animating": "Анимация Попапа вкл/выкл",
+    "nble-highlight": "Подсветка даблов,<br/>триплов и т.п. вкл/выкл",
   },
 };
