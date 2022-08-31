@@ -1327,6 +1327,15 @@ class MainClass_Shortcuts {
         MainClass_Base.setOptions({ popupBackground: !MainClass_Base.settings.popupBackground });
         break;
       }
+      case checkMatch(MainClass_Base.settings.shortcuts.popupChangeAnimation): {
+        stopEvent();
+
+        const currentPopupAnimationIndex = animationValues.indexOf(MainClass_Base.settings.popupAnimation);
+        const nextAnimationIndex = (currentPopupAnimationIndex + animationValues.length + 1) % animationValues.length;
+
+        MainClass_Base.setOptions({ popupAnimation: animationValues[nextAnimationIndex] });
+        break;
+      }
       case checkMatch(MainClass_Base.settings.shortcuts.nbleHighlight): {
         stopEvent();
         MainClass_Base.setOptions({ colorPost: !MainClass_Base.settings.colorPost });

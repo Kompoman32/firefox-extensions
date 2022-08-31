@@ -58,6 +58,7 @@ var i18n_ru_lang_lines = {
   shortcuts: {
     "popup-background": "Фон Попапа вкл/выкл",
     "popup-animating": "Анимация Попапа вкл/выкл",
+    "popup-change-animation": "Сменить анимацию Попапа",
     "nble-highlight": "Подсветка даблов,<br/>триплов и т.п. вкл/выкл",
   },
 };

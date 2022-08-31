@@ -49,6 +49,7 @@ var defaultOptionsValues = {
     // Shift, Ctrl, Alt, Code
     popupBackground: [false, false, true, "KeyB"],
     popupAnimating: [false, false, true, "KeyP"],
+    popupChangeAnimation: [false, false, true, "KeyO"],
     nbleHighlight: [false, false, true, "KeyH"],
   },
 };

@@ -58,6 +58,7 @@ var i18n_en_lang_lines = {
   shortcuts: {
     "popup-background": "Popup background on/off",
     "popup-animating": "Popup animating on/off",
+    "popup-change-animation": "Сhange popup animation",
     "nble-highlight": "Posts highlights double, triple, etc  on/off",
   },
 };
