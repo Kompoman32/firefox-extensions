@@ -685,6 +685,13 @@ class MainClass_Render {
 
   static updatePreview() {
     const modal = document.querySelector(".mv");
+    const mvMain = modal && modal.querySelector("#js-mv-main");
+
+    if (!modal || !mvMain) {
+      return;
+    }
+
+    MainClass_Render.setPreviewMediaTypeClass(modal, mvMain);
 
     const isImg = modal.classList.contains("img");
     const isGif = modal.classList.contains("gif");
@@ -717,6 +724,39 @@ class MainClass_Render {
         }
       }
     }
+  }
+  static setPreviewMediaTypeClass(modal, mvMain) {
+    if (["img", "gif", "vid"].some((x) => modal.classList.contains(x))) {
+      return;
+    }
+
+    let mediaInfo = mvMain.dataset.mediainfo || "";
+    mediaInfo = mediaInfo.substring(
+      0,
+      mediaInfo.lastIndexOf(".") + mediaInfo.substring(mediaInfo.lastIndexOf(".")).indexOf(" ")
+    );
+
+    const img = document.querySelector(`[data-title="${mediaInfo}"`);
+
+    if (!img) {
+      return;
+    }
+
+    let mediaClass = "";
+
+    if (img.dataset.type === "4") {
+      mediaClass = "gif";
+    } else {
+      if (img.parentElement.classList.contains("webm")) {
+        mediaClass = "vid";
+      } else {
+        mediaClass = "img";
+      }
+    }
+
+    ["img", "gif", "vid"].forEach((x) => modal.classList.remove(x));
+
+    modal.classList.add(mediaClass);
   }
 }
 
@@ -925,6 +965,8 @@ class MainClass_Derender {
       video.addAttribute("loop");
       video.onended = null;
     }
+
+    ["img", "gif", "vid"].forEach((x) => modal.classList.remove(x));
   }
 }
 
@@ -1154,39 +1196,6 @@ class MainClass_Events {
       event.stopPropagation();
       event.stopImmediatePropagation();
     }
-
-    setTimeout(() => {
-      const mvMain = modal.querySelector("#js-mv-main");
-
-      if (!mvMain) {
-        return;
-      }
-
-      let mediaInfo = mvMain.dataset.mediainfo || "";
-      mediaInfo = mediaInfo.substring(0, mediaInfo.indexOf(" "));
-
-      const img = document.querySelector(`[data-title="${mediaInfo}"`);
-
-      if (!img) {
-        return;
-      }
-
-      let mediaClass = "";
-
-      if (img.dataset.type === "4") {
-        mediaClass = "gif";
-      } else {
-        if (img.parentElement.classList.contains("webm")) {
-          mediaClass = "vid";
-        } else {
-          mediaClass = "img";
-        }
-      }
-
-      ["img", "gif", "vid"].forEach((x) => modal.classList.remove(x));
-
-      modal.classList.add(mediaClass);
-    }, 4);
   }
   static mouseDownBodyListener(event) {
     const modal = document.querySelector("body > .mv .mv__main");
