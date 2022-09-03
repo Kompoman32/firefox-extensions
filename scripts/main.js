@@ -297,6 +297,7 @@ class MainClass_Render {
     consoleGroup("KD -", "Render");
     MainClass_Render.updateThreads();
     MainClass_Render.updatePosts();
+    MainClass_Render.updatePreview();
     document.body.parentElement.classList.add("kd-toggle");
     if (MainClass_Base.isBeta) {
       document.body.parentElement.classList.add("beta");
@@ -681,6 +682,42 @@ class MainClass_Render {
       post.classList.add(postClass);
     }
   }
+
+  static updatePreview() {
+    const modal = document.querySelector(".mv");
+
+    const isImg = modal.classList.contains("img");
+    const isGif = modal.classList.contains("gif");
+    const isVid = modal.classList.contains("vid");
+
+    if (isImg) {
+    }
+    if (isGif) {
+    }
+    if (isVid) {
+      const wrapper = modal.querySelector("#js-mv-main");
+      const video = modal.querySelector("video");
+
+      if (!wrapper || !video) {
+        return;
+      }
+
+      if (video.clientHeight !== wrapper.clientHeight) {
+        wrapper.style.height = video.clientHeight + "px";
+      }
+
+      if (MainClass_Base.settings.popupSkipVideo) {
+        video.removeAttribute("loop");
+
+        if (!video.onended) {
+          video.onended = () => {
+            const goNextBut = document.querySelector("#js-mv-r");
+            goNextBut && goNextBut.click();
+          };
+        }
+      }
+    }
+  }
 }
 
 class MainClass_Derender {
@@ -698,6 +735,7 @@ class MainClass_Derender {
     consoleGroup("KD -", "DeRender");
     MainClass_Derender.deUpdateThreads();
     MainClass_Derender.deUpdatePosts();
+    MainClass_Derender.deUpdatePreview();
     MainClass_Events.deSetupListeners();
     document.body.parentElement.classList.remove("kd-toggle");
     document.body.parentElement.classList.remove("hide-plashque");
@@ -862,6 +900,30 @@ class MainClass_Derender {
     el = menu.querySelector("a.save-link");
     if (!!el) {
       el.remove();
+    }
+  }
+
+  static deUpdatePreview() {
+    const modal = document.querySelector(".mv");
+
+    const isImg = modal.classList.contains("img");
+    const isGif = modal.classList.contains("gif");
+    const isVid = modal.classList.contains("vid");
+
+    if (isImg) {
+    }
+    if (isGif) {
+    }
+    if (isVid) {
+      const wrapper = modal.querySelector("#js-mv-main");
+      const video = modal.querySelector("video");
+
+      if (!wrapper || !video) {
+        return;
+      }
+
+      video.addAttribute("loop");
+      video.onended = null;
     }
   }
 }

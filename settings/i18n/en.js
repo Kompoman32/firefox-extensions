@@ -42,6 +42,7 @@ var i18n_en_lang_lines = {
       "depend-on-video": "Video",
     },
     "block-click": "Blocking hiding popup on click",
+    "skip-video": "Skip video to next video/image on end",
     animate: "Animate popup",
     animation: "Animation",
     animationTime: "Animation time",

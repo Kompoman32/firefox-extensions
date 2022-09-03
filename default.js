@@ -27,6 +27,8 @@ var defaultOptionsValues = {
   popupBackground_vid: true,
   popupBackground_gif: true,
 
+  popupSkipVideo: false,
+
   popupAnimate: false,
   popupAnimation: "jumping",
   popupAnimationTime: 2,

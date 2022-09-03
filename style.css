@@ -393,3 +393,12 @@ html.kd-toggle body .mv.animated.rotating .mv__main {
 html.kd-toggle body .mv.animated .mv__main.animation-paused {
   animation-name: "unset";
 }
+
+/** Catalog */
+html.kd-toggle .ctlg__thread .ctlg__img:hover {
+  background-color: var(--theme_shadow);
+}
+
+html.kd-toggle .ctlg__thread .ctlg__info {
+  cursor: initial !important;
+}
