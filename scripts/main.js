@@ -713,8 +713,11 @@ class MainClass_Render {
         wrapper.style.height = video.clientHeight + "px";
       }
 
-      if (MainClass_Base.settings.popupSkipVideo) {
+      if (MainClass_Base.settings.popupSkipVideo && !video.dataset.rendered) {
         video.removeAttribute("loop");
+
+        // to prevent user select to loop this video
+        video.dataset.rendered = true;
 
         if (!video.onended) {
           video.onended = () => {
@@ -964,6 +967,7 @@ class MainClass_Derender {
 
       video.addAttribute("loop");
       video.onended = null;
+      delete video.dataset.rendered;
     }
 
     ["img", "gif", "vid"].forEach((x) => modal.classList.remove(x));
