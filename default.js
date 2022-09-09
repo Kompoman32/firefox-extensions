@@ -53,6 +53,7 @@ var defaultOptionsValues = {
     popupAnimating: [false, false, true, "KeyP"],
     popupChangeAnimation: [false, false, true, "KeyO"],
     nbleHighlight: [false, false, true, "KeyH"],
+    popupSkipVideo: [false, false, true, "KeyS"],
   },
 };
 

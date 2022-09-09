@@ -412,6 +412,21 @@ html.kd-toggle body .mv.animated .mv__main.animation-paused {
   animation-name: "unset";
 }
 
+html.kd-toggle body #js-mv-player[loop] + #html5videofixer::after {
+  content: "↻";
+  display: block;
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  right: 0;
+  margin: 2px 8px;
+  font-size: 16px;
+  transform: scale(1.5);
+  line-height: 16px;
+  letter-spacing: 0px;
+  text-align: center;
+}
+
 /** Catalog */
 html.kd-toggle .ctlg__thread .ctlg__img:hover {
   background-color: var(--theme_shadow);

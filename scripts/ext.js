@@ -1,3 +1,17 @@
+function setDefaultSettingsIfUndefined(settings, defaultSettings) {
+  Object.keys(defaultSettings).forEach((setting) => {
+    if (settings[setting] === undefined) {
+      settings[setting] = defaultSettings[setting];
+      return;
+    }
+
+    if (typeof settings[setting] === "object" && !Array.isArray(settings[setting])) {
+      setDefaultSettingsIfUndefined(settings[setting], defaultSettings[setting]);
+      return;
+    }
+  });
+}
+
 (async () => {
   [...document.querySelectorAll("img")].forEach((x) => {
     x.setAttribute("loading", "lazy");
@@ -15,6 +29,8 @@
     if (!settings) {
       return;
     }
+
+    setDefaultSettingsIfUndefined(settings, defaultOptionsValues);
 
     const isThreadPage = new RegExp("/.+/res/*/").test(location.pathname);
     const threadGroup = location.pathname.substring(0, location.pathname.substr(1).indexOf("/") + 2);

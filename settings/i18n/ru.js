@@ -60,6 +60,7 @@ var i18n_ru_lang_lines = {
     "popup-background": "Фон Попапа вкл/выкл",
     "popup-animating": "Анимация Попапа вкл/выкл",
     "popup-change-animation": "Сменить анимацию Попапа",
+    "popup-skip-video": "Пропуск видео вкл/выкл",
     "nble-highlight": "Подсветка даблов,<br/>триплов и т.п. вкл/выкл",
   },
 };

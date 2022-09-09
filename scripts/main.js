@@ -966,7 +966,7 @@ class MainClass_Derender {
         return;
       }
 
-      video.addAttribute("loop");
+      video.setAttribute("loop", 1);
       video.onended = null;
       delete video.dataset.rendered;
     }
@@ -1062,6 +1062,7 @@ class MainClass_Events {
           const popupAnimationChanged = newSettings.popupAnimation !== currentSettings.popupAnimation;
           const popupAnimationTimeChanged = newSettings.popupAnimationTime !== currentSettings.popupAnimationTime;
           const popupChangeAnimationChanged = newSettings.popupChangeAnimation !== currentSettings.popupChangeAnimation;
+          const popupSkipVideoChanged = newSettings.popupSkipVideo !== currentSettings.popupSkipVideo;
 
           MainClass_Base.settings = newSettings;
 
@@ -1145,6 +1146,11 @@ class MainClass_Events {
             setTimeout(() => {
               mvMain.classList.remove("animation-paused");
             }, 50);
+          }
+
+          if (popupSkipVideoChanged) {
+            MainClass_Derender.deUpdatePreview();
+            MainClass_Render.updatePreview();
           }
 
           break;
@@ -1373,7 +1379,7 @@ class MainClass_Shortcuts {
     const ctrl = event.ctrlKey;
     const shift = event.shiftKey;
     const alt = event.altKey;
-    const key = event.key;
+    const key = event.code;
 
     const arrowKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
 
@@ -1440,6 +1446,11 @@ class MainClass_Shortcuts {
       case checkMatch(MainClass_Base.settings.shortcuts.nbleHighlight): {
         stopEvent();
         MainClass_Base.setOptions({ colorPost: !MainClass_Base.settings.colorPost });
+        break;
+      }
+      case checkMatch(MainClass_Base.settings.shortcuts.popupSkipVideo): {
+        stopEvent();
+        MainClass_Base.setOptions({ popupSkipVideo: !MainClass_Base.settings.popupSkipVideo });
         break;
       }
       // stop event to control video
