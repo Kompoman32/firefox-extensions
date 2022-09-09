@@ -104,6 +104,8 @@ html.kd-toggle body .post:not(.post_preview) .post__image-link.webm div {
   padding: 5px;
   background: var(--theme_default_bg);
 
+  border-bottom-right-radius: 4px;
+
   text-transform: uppercase;
 }
 
@@ -224,6 +226,22 @@ html.kd-toggle.hide-plashque #plashque {
 
 html.kd-toggle body .post:not(.post_preview) .post__image-link img {
   max-height: var(--kd-max-image-height);
+}
+
+@keyframes post_highlight {
+  0% {
+    background-color: var(--theme_default_link);
+  }
+
+  100% {
+    background-color: var(--theme_default_postbghighlight);
+  }
+}
+
+html.kd-toggle body .post.post_type_highlight {
+  animation: post_highlight;
+  animation-duration: 5s;
+  animation-iteration-count: 1;
 }
 
 html.kd-toggle body .post .post__details {

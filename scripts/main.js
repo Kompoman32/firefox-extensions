@@ -163,6 +163,7 @@ class MainClass_Base {
     setTimeout(() => {
       if (!!location.hash) {
         location = location;
+        MainClass_Events.fixScrollToPost(location.hash.substring(1));
       }
     }, 100);
   }
@@ -1194,11 +1195,16 @@ class MainClass_Events {
   }
   static clickBodyListener(event) {
     const modal = document.querySelector("body > .mv");
+    const target = event.target;
 
     if (MainClass_Base.settings.popupBlockClicks && modal && modal.contains(event.target) && event.target !== modal) {
       event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation();
+    }
+
+    if (target && target.tagName === "A" && target.dataset.num) {
+      MainClass_Events.fixScrollToPost(target.dataset.num);
     }
   }
   static mouseDownBodyListener(event) {
@@ -1331,6 +1337,26 @@ class MainClass_Events {
         x.classList.add("collapsed");
       });
     }
+  }
+
+  static fixScrollToPost(postNum) {
+    let timer;
+
+    const scrollSome = () => {
+      window.removeEventListener("scroll", scrolEv);
+
+      const post = document.querySelector(`.post[data-num="${postNum}"]`);
+      if (post && post.getBoundingClientRect().top < 35) {
+        window.scrollBy(0, -(35 - post.getBoundingClientRect().top));
+      }
+    };
+
+    const scrolEv = () => {
+      clearTimeout(timer);
+      timer = setTimeout(scrollSome, 30);
+    };
+
+    window.addEventListener("scroll", scrolEv);
   }
 }
 
