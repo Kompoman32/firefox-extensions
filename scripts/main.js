@@ -27,6 +27,14 @@ function consoleGroupEnd() {
   }
 }
 
+async function sleep(time = 100) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, time);
+  });
+}
+
 class MainClass_Base {
   static settings = {};
   static localSettings = {};
@@ -721,41 +729,88 @@ class MainClass_Render {
         video.dataset.rendered = true;
 
         if (!video.onended) {
-          video.onended = () => {
-            const goNextBut = document.querySelector("#js-mv-r");
-            goNextBut && goNextBut.click();
+          video.onended = async () => {
+            await sleep(500);
+
+            const sourceFileLink = document.querySelector(
+              `[href="${video.querySelector("source")?.getAttribute("src")}"`
+            );
+            let post = sourceFileLink?.parentElement.parentElement.parentElement.parentElement;
+
+            if (!sourceFileLink || !post || !post.classList.contains("post")) {
+              return;
+            }
+
+            const num = post.dataset.num;
+            const threadNum = post.parentElement.id.substring(7);
+
+            const postImageElement = sourceFileLink.parentElement.parentElement;
+            const postImageIndex = [...postImageElement.parentElement.children].indexOf(postImageElement);
+
+            const selector =
+              `.post[data-num="${num}"] .post__image:nth-child(${
+                postImageIndex + 1
+              }) ~ .post__image .post__file-webm,` +
+              `.post[data-num="${num}"] ~ .post .post__file-webm,` +
+              `#thread-${threadNum} ~ .thread .post__file-webm`;
+
+            const nextFile = document.querySelector(selector);
+
+            if (nextFile) {
+              nextFile.click();
+              nextFile.scrollIntoViewIfNeeded();
+
+              MainClass_Events.fixScrollToPost(
+                nextFile.parentElement.parentElement.parentElement.parentElement.dataset.num
+              );
+            } else {
+              const goNextBut = document.querySelector("#js-mv-r");
+              goNextBut && goNextBut.click();
+            }
           };
         }
       }
     }
   }
   static setPreviewMediaTypeClass(modal, mvMain) {
-    if (["img", "gif", "vid"].some((x) => modal.classList.contains(x))) {
-      return;
+    const video = mvMain.querySelector("video");
+    const img = mvMain.querySelector("img");
+
+    const isVid = !!video;
+    const isImgOrGif = !!img;
+
+    // let mediaInfo = mvMain.dataset.mediainfo || "";
+    // mediaInfo = mediaInfo.substring(
+    //   0,
+    //   mediaInfo.lastIndexOf(".") + mediaInfo.substring(mediaInfo.lastIndexOf(".")).indexOf(" ")
+    // );
+
+    // const img = document.querySelector(`[data-title="${mediaInfo}"`);
+
+    let sourceFile;
+
+    if (isImgOrGif) {
+      sourceFile = document
+        .querySelector(`[href="${img.getAttribute("src")}"`)
+        ?.parentElement.parentElement.querySelector("img");
     }
 
-    let mediaInfo = mvMain.dataset.mediainfo || "";
-    mediaInfo = mediaInfo.substring(
-      0,
-      mediaInfo.lastIndexOf(".") + mediaInfo.substring(mediaInfo.lastIndexOf(".")).indexOf(" ")
-    );
+    let mediaClass = "img";
 
-    const img = document.querySelector(`[data-title="${mediaInfo}"`);
-
-    if (!img) {
-      return;
-    }
-
-    let mediaClass = "";
-
-    if (img.dataset.type === "4") {
-      mediaClass = "gif";
-    } else {
-      if (img.parentElement.classList.contains("webm")) {
+    switch (true) {
+      case isVid: {
         mediaClass = "vid";
-      } else {
-        mediaClass = "img";
+        break;
       }
+
+      case sourceFile?.dataset.type === "4": {
+        mediaClass = "gif";
+        break;
+      }
+    }
+
+    if (modal.classList.contains(mediaClass)) {
+      return;
     }
 
     ["img", "gif", "vid"].forEach((x) => modal.classList.remove(x));
@@ -1230,11 +1285,7 @@ class MainClass_Events {
   }
 
   static async savePostMenuListener(e) {
-    await new Promise((r) => {
-      setTimeout(() => {
-        r();
-      }, 50);
-    });
+    await sleep(50);
 
     const menu = document.querySelector("#ABU-select");
 
