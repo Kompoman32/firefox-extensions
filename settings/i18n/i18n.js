@@ -1,6 +1,7 @@
 var i18nLanguageEnum = {
   ru: "ru",
   en: "en",
+  ua: "ua",
 };
 
 const parseLange = (json) => {
@@ -13,6 +14,7 @@ const parseLange = (json) => {
 
 var ru = i18n_ru_lang_lines;
 var en = i18n_en_lang_lines;
+var ua = i18n_ua_lang_lines;
 
 class I18N {
   static lang = i18nLanguageEnum.ru;
@@ -20,6 +22,7 @@ class I18N {
   static lines = {
     ru: ru,
     en: en,
+    ua: ua,
   };
 
   static setLanguage(lang) {

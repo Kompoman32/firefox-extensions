@@ -172,6 +172,10 @@ table.tab > tbody > tr > td:not([colspan]) {
   border-bottom: 1px solid black;
 
   margin-bottom: 5px;
+
+  flex: 0 1 0;
+
+  width: calc(26px * 5);
 }
 
 .tabs {
