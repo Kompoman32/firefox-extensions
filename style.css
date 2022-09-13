@@ -261,41 +261,49 @@ html.kd-toggle body .post .post__details .post__detailpart:last-child {
   display: block;
 }
 
+html.kd-toggle body .thread.double .post__details__oppost .post__reflink,
 html.kd-toggle body .post.double .post__details * {
   color: var(--kd-double-color);
   background-color: var(--kd-double-back-color);
 }
 
+html.kd-toggle body .thread.triple .post__details__oppost .post__reflink,
 html.kd-toggle body .post.triple .post__details * {
   color: var(--kd-triple-color);
   background-color: var(--kd-triple-back-color);
 }
 
+html.kd-toggle body .thread.quadruple .post__details__oppost .post__reflink,
 html.kd-toggle body .post.quadruple .post__details * {
   color: var(--kd-quadruple-color);
   background-color: var(--kd-quadruple-back-color);
 }
 
+html.kd-toggle body .thread.quintuple .post__details__oppost .post__reflink,
 html.kd-toggle body .post.quintuple .post__details * {
   color: var(--kd-quintuple-color);
   background-color: var(--kd-quintuple-back-color);
 }
 
+html.kd-toggle body .thread.sextuple .post__details__oppost .post__reflink,
 html.kd-toggle body .post.sextuple .post__details * {
   color: var(--kd-sextuple-color);
   background-color: var(--kd-sextuple-back-color);
 }
 
+html.kd-toggle body .thread.septuple .post__details__oppost .post__reflink,
 html.kd-toggle body .post.septuple .post__details * {
   color: var(--kd-septuple-color);
   background-color: var(--kd-septuple-back-color);
 }
 
+html.kd-toggle body .thread.octuple .post__details__oppost .post__reflink,
 html.kd-toggle body .post.octuple .post__details * {
   color: var(--kd-octuple-color);
   background-color: var(--kd-octuple-back-color);
 }
 
+html.kd-toggle body .thread.noncuple .post__details__oppost .post__reflink,
 html.kd-toggle body .post.noncuple .post__details * {
   color: var(--kd-noncuple-color);
   background-color: var(--kd-noncuple-back-color);

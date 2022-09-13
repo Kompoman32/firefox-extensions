@@ -381,7 +381,10 @@ class MainClass_Render {
 
       const isBThreadTitlesEnabled = MainClass_Base.settings.bTitles;
 
+      MainClass_Render.addPostNbleClass(thread);
+
       if (MainClass_Base.isBThread && !isBThreadTitlesEnabled) {
+        thread.dataset.threadUpdated = true;
         return;
       }
 
@@ -1032,6 +1035,10 @@ class MainClass_Derender {
 
 class MainClass_Events {
   static collapseThreadClick(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+
     const collapser = e.target;
     const thread = collapser.parentElement.parentElement;
     const threadId = +thread.querySelector(".post__reflink")?.id;
@@ -1264,8 +1271,23 @@ class MainClass_Events {
       event.stopImmediatePropagation();
     }
 
-    if (target && target.tagName === "A" && target.dataset.num) {
+    if (target?.tagName === "A" && target.dataset.num) {
       MainClass_Events.fixScrollToPost(target.dataset.num);
+    }
+
+    if (
+      target?.tagName === "A" &&
+      target.classList.contains("post__reflink") &&
+      !target.classList.contains("js-post-reply-btn")
+    ) {
+      const post = target.parentElement.parentElement.parentElement;
+
+      document.querySelectorAll(".post.post_type_highlight").forEach((x) => x.classList.remove("post_type_highlight"));
+      setTimeout(() => {
+        post?.classList.add("post_type_highlight");
+
+        MainClass_Events.fixScrollToPost(target.dataset.num);
+      });
     }
   }
   static mouseDownBodyListener(event) {
