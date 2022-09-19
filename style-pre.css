@@ -1,0 +1,72 @@
+html.kd-pre:root {
+  --kd-bg: #080808;
+  --kd-color: #ffffff;
+  --kd-link-color: #3f3fee;
+}
+
+html.kd-pre #p-personal .toggler {
+  display: none;
+}
+
+html.kd-pre,
+html.kd-pre .set-bg,
+html.kd-pre body,
+html.kd-pre #mw-page-base,
+html.kd-pre #mw-head-base,
+html.kd-pre #content,
+html.kd-pre .vector-menu-tabs .mw-list-item,
+html.kd-pre pre,
+html.kd-pre code,
+html.kd-pre .mw-code html.kd-pre .toc,
+html.kd-pre .toccolours,
+html.kd-pre table tr:not(:nth-child(1)),
+html.kd-pre .catlinks,
+html.kd-pre .toc,
+html.kd-pre .toccolours,
+html.kd-pre div.roles,
+html.kd-pre div.roles > div,
+html.kd-pre .tabs-label,
+html.kd-pre .thumbinner,
+p_l_a_c_e_h_o_l_d_e_r {
+  background-color: var(--kd-bg) !important;
+  background-image: none;
+}
+
+html.kd-pre *,
+html.kd-pre h1,
+html.kd-pre code,
+html.kd-pre .mw-footer li,
+p_l_a_c_e_h_o_l_d_e_r {
+  color: var(--kd-color);
+}
+
+html.kd-pre table th:nth-child(1),
+html.kd-pre table th:nth-child(1) *,
+html.kd-pre table tr:nth-child(1) td,
+html.kd-pre table tr:nth-child(1) th,
+p_l_a_c_e_h_o_l_d_e_r {
+  color: #000000;
+}
+
+html.kd-pre ul li::marker {
+  filter: hue-rotate(180deg);
+}
+
+html.kd-pre a,
+html.kd-pre a b,
+p_l_a_c_e_h_o_l_d_e_r {
+  color: var(--kd-link-color) !important;
+}
+
+html.kd-pre * {
+  /* background-image: none !important; */
+}
+
+/* html.kd-pre #mw-page-base,
+p_l_a_c_e_h_o_l_d_e_r {
+  background-image: linear-gradient(to bottom, #000 50%, var(--kd-bg) 100%);
+} */
+
+/* html.kd-pre {
+  filter: grayscale(100%);
+} */

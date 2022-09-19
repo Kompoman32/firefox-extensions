@@ -1,0 +1,41 @@
+{
+  "manifest_version": 2,
+  "name": "ss220 wiki design",
+  "version": "1.0",
+
+  "description": "Design for ss220 wiki by Kompoman32",
+
+  "content_scripts": [
+    {
+      "matches": ["*://wiki.ss220.space/*"],
+      "js": ["default.js", "scripts/main.js", "scripts/ext.js"],
+      "css": ["./style.css"],
+      "run_at": "document_end"
+    },
+    {
+      "matches": ["*://wiki.ss220.space/*"],
+      "js": ["scripts/pre.js"],
+      "css": ["./style-pre.css"],
+      "run_at": "document_start"
+    }
+  ],
+
+  "permissions": ["storage"],
+
+  "page_action": {
+    "browser_style": true,
+    "default_icon": "settings/favicon.png",
+    "default_popup": "settings/options.html",
+    "show_matches": ["*://wiki.ss220.space/*"]
+  },
+
+  "background": {
+    "scripts": ["background.js"]
+  },
+
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{1c93fe19-573f-41b2-bd49-3f9a73de1ff4}"
+    }
+  }
+}

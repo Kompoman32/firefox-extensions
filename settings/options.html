@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1" />
+    <title>Kompoman32's for 2ch.hk</title>
+    <link rel="stylesheet" href="./color-picker.css" />
+    <script src="./color-picker.js"></script>
+    <script src="../default.js"></script>
+    <link href="./options.css" rel="stylesheet" type="text/css" />
+  </head>
+
+  <body>
+    <form>
+      <div id="loader" class="loader" data-completed="false">
+        <div><div></div></div>
+      </div>
+      <div class="tabs-wrapper">
+        <div class="tabs">
+          <div class="tab links selected" data-i18n="tab.links">Links</div>
+          <div class="tab options" data-i18n="tab.common">Options</div>
+          <!-- <div class="tab popup" data-i18n="tab.popup">Popup</div>
+          <div class="tab shortcuts" data-i18n="tab.shortcuts">Shortcuts</div> -->
+        </div>
+      </div>
+      <table class="tab links selected">
+        <thead>
+          <tr>
+            <th>
+              <div class="add-link">+</div>
+              <span data-i18n="links.th-link">Link</span>
+            </th>
+            <th data-i18n="links.th-name">Name</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="2">
+              <table></table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table class="tab options">
+        <thead></thead>
+        <tbody>
+          <tr class="section-background-toggler">
+            <td>
+              <label data-i18n="show-background">Enable background</label>
+            </td>
+            <td>
+              <input
+                class="section-toggler"
+                data-collapse-section="background"
+                type="checkbox"
+                id="background"
+                name="enableBackground"
+              />
+            </td>
+          </tr>
+          <tr class="section-background">
+            <td>
+              <label data-i18n="background">Background color</label>
+            </td>
+            <td>
+              <div id="background-color-picker"></div>
+              <input type="color" id="background-color" style="display: none" name="background" />
+            </td>
+          </tr>
+
+          <tr class="section-background">
+            <td>
+              <label data-i18n="color">Text color</label>
+            </td>
+            <td>
+              <div id="color-picker"></div>
+              <input type="color" id="color" style="display: none" name="color" />
+            </td>
+          </tr>
+
+          <tr class="section-background">
+            <td>
+              <label data-i18n="color">Links color</label>
+            </td>
+            <td>
+              <div id="links-color-picker"></div>
+              <input type="color" id="links-color" style="display: none" name="linksColor" />
+            </td>
+          </tr>
+
+          <tr class="splitter">
+            <td colspan="2"></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- <table class="tab shortcuts">
+        <tbody>
+          <tr>
+            <td colspan="2">
+              <tr>
+                <td>
+                  <label data-i18n="shortcuts.popup-background">Popup background on/off</label>
+                </td>
+                <td class="shortcut" name="popupBackground">
+                  <div class="additionals">
+                    <div>Shift<input type="checkbox" class="shift" /></div>
+                    <div>Ctrl<input type="checkbox" class="ctrl" /></div>
+                    <div>Alt<input type="checkbox" class="alt" /></div>
+                  </div>
+                  <div class="button">
+                    <input class="disabled" readonly />
+                    <div class="approve">✓</div>
+                    <div class="cancel">X</div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label data-i18n="shortcuts.popup-animating">Popup animating on/off</label>
+                </td>
+                <td class="shortcut" name="popupAnimating">
+                  <div class="additionals">
+                    <div>Shift<input type="checkbox" class="shift" /></div>
+                    <div>Ctrl<input type="checkbox" class="ctrl" /></div>
+                    <div>Alt<input type="checkbox" class="alt" /></div>
+                  </div>
+                  <div class="button">
+                    <input class="disabled" readonly />
+                    <div class="approve">✓</div>
+                    <div class="cancel">X</div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label data-i18n="shortcuts.popup-change-animation">Change popup animation</label>
+                </td>
+                <td class="shortcut" name="popupChangeAnimation">
+                  <div class="additionals">
+                    <div>Shift<input type="checkbox" class="shift" /></div>
+                    <div>Ctrl<input type="checkbox" class="ctrl" /></div>
+                    <div>Alt<input type="checkbox" class="alt" /></div>
+                  </div>
+                  <div class="button">
+                    <input class="disabled" readonly />
+                    <div class="approve">✓</div>
+                    <div class="cancel">X</div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label data-i18n="shortcuts.popup-skip-video">Skip video on/off</label>
+                </td>
+                <td class="shortcut" name="popupSkipVideo">
+                  <div class="additionals">
+                    <div>Shift<input type="checkbox" class="shift" /></div>
+                    <div>Ctrl<input type="checkbox" class="ctrl" /></div>
+                    <div>Alt<input type="checkbox" class="alt" /></div>
+                  </div>
+                  <div class="button">
+                    <input class="disabled" readonly />
+                    <div class="approve">✓</div>
+                    <div class="cancel">X</div>
+                  </div>
+                </td>
+              </tr>
+
+              <tr class="splitter">
+                <td colspan="2"></td>
+              </tr>
+
+              <tr>
+                <td>
+                  <label data-i18n="shortcuts.nble-highlight">Posts header highlights on/off</label>
+                </td>
+                <td class="shortcut" name="nbleHighlight">
+                  <div class="additionals">
+                    <div>Shift<input type="checkbox" class="shift" /></div>
+                    <div>Ctrl<input type="checkbox" class="ctrl" /></div>
+                    <div>Alt<input type="checkbox" class="alt" /></div>
+                  </div>
+                  <div class="button">
+                    <input class="disabled" readonly />
+                    <div class="approve">✓</div>
+                    <div class="cancel">X</div>
+                  </div>
+                </td>
+              </tr>
+            </td>
+          </tr>
+        </tbody>
+      </table> -->
+      <!-- <div class="buttons">
+        <td>
+          <input type="checkbox" id="auto-save" class="auto-save" name="autoSave" />
+          <label for="auto-save">Auto save</label>
+        </td>
+        <td>
+          <button class="save-button" type="submit">Save</button>
+        </td>
+      </div> -->
+    </form>
+
+    <script src="./options.js"></script>
+  </body>
+</html>
