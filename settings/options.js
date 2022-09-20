@@ -152,6 +152,39 @@ function restoreOptions() {
       const tr = document.createElement("tr");
       tr.classList.add("links");
 
+      /** NAME **/
+      {
+        const td_ = document.createElement("td");
+        const td = document.createElement("div");
+        td.classList.add("name-div");
+        td_.appendChild(td);
+
+        const name = document.createElement("span");
+        name.innerText = x.name;
+
+        td.appendChild(name);
+
+        const editName = document.createElement("div");
+        editName.classList.add("pen");
+        editName.title = "Редактировать";
+        editName.addEventListener("click", (e) => {
+          const newName = window.prompt("Новое имя", x.name);
+
+          if (newName === null) {
+            return;
+          }
+
+          x.name = newName;
+          name.innerText = newName;
+
+          saveLinks();
+        });
+        td.appendChild(editName);
+
+        tr.appendChild(td_);
+      }
+      /** NAME **/
+
       /** LINK **/
       {
         const td_ = document.createElement("td");
@@ -190,39 +223,6 @@ function restoreOptions() {
         tr.appendChild(td_);
       }
       /** LINK **/
-
-      /** NAME **/
-      {
-        const td_ = document.createElement("td");
-        const td = document.createElement("div");
-        td.classList.add("name-div");
-        td_.appendChild(td);
-
-        const name = document.createElement("span");
-        name.innerText = x.name;
-
-        td.appendChild(name);
-
-        const editName = document.createElement("div");
-        editName.classList.add("pen");
-        editName.title = "Редактировать";
-        editName.addEventListener("click", (e) => {
-          const newName = window.prompt("Новое имя", x.name);
-
-          if (newName === null) {
-            return;
-          }
-
-          x.name = newName;
-          name.innerText = newName;
-
-          saveLinks();
-        });
-        td.appendChild(editName);
-
-        tr.appendChild(td_);
-      }
-      /** NAME **/
 
       /** DELETE **/
       {
