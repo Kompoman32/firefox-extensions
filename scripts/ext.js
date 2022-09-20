@@ -14,6 +14,18 @@ function setDefaultSettingsIfUndefined(settings, defaultSettings) {
   });
 }
 
+function fixLinks(links) {
+  links = links || [];
+
+  links.forEach((x) => {
+    if (x.link.startsWith("/index.php")) {
+      x.link = x.link.substring(10);
+    }
+  });
+
+  return links;
+}
+
 (async () => {
   [...document.querySelectorAll("img")].forEach((x) => {
     x.setAttribute("loading", "lazy");
@@ -29,8 +41,12 @@ function setDefaultSettingsIfUndefined(settings, defaultSettings) {
 
     setDefaultSettingsIfUndefined(settings, defaultOptionsValues);
 
+    localSettings.links = fixLinks(localSettings.links);
+
     if (settings.links && settings.links.length) {
+      settings.links = fixLinks(settings.links);
       localSettings.links = [...settings.links, ...localSettings.links];
+
       settings.links = [];
 
       MainClass_Base.setOptions(settings);

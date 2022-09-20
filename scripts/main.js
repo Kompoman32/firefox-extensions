@@ -212,7 +212,7 @@ class MainClass_Events {
             break;
           }
 
-          let link = decodeURI(location.pathname + location.hash);
+          let link = decodeURI(location.pathname.substring(10) + location.hash);
 
           const newLink = {
             link,

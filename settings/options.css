@@ -345,13 +345,13 @@ tr.section-colors td .wrapper h3 {
   position: relative;
 }
 
-.tab.links table {
+table.tab.links {
   width: 100%;
 
   min-height: 150px;
 }
 
-.tab.links table td {
+table.tab.links td {
   max-height: 400px;
 
   width: auto;
@@ -359,26 +359,30 @@ tr.section-colors td .wrapper h3 {
   overflow: auto;
 }
 
-.tab.links table td:nth-child(1) {
+table.tab.links th {
+  height: 24px;
+}
+
+table.tab.links td:nth-child(1) {
   max-width: 200px;
 }
 
-.tab.links table td:nth-child(2) {
+table.tab.links td:nth-child(2) {
   max-width: 400px;
 }
-.tab.links table td:nth-child(3) {
+table.tab.links td:nth-child(3) {
   max-width: 20px;
   cursor: pointer;
 
   width: max-content;
 }
 
-.tab.links thead th:nth-child(1) {
+.tab.links thead th:nth-child(2) {
   position: relative;
 }
 
-.tab.links table td .name-div,
-.tab.links table td .link-div {
+table.tab.links td .name-div,
+table.tab.links td .link-div {
   max-width: 300px;
 
   display: flex;
@@ -388,13 +392,13 @@ tr.section-colors td .wrapper h3 {
   align-items: center;
 }
 
-.tab.links table td .name-div span,
-.tab.links table td .link-div a {
+table.tab.links td .name-div span,
+table.tab.links td .link-div a {
   flex: 1 1 0;
   word-wrap: anywhere;
 }
 
-.tab.links table td .name-div span {
+table.tab.links td .name-div span {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
@@ -403,7 +407,6 @@ tr.section-colors td .wrapper h3 {
 
 .tab.links .add-link {
   display: block;
-  position: absolute;
 
   left: 0;
 
@@ -417,7 +420,7 @@ tr.section-colors td .wrapper h3 {
   text-align: center;
   line-height: 8px;
 
-  margin-left: 1rem;
+  margin-right: 0.2rem;
 }
 
 /*#endregion  LINKS */

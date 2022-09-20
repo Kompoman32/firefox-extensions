@@ -136,8 +136,20 @@ function saveOptions(e = { target: document.querySelector("form") }) {
 }
 
 function restoreOptions() {
+  function fixLinks(links) {
+    links = links || [];
+
+    links.forEach((x) => {
+      if (x.link.startsWith("/index.php")) {
+        x.link = x.link.substring(10);
+      }
+    });
+
+    return links;
+  }
+
   function setupLinks(links) {
-    let table = document.querySelector(`.links.tab table`);
+    let table = document.querySelector(`table.links.tab tbody`);
     const existedLinks = table.querySelectorAll("tr");
     existedLinks.forEach((x) => x.remove());
 
@@ -161,6 +173,7 @@ function restoreOptions() {
 
         const name = document.createElement("span");
         name.innerText = x.name;
+        name.title = x.name;
 
         td.appendChild(name);
 
@@ -192,7 +205,7 @@ function restoreOptions() {
         td.classList.add("link-div");
         td_.appendChild(td);
         const link = document.createElement("a");
-        link.href = `https://wiki.ss220.space${x.link}`;
+        link.href = `https://wiki.ss220.space/index.php${x.link}`;
         link.innerText = x.link;
         link.addEventListener("click", (e) => {
           e.preventDefault();
@@ -206,14 +219,14 @@ function restoreOptions() {
         editLink.classList.add("pen");
         editLink.title = "Редактировать";
         editLink.addEventListener("click", (e) => {
-          const newLink = window.prompt("Новая ссылка - https://wiki.ss220.space<#ССЫЛКА#>", x.link);
+          const newLink = window.prompt("Новая ссылка - https://wiki.ss220.space/index.php<#ССЫЛКА#>", x.link);
 
           if (newLink === null) {
             return;
           }
 
           x.link = newLink;
-          link.href = `https://wiki.ss220.space${newLink}`;
+          link.href = `https://wiki.ss220.space/index.php${newLink}`;
           link.innerText = newLink;
 
           saveLinks();
@@ -338,7 +351,7 @@ function restoreOptions() {
     //   keyInput._val = keyCode;
     // });
 
-    globalLinks = result.links || [];
+    globalLinks = fixLinks(result.links);
     setupLinks(globalLinks);
 
     setupLabelsByLanguage(result.lang);
