@@ -1,9 +1,9 @@
 {
   "manifest_version": 2,
-  "name": "ss220 wiki design",
-  "version": "1.0",
+  "name": "ss220 wiki dark theme",
+  "version": "1.1",
 
-  "description": "Design for ss220 wiki by Kompoman32",
+  "description": "Dark theme for ss220 wiki by Kompoman32",
 
   "content_scripts": [
     {
