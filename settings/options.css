@@ -336,6 +336,10 @@ tr.section-colors td .wrapper h3 {
 
 /*#region  LINKS */
 
+table.tab.links {
+  min-width: 300px;
+}
+
 .tab.links th {
   text-align: center;
 }

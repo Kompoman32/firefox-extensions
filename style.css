@@ -62,18 +62,19 @@ p_l_a_c_e_h_o_l_d_e_r {
 
 html.kd-bg table th:nth-child(1),
 html.kd-bg table th:nth-child(1) *,
-html.kd-bg table tr[style*="background"] td,
-html.kd-bg table tr[style*="background"] td *,
-html.kd-bg table tr[style*="background"] th,
-html.kd-bg table tr[style*="background"] th *,
-html.kd-bg table tr td[style*="background"],
-html.kd-bg table tr td[style*="background"] *,
-html.kd-bg table tr:nth-child(1) td,
-html.kd-bg table tr:nth-child(1) th,
+html.kd-bg table tr[style*="background"] td:not([style*="color"]),
+html.kd-bg table tr[style*="background"] td:not([style*="color"]) *,
+html.kd-bg table tr[style*="background"] th:not([style*="color"]),
+html.kd-bg table tr[style*="background"] th:not([style*="color"]) *,
+html.kd-bg table tr td[style*="background"]:not([style*="color"]),
+html.kd-bg table tr td[style*="background"]:not([style*="color"]) *,
+html.kd-bg table:not(.wikitable) > tbody > tr:nth-child(1) > td,
+html.kd-bg table:not(.wikitable) > tbody > tr:nth-child(1) > th,
 html.kd-bg .wikitable > tr > th,
 html.kd-bg .wikitable > tr > th *,
 html.kd-bg .wikitable > * > tr > th,
 html.kd-bg .wikitable > * > tr > th *,
+html.kd-bg [bgcolor="fcfbce"] *,
 p_l_a_c_e_h_o_l_d_e_r {
   color: #252525;
 }
