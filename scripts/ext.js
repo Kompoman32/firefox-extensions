@@ -20,7 +20,8 @@ function setDefaultSettingsIfUndefined(settings, defaultSettings) {
   try {
     // NO ARCHIVACH
     if (new RegExp("/.+/arch/*/").test(location.pathname)) {
-      throw "No Archivach please";
+      // throw "No Archivach please";
+      return;
     }
 
     const settings = await browser.storage.sync.get(defaultOptionsValues);
