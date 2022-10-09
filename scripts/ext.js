@@ -42,7 +42,7 @@ function setDefaultSettingsIfUndefined(settings, defaultSettings) {
       : null;
 
     if (isMuon) {
-      document.body.parentElement.classList.add("muon");
+      document.documentElement.classList.add("muon");
     }
 
     let { toggled, intervalTimeout } = settings;

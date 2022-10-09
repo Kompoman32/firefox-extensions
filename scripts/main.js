@@ -307,13 +307,13 @@ class MainClass_Render {
     MainClass_Render.updateThreads();
     MainClass_Render.updatePosts();
     MainClass_Render.updatePreview();
-    document.body.parentElement.classList.add("kd-toggle");
+    document.documentElement.classList.add("kd-toggle");
     if (MainClass_Base.isBeta) {
-      document.body.parentElement.classList.add("beta");
+      document.documentElement.classList.add("beta");
     }
 
     if (!MainClass_Base.settings.showPlashque) {
-      document.body.parentElement.classList.add("hide-plashque");
+      document.documentElement.classList.add("hide-plashque");
     }
 
     consoleGroupEnd();
@@ -582,7 +582,7 @@ class MainClass_Render {
 
     let nextSibling = parentPost.nextElementSibling;
 
-    while (nextSibling.classList.contains("duplicate")) {
+    while (nextSibling?.classList.contains("duplicate")) {
       postDuplicates.push(nextSibling);
 
       nextSibling = nextSibling.nextElementSibling;
@@ -839,8 +839,8 @@ class MainClass_Derender {
     MainClass_Derender.deUpdatePosts();
     MainClass_Derender.deUpdatePreview();
     MainClass_Events.deSetupListeners();
-    document.body.parentElement.classList.remove("kd-toggle");
-    document.body.parentElement.classList.remove("hide-plashque");
+    document.documentElement.classList.remove("kd-toggle");
+    document.documentElement.classList.remove("hide-plashque");
     consoleGroupEnd();
   }
 
@@ -1234,9 +1234,9 @@ class MainClass_Events {
     if (switchStyleSelect) {
       switchStyleSelect.addEventListener("change", (e) => {
         if (switchStyleSelect.value === "muon") {
-          document.body.parentElement.classList.add("muon");
+          document.documentElement.classList.add("muon");
         } else {
-          document.body.parentElement.classList.remove("muon");
+          document.documentElement.classList.remove("muon");
         }
       });
     }
@@ -1396,7 +1396,7 @@ class MainClass_Events {
       links: MainClass_Base.localSettings.links,
     });
 
-    browser.runtime.sendMessage({ action: "savedLinksUpdated", data: MainClass_Base.settings.links });
+    browser.runtime.sendMessage({ action: "savedLinksUpdated", data: MainClass_Base.localSettings.links });
   }
 
   static parentDuplicateCollapserClick(parentPost, e) {
