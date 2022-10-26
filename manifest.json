@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "2ch design",
-  "version": "1.9.6",
+  "version": "1.9.6.1",
 
   "description": "Design for 2ch by Kompoman32",
 
@@ -15,6 +15,12 @@
     {
       "matches": ["*://2ch.hk/", "*://beta.2ch.hk/", "*://2ch.life/", "*://beta.2ch.life/"],
       "js": ["scripts/home.js"],
+      "css": [],
+      "run_at": "document_end"
+    },
+    {
+      "matches": ["*://2ch.hk/*/src/*", "*://beta.2ch.hk/*/src/*", "*://2ch.life/*/src/*", "*://beta.2ch.life/*/src/*"],
+      "js": ["scripts/src.js"],
       "css": [],
       "run_at": "document_end"
     },
