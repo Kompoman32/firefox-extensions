@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "2ch design",
-  "version": "1.9.6.1",
+  "version": "1.9.7",
 
   "description": "Design for 2ch by Kompoman32",
 
@@ -32,6 +32,12 @@
         "*://beta.2ch.life/*/arch/*"
       ],
       "js": ["scripts/arch.js"],
+      "css": [],
+      "run_at": "document_end"
+    },
+    {
+      "matches": ["*://arhivach.ng/*"],
+      "js": ["scripts/arhivach.js"],
       "css": [],
       "run_at": "document_end"
     }

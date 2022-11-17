@@ -1339,11 +1339,15 @@ class MainClass_Events {
 
     menu.appendChild(a);
 
-    const saveBottom =
+    const isThreadPost =
       MainClass_Base.currentThreadId === +postLink.id ||
       e.target.parentElement.parentElement.classList.contains("post__details__oppost");
 
-    if (saveBottom) {
+    if (!isThreadPost) {
+      return;
+    }
+
+    {
       a = menu.querySelector("a.save-bottom");
       if (!a) {
         a = document.createElement("a");
@@ -1355,9 +1359,25 @@ class MainClass_Events {
           MainClass_Events.savePostLink(e, postLink, true);
         });
       }
+
+      menu.appendChild(a);
     }
 
-    menu.appendChild(a);
+    {
+      a = menu.querySelector("a.save-arhivach");
+      if (!a) {
+        a = document.createElement("a");
+        a.classList.add("save-arhivach");
+        a.href = "#";
+        a.innerText = `Сохранить на arhivach.ng`;
+
+        a.addEventListener("click", (e) => {
+          MainClass_Events.saveArhivach(e, postLink);
+        });
+      }
+
+      menu.appendChild(a);
+    }
   }
 
   static savePostLink(e, postLink, saveBottom = false) {
@@ -1397,6 +1417,20 @@ class MainClass_Events {
     });
 
     browser.runtime.sendMessage({ action: "savedLinksUpdated", data: MainClass_Base.localSettings.links });
+  }
+
+  static saveArhivach(e, postLink) {
+    postLink = postLink.pathname;
+    postLink = (postLink.match(/^\/\w+\/\w+\/\d+/g) || [])[0];
+
+    if (!postLink) {
+      return;
+    }
+
+    const a = document.createElement("a");
+    a.href = `https://arhivach.ng/add/#${postLink}`;
+    a.target = "_blank";
+    a.click();
   }
 
   static parentDuplicateCollapserClick(parentPost, e) {
