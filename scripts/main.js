@@ -35,6 +35,59 @@ async function sleep(time = 100) {
   });
 }
 
+function isPostTextBump(text) {
+  text = text.toLocaleLowerCase().trim();
+
+  const bumps = [
+    "bump",
+    "bamp",
+    "бамп",
+    "игьз",
+    "ифьз",
+    ",fvg",
+    "<fvg",
+    "bum",
+    "bam",
+    "бам",
+    "игь",
+    "ифь",
+    ",fv",
+    "<fv",
+    "бумп",
+    ",evg",
+    "<evg",
+    "бiмп",
+    "бшмп",
+    ",шvg",
+    "<шvg",
+    ",ivg",
+    "<ivg",
+    "бшмп",
+  ];
+
+  return bumps.includes(text);
+}
+
+function isPostTextRoll(text) {
+  text = text.toLocaleLowerCase().trim();
+
+  const rolls = ["roll", "ролл", "кщдд", "hjkk", "rol", "рол", "кщд", "hjk"];
+
+  return rolls.includes(text);
+}
+
+function isDuplicatePostText(source, target) {
+  source = source.toLocaleLowerCase().trim();
+  target = target.toLocaleLowerCase().trim();
+
+  const isSourceBump = isPostTextBump(source);
+  const isTargetBump = isPostTextBump(target);
+  const isSourceRoll = isPostTextRoll(source);
+  const isTargetRoll = isPostTextRoll(target);
+
+  return (isSourceBump && isTargetBump) || (isSourceRoll && isTargetRoll) || source === target;
+}
+
 class MainClass_Base {
   static settings = {};
   static localSettings = {};
@@ -559,7 +612,7 @@ class MainClass_Render {
 
     post._dup_text = currentText;
 
-    const isDuplicate = currentText === previousText;
+    const isDuplicate = isDuplicatePostText(currentText, previousText);
 
     if (!isDuplicate) {
       return;
