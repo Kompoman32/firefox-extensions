@@ -704,8 +704,8 @@ class MainClass_Render {
       return;
     }
 
-    button.removeEventListener("click", MainClass_Events.savePostMenuListener);
-    button.addEventListener("click", MainClass_Events.savePostMenuListener);
+    button.removeEventListener("click", MainClass_Events.postMenuClickListener);
+    button.addEventListener("click", MainClass_Events.postMenuClickListener);
   }
 
   static addPostNbleClass(post) {
@@ -1039,7 +1039,7 @@ class MainClass_Derender {
       return;
     }
 
-    button.removeEventListener("click", MainClass_Events.savePostMenuListener);
+    button.removeEventListener("click", MainClass_Events.postMenuClickListener);
 
     const menu = document.querySelector("#ABU-select");
 
@@ -1359,7 +1359,7 @@ class MainClass_Events {
     }
   }
 
-  static async savePostMenuListener(e) {
+  static async postMenuClickListener(e) {
     await sleep(50);
 
     const menu = document.querySelector("#ABU-select");
@@ -1368,69 +1368,64 @@ class MainClass_Events {
       return;
     }
 
-    let splitter = menu.querySelector("div.splitter");
-    if (!splitter) {
-      splitter = document.createElement("div");
-      splitter.classList.add("splitter");
-    }
+    const addSplitter = (className) => {
+      let splitter = menu.querySelector(`div.splitter.${className}`);
 
-    menu.appendChild(splitter);
+      if (!splitter) {
+        splitter = document.createElement("div");
+        splitter.classList.add("splitter");
+      }
+
+      menu.appendChild(splitter);
+    };
+
+    const addMenuItem = (elClass, text, callback) => {
+      let a = menu.querySelector(`a.${elClass}`);
+      if (!a) {
+        a = document.createElement("a");
+        a.classList.add(elClass);
+        a.href = "#";
+        a.innerText = text;
+
+        a.addEventListener("click", callback);
+      }
+
+      menu.appendChild(a);
+    };
+
+    addSplitter("splitter-1");
 
     const postLink = e.target.parentElement.parentElement.querySelector(".post__reflink");
-
-    let a = menu.querySelector("a.save-link");
-    if (!a) {
-      a = document.createElement("a");
-      a.classList.add("save-link");
-      a.href = "#";
-      a.innerText = "Сохранить ссылку";
-
-      a.addEventListener("click", (e) => {
-        MainClass_Events.savePostLink(e, postLink);
-      });
-    }
-
-    menu.appendChild(a);
 
     const isThreadPost =
       MainClass_Base.currentThreadId === +postLink.id ||
       e.target.parentElement.parentElement.classList.contains("post__details__oppost");
 
+    addMenuItem("save-link", "Сохранить ссылку", (e) => {
+      e.preventDefault();
+      MainClass_Events.savePostLink(e, postLink);
+    });
+
+    addMenuItem("update-images", "Обновить изображения", (e) => {
+      e.preventDefault();
+      MainClass_Events.updateImages(e, +postLink.id, isThreadPost);
+    });
+
     if (!isThreadPost) {
       return;
     }
 
-    {
-      a = menu.querySelector("a.save-bottom");
-      if (!a) {
-        a = document.createElement("a");
-        a.classList.add("save-bottom");
-        a.href = "#";
-        a.innerText = `Сохранить #bottom`;
+    addMenuItem("save-bottom", "Сохранить #bottom", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      MainClass_Events.savePostLink(e, postLink, true);
+    });
 
-        a.addEventListener("click", (e) => {
-          MainClass_Events.savePostLink(e, postLink, true);
-        });
-      }
-
-      menu.appendChild(a);
-    }
-
-    {
-      a = menu.querySelector("a.save-arhivach");
-      if (!a) {
-        a = document.createElement("a");
-        a.classList.add("save-arhivach");
-        a.href = "#";
-        a.innerText = `Сохранить на arhivach.ng`;
-
-        a.addEventListener("click", (e) => {
-          MainClass_Events.saveArhivach(e, postLink);
-        });
-      }
-
-      menu.appendChild(a);
-    }
+    addMenuItem("save-arhivach", "Сохранить на arhivach.ng", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      MainClass_Events.saveArhivach(e, postLink);
+    });
   }
 
   static savePostLink(e, postLink, saveBottom = false) {
@@ -1484,6 +1479,16 @@ class MainClass_Events {
     a.href = `https://arhivach.ng/add/#${postLink}`;
     a.target = "_blank";
     a.click();
+  }
+
+  static updateImages(e, postId, isThreadPost) {
+    let post = document.querySelector(`#${isThreadPost ? "thread" : "post"}-${postId}`);
+
+    const postsImgs = [...post.querySelectorAll(".post__image-link img:not(.post__file-webm)")];
+
+    postsImgs.forEach((x) => {
+      x.src = x.src;
+    });
   }
 
   static parentDuplicateCollapserClick(parentPost, e) {
