@@ -13,6 +13,21 @@ browser.runtime.onMessage.addListener(function (message) {
     case "log":
       console.log(message);
       break;
+    case "download":
+      const zipName = message.data.zipName;
+      const files = message.data.files;
+
+      if (!files?.length) {
+        break;
+      }
+
+      (async () => {
+        const blob = await ZIP.downloadZip(files).blob();
+
+        saveAs(blob, zipName);
+      })();
+
+      break;
     default:
       break;
   }

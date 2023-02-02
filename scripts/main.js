@@ -1401,14 +1401,24 @@ class MainClass_Events {
       MainClass_Base.currentThreadId === +postLink.id ||
       e.target.parentElement.parentElement.classList.contains("post__details__oppost");
 
-    addMenuItem("save-link", "Сохранить ссылку", (e) => {
-      e.preventDefault();
-      MainClass_Events.savePostLink(e, postLink);
-    });
-
     addMenuItem("update-images", "Обновить изображения", (e) => {
       e.preventDefault();
       MainClass_Events.updateImages(e, +postLink.id, isThreadPost);
+    });
+
+    addMenuItem("download-images", "Скачать изображения", (e) => {
+      e.preventDefault();
+      MainClass_Events.downloadImages(e, +postLink.id, isThreadPost);
+    });
+
+    addMenuItem("download-images-zip", "Скачать изображения zip", (e) => {
+      e.preventDefault();
+      MainClass_Events.downloadImagesZip(e, +postLink.id, isThreadPost);
+    });
+
+    addMenuItem("save-link", "Сохранить ссылку", (e) => {
+      e.preventDefault();
+      MainClass_Events.savePostLink(e, postLink);
     });
 
     if (!isThreadPost) {
@@ -1488,6 +1498,69 @@ class MainClass_Events {
 
     postsImgs.forEach((x) => {
       x.src = x.src;
+    });
+  }
+
+  static downloadImages(e, postId, isThreadPost) {
+    let post = document.querySelector(`#${isThreadPost ? "thread" : "post"}-${postId}`);
+
+    const postsImgs = [...post.querySelectorAll(".post__image-link img")];
+
+    if (postsImgs.length === 0) {
+      return;
+    }
+
+    postsImgs.forEach((x) => {
+      const imageDownloadButton = x.parentElement?.previousElementSibling?.querySelector(".js-post-saveimg");
+
+      imageDownloadButton?.dispatchEvent(
+        new MouseEvent("click", {
+          bubbles: true,
+          cancelable: true,
+          view: window,
+        })
+      );
+    });
+  }
+
+  static async downloadImagesZip(e, postId, isThreadPost) {
+    let post = document.querySelector(`#${isThreadPost ? "thread" : "post"}-${postId}`);
+
+    const postsImgs = [...post.querySelectorAll(".post__image-link img")];
+
+    if (postsImgs.length === 0) {
+      return;
+    }
+
+    const zipFilename = `${isThreadPost ? "thread" : "post"}-${postId}.zip`;
+
+    const promises = [];
+    const files = [];
+
+    postsImgs.forEach(async (img, i) => {
+      const filename = img.dataset.title;
+      const imgURL = img.dataset.src ? `${location.origin}${img.dataset.src}` : img.src;
+
+      promises.push(
+        fetch(imgURL).then(async (x) => {
+          const blob = await x.blob();
+          files.push({
+            name: filename,
+            input: blob,
+            size: blob.size,
+          });
+        })
+      );
+    });
+
+    Promise.allSettled(promises).then(() => {
+      browser.runtime.sendMessage({
+        action: "download",
+        data: {
+          zipName: zipFilename,
+          files: files,
+        },
+      });
     });
   }
 
