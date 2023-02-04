@@ -11,6 +11,8 @@ var i18n_ru_lang_lines = {
     "thumb-replace": "Заменять быстрые изображение<br/>полноразмерными (медленная загрузка)",
     "title-to-bottom": "Заголовок треда отправляет<br/>вниз треда (#bottom)",
     "run-gif": "Запускать GIF",
+    "download-warning": "Предупреждать о размере скачиваемой группы файлов",
+    "download-warning-size": "Группа файлов больше",
     "nble-highlight": "Использовать подстветку постов для ролла",
     "nble-highlight-colors-label": "Цвета",
     "nble-highlight-colors": {

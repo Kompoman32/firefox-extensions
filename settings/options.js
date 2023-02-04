@@ -379,10 +379,13 @@ function restoreOptions() {
       el.addEventListener("change", func.bind(el));
     }
 
-    setSectionToggler("b");
-    setSectionToggler("colors");
-    setSectionToggler("popup-background");
-    setSectionToggler("popup-animating");
+    function setSectionTogglers() {
+      [...document.querySelectorAll("[data-section]")].forEach((x) => {
+        setSectionToggler(x.dataset.section);
+      });
+    }
+
+    setSectionTogglers();
 
     let el;
 

@@ -1156,6 +1156,10 @@ class MainClass_Events {
           const showPlashqueChanged = newSettings.showPlashque !== currentSettings.showPlashque;
           const titleToBottomChanged = newSettings.titleToBottom !== currentSettings.titleToBottom;
           const runGifChanged = newSettings.runGif !== currentSettings.runGif;
+          const downloadWarningChanged =
+            newSettings.downloadWarning !== currentSettings.downloadWarning ||
+            newSettings.downloadWarningSize !== currentSettings.downloadWarningSize ||
+            newSettings.downloadWarningScale !== currentSettings.downloadWarningScale;
           const popupBlockClicksChanged = newSettings.popupBlockClicks !== currentSettings.popupBlockClicks;
           const popupBackgroundChanged = newSettings.popupBackground !== currentSettings.popupBackground;
           const popupBackgroundImgChanged = newSettings.popupBackground_img !== currentSettings.popupBackground_img;
@@ -1501,12 +1505,12 @@ class MainClass_Events {
     });
   }
 
-  static downloadImages(e, postId, isThreadPost) {
+  static async downloadImages(e, postId, isThreadPost) {
     let post = document.querySelector(`#${isThreadPost ? "thread" : "post"}-${postId}`);
 
     const postsImgs = [...post.querySelectorAll(".post__image-link img")];
 
-    if (postsImgs.length === 0) {
+    if (postsImgs.length === 0 || !(await MainClass_Events.downloadImagesWarning(postsImgs))) {
       return;
     }
 
@@ -1528,7 +1532,7 @@ class MainClass_Events {
 
     const postsImgs = [...post.querySelectorAll(".post__image-link img")];
 
-    if (postsImgs.length === 0) {
+    if (postsImgs.length === 0 || !(await MainClass_Events.downloadImagesWarning(postsImgs, true))) {
       return;
     }
 
@@ -1562,6 +1566,50 @@ class MainClass_Events {
         },
       });
     });
+  }
+
+  static async downloadImagesWarning(images, isZip = false) {
+    const needWarning = MainClass_Base.settings.downloadWarning;
+
+    if (!needWarning) {
+      return Promise.resolve(true);
+    }
+
+    const warningScale = MainClass_Base.settings.downloadWarningScale;
+    const warningSize =
+      MainClass_Base.settings.downloadWarningSize *
+      Math.pow(1024, Math.max(downloadWarningScaleValues.indexOf(warningScale), 0));
+
+    function parseSize(text) {
+      text = text.split(",")[0] || "";
+      const val = +text.substring(0, text.length - 2) || 0;
+      switch (true) {
+        case text.includes("Кб"):
+          return val;
+
+        case text.includes("Мб"):
+          return val * 1024;
+
+        case text.includes("Гб"):
+          return val * 1024 * 1024;
+      }
+      return val;
+    }
+
+    const filesSize = images.reduce(
+      (acc, x) => acc + parseSize(x.parentElement.parentElement.querySelector(".post__filezise")?.innerText || ""),
+      0
+    );
+
+    if (filesSize > warningSize) {
+      return confirm(
+        `Скачиваемые файлы больше чем ${MainClass_Base.settings.downloadWarningSize}${warningScale} (${
+          filesSize > 1024 ? (filesSize / 1024).toFixed(2) : filesSize
+        }${filesSize > 1024 ? "Mb" : "Kb"}${isZip ? " без компрессии" : ""})\n` + `Вы уверены?`
+      );
+    }
+
+    return Promise.resolve(true);
   }
 
   static parentDuplicateCollapserClick(parentPost, e) {

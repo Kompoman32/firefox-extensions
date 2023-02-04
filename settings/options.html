@@ -69,6 +69,31 @@
             </td>
             <td><input type="checkbox" id="run-gif" name="runGif" /></td>
           </tr>
+
+          <tr class="splitter">
+            <td colspan="2"></td>
+          </tr>
+
+          <tr class="section-download-warning-toggler" data-section="download-warning">
+            <td>
+              <label data-i18n="common.download-warning">Warn about size downloading a group of files</label>
+            </td>
+            <td><input class="section-toggler" data-collapse-section="download-warning" type="checkbox" id="download-warning" name="downloadWarning" /></td>
+          </tr>
+
+          <tr class="section-download-warning">
+            <td>
+              <label data-i18n="common.download-warning-size">Group of files size more than</label>
+            </td>
+            <td class="flex">
+              <input type="number" id="download-warning-size" name="downloadWarningSize" step="0.01" min="0" />
+
+              <select id="download-warning-sacle" name="downloadWarningScale">
+                <option value="Kb" data-i18n="common.downloadWarningScale">Kb</option>
+                <option value="Mb" data-i18n="common.downloadWarningScale">Mb</option>
+              </select>
+            </td>
+          </tr>
           
           <tr class="splitter">
             <td colspan="2"></td>
@@ -193,7 +218,7 @@
             <td colspan="2"></td>
           </tr>
 
-          <tr class="section-b-toggler">
+          <tr class="section-b-toggler" data-section="b">
             <td>
               <label data-i18n="common.b.show">Show titles on /b/</label>
             </td>
@@ -216,7 +241,7 @@
       <table class="tab popup">
         <thead></thead>
         <tbody>
-          <tr class="section-popup-background-toggler">
+          <tr class="section-popup-background-toggler" data-section="popup-background">
             <td>
               <label data-i18n="popup.show-background">Add background on image/video popup<br />(reply popup not working)</label>
             </td>
@@ -302,7 +327,7 @@
             <td colspan="2"></td>
           </tr>
 
-          <tr class="section-popup-animating-toggler">
+          <tr class="section-popup-animating-toggler" data-section="popup-animating">
             <td>
               <label data-i18n="popup.animate">Animate popup</label>
             </td>

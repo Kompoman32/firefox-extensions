@@ -11,6 +11,8 @@ var i18n_en_lang_lines = {
     "thumb-replace": "Replace thumb images with<br/>full-sized images<br/>(slow loading)",
     "title-to-bottom": "Title link go to #bottom",
     "run-gif": "Run GIF",
+    "download-warning": "Warn about size downloading a group of files",
+    "download-warning-size": "Group of files size more than",
     "nble-highlight": "Use posts header highlights",
     "nble-highlight-colors-label": "Colors",
     "nble-highlight-colors": {

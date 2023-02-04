@@ -1,4 +1,5 @@
 var animationValues = ["jumping", "circle", "rotating"];
+var downloadWarningScaleValues = ["Kb", "Mb"];
 
 var defaultOptionsValues = {
   lang: "ru",
@@ -17,6 +18,10 @@ var defaultOptionsValues = {
   showPlashque: true,
 
   runGif: true,
+
+  downloadWarning: true,
+  downloadWarningSize: 10,
+  downloadWarningScale: "Mb",
 
   popupBlockClicks: false,
 
