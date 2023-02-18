@@ -245,8 +245,23 @@ class Modal_ImageDownloader extends ModalClass {
 
     this.setLoading(images.length);
 
+    const namesMap = new Map();
+
     images.forEach(async (img, i) => {
-      const filename = img.dataset.title;
+      let filename = img.dataset.title;
+
+      if (namesMap.has(filename)) {
+        const originalFileName = filename;
+        const extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+        const count = namesMap.get(originalFileName);
+        filename = filename.substring(0, filename.lastIndexOf("."));
+
+        filename = `${filename} (${count})${extension}`;
+        namesMap.set(originalFileName, count + 1);
+      } else {
+        namesMap.set(filename, 1);
+      }
+
       const imgURL = img.dataset.src ? `${location.origin}${img.dataset.src}` : img.src;
 
       promises.push(
