@@ -293,7 +293,7 @@ class Modal_ImageDownloader extends ModalClass {
       }
 
       browser.runtime.sendMessage({
-        action: this.isZip ? "downloadZip" : "downloadZip",
+        action: this.isZip ? "downloadZip" : "download",
         data: {
           zipName: this.zipFilename,
           files: files,
