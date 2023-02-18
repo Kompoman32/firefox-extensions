@@ -360,6 +360,7 @@ class MainClass_Render {
     MainClass_Render.updateThreads();
     MainClass_Render.updatePosts();
     MainClass_Render.updatePreview();
+    MainClass_Render.updateModals();
     document.documentElement.classList.add("kd-toggle");
     if (MainClass_Base.isBeta) {
       document.documentElement.classList.add("beta");
@@ -576,6 +577,10 @@ class MainClass_Render {
           if (title) {
             title.remove();
           }
+
+          if (!gif.dataset.thumbSrc) {
+            gif.dataset.thumbSrc = x.src;
+          }
         });
       }
     }
@@ -592,6 +597,10 @@ class MainClass_Render {
       aLink.appendChild(div);
 
       aLink.classList.add("webm");
+
+      if (!x.dataset.thumbSrc) {
+        x.dataset.thumbSrc = x.src;
+      }
     });
   }
   static updateDuplicatePost(post) {
@@ -814,7 +823,7 @@ class MainClass_Render {
 
             if (nextFile) {
               nextFile.click();
-              nextFile.scrollIntoViewIfNeeded();
+              nextFile.scrollIntoView({ behavior: "smooth", block: "center" });
 
               MainClass_Events.fixScrollToPost(
                 nextFile.parentElement.parentElement.parentElement.parentElement.dataset.num
@@ -872,6 +881,19 @@ class MainClass_Render {
     ["img", "gif", "vid"].forEach((x) => modal.classList.remove(x));
 
     modal.classList.add(mediaClass);
+  }
+
+  static updateModals() {
+    let modals = document.querySelector(" body > .kd-modals");
+
+    if (modals) {
+      return;
+    }
+
+    modals = document.createElement("div");
+    modals.classList.add("kd-modals");
+
+    document.body.appendChild(modals);
   }
 }
 
@@ -1417,7 +1439,7 @@ class MainClass_Events {
 
     addMenuItem("download-images-zip", "Скачать изображения zip", (e) => {
       e.preventDefault();
-      MainClass_Events.downloadImagesZip(e, +postLink.id, isThreadPost);
+      MainClass_Events.downloadImages(e, +postLink.id, isThreadPost, true);
     });
 
     addMenuItem("save-link", "Сохранить ссылку", (e) => {
@@ -1505,111 +1527,22 @@ class MainClass_Events {
     });
   }
 
-  static async downloadImages(e, postId, isThreadPost) {
+  static async downloadImages(e, postId, isThreadPost, isZip) {
     let post = document.querySelector(`#${isThreadPost ? "thread" : "post"}-${postId}`);
 
     const postsImgs = [...post.querySelectorAll(".post__image-link img")];
-
-    if (postsImgs.length === 0 || !(await MainClass_Events.downloadImagesWarning(postsImgs))) {
-      return;
-    }
-
-    postsImgs.forEach((x) => {
-      const imageDownloadButton = x.parentElement?.previousElementSibling?.querySelector(".js-post-saveimg");
-
-      imageDownloadButton?.dispatchEvent(
-        new MouseEvent("click", {
-          bubbles: true,
-          cancelable: true,
-          view: window,
-        })
-      );
-    });
-  }
-
-  static async downloadImagesZip(e, postId, isThreadPost) {
-    let post = document.querySelector(`#${isThreadPost ? "thread" : "post"}-${postId}`);
-
-    const postsImgs = [...post.querySelectorAll(".post__image-link img")];
-
-    if (postsImgs.length === 0 || !(await MainClass_Events.downloadImagesWarning(postsImgs, true))) {
-      return;
-    }
 
     const zipFilename = `${isThreadPost ? "thread" : "post"}-${postId}.zip`;
 
-    const promises = [];
-    const files = [];
-
-    postsImgs.forEach(async (img, i) => {
-      const filename = img.dataset.title;
-      const imgURL = img.dataset.src ? `${location.origin}${img.dataset.src}` : img.src;
-
-      promises.push(
-        fetch(imgURL).then(async (x) => {
-          const blob = await x.blob();
-          files.push({
-            name: filename,
-            input: blob,
-            size: blob.size,
-          });
-        })
-      );
-    });
-
-    Promise.allSettled(promises).then(() => {
-      browser.runtime.sendMessage({
-        action: "download",
-        data: {
-          zipName: zipFilename,
-          files: files,
-        },
-      });
-    });
-  }
-
-  static async downloadImagesWarning(images, isZip = false) {
-    const needWarning = MainClass_Base.settings.downloadWarning;
-
-    if (!needWarning) {
-      return Promise.resolve(true);
-    }
-
-    const warningScale = MainClass_Base.settings.downloadWarningScale;
-    const warningSize =
-      MainClass_Base.settings.downloadWarningSize *
-      Math.pow(1024, Math.max(downloadWarningScaleValues.indexOf(warningScale), 0));
-
-    function parseSize(text) {
-      text = text.split(",")[0] || "";
-      const val = +text.substring(0, text.length - 2) || 0;
-      switch (true) {
-        case text.includes("Кб"):
-          return val;
-
-        case text.includes("Мб"):
-          return val * 1024;
-
-        case text.includes("Гб"):
-          return val * 1024 * 1024;
-      }
-      return val;
-    }
-
-    const filesSize = images.reduce(
-      (acc, x) => acc + parseSize(x.parentElement.parentElement.querySelector(".post__filezise")?.innerText || ""),
-      0
+    MainClass_Modals.showModal(
+      new Modal_ImageDownloader({
+        images: postsImgs,
+        zip: isZip,
+        zipFilename: zipFilename,
+      })
     );
 
-    if (filesSize > warningSize) {
-      return confirm(
-        `Скачиваемые файлы больше чем ${MainClass_Base.settings.downloadWarningSize}${warningScale} (${
-          filesSize > 1024 ? (filesSize / 1024).toFixed(2) : filesSize
-        }${filesSize > 1024 ? "Mb" : "Kb"}${isZip ? " без компрессии" : ""})\n` + `Вы уверены?`
-      );
-    }
-
-    return Promise.resolve(true);
+    return;
   }
 
   static parentDuplicateCollapserClick(parentPost, e) {
@@ -1779,5 +1712,48 @@ class MainClass_Shortcuts {
       default:
         break;
     }
+  }
+}
+
+class MainClass_Modals {
+  static showModal(modal) {
+    if (!modal instanceof ModalClass) {
+      return;
+    }
+
+    const modalsWrapper = document.querySelector(" body > .kd-modals");
+
+    if (!modalsWrapper) {
+      return;
+    }
+
+    const modalEl = document.createElement("div");
+    modal.modalRef = modalEl;
+    modalEl.classList.add("kd-modal");
+
+    const html = modal.getHtml();
+    html.classList.add("kd-modal-content");
+    modalEl.appendChild(html);
+
+    modalEl.classList.add(...modal.getModalClasses());
+
+    modalsWrapper.appendChild(modalEl);
+
+    modalEl.addEventListener("click", (e) => {
+      if (e.target === modalEl) {
+        typeof modal.close === "function" && modal.close();
+      }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        typeof modal.close === "function" && modal.close();
+      }
+    });
+
+    typeof modal.onShow === "function" && modal.onShow();
   }
 }

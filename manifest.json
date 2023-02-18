@@ -1,15 +1,15 @@
 {
   "manifest_version": 2,
   "name": "2ch design",
-  "version": "1.10.1",
+  "version": "1.11.0",
 
   "description": "Design for 2ch by Kompoman32",
 
   "content_scripts": [
     {
       "matches": ["*://2ch.hk/*/*", "*://beta.2ch.hk/*/*", "*://2ch.life/*/*", "*://beta.2ch.life/*/*"],
-      "js": ["default.js", "scripts/main.js", "scripts/ext.js"],
-      "css": ["./style.css"],
+      "js": ["default.js", "scripts/main.js", "scripts/modals.js", "scripts/ext.js"],
+      "css": ["./style.css", "./modals-style.css"],
       "run_at": "document_end"
     },
     {
