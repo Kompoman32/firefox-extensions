@@ -344,3 +344,127 @@ class Modal_ImageDownloader extends ModalClass {
     loaderWrapper.classList.add("hidden");
   }
 }
+
+class Modal_ImageViewer extends ModalClass {
+  imageElements = [];
+
+  constructor(params) {
+    super(params);
+    this.imageElements = params.images || [];
+  }
+
+  getHtml() {
+    const wrapper = document.createElement("div");
+
+    //Header
+    const header = document.createElement("h2");
+    header.innerText = "Все изображения треда";
+    wrapper.appendChild(header);
+
+    // Images
+    const imagesList = document.createElement("div");
+    imagesList.classList.add("images");
+
+    (this.imageElements || []).forEach((x) => {
+      const post = x.parentElement.parentElement.parentElement.parentElement;
+      const src = x.dataset.thumbSrc || x.dataset.src || x.src;
+
+      const height = (x.dataset.thumbHeight || x.getAttribute("height")) + "px";
+      const width = (x.dataset.thumbWidth || x.getAttribute("width")) + "px";
+
+      const image = document.createElement("img");
+      image.loading = "lazy";
+      image.src = src;
+      image.style.height = height;
+      image.style.width = width;
+      image.title = x.dataset.title;
+
+      image.dataset.src = x.dataset.src;
+      image.dataset.title = x.dataset.title;
+      image.__sourceImage = x;
+
+      const imageWrapper = document.createElement("div");
+      imageWrapper.classList.add("image-wrapper");
+      imagesList.appendChild(imageWrapper);
+
+      const originalDownloadIcon = x.parentElement.parentElement.querySelector(".js-post-saveimg");
+
+      const downloadIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      downloadIcon.classList.add("icon");
+
+      const downloadIcon_use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+      downloadIcon_use.setAttribute("xlink:href", "#icon__saveimg");
+      downloadIcon_use.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "#icon__saveimg");
+      downloadIcon.appendChild(downloadIcon_use);
+      downloadIcon.title = "Скачать";
+
+      downloadIcon.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        originalDownloadIcon.dispatchEvent(
+          new MouseEvent("click", {
+            bubbles: true,
+            cancelable: true,
+            view: window,
+          })
+        );
+      });
+
+      const buttonsWrapper = document.createElement("div");
+      buttonsWrapper.classList.add("header");
+
+      buttonsWrapper.appendChild(downloadIcon);
+
+      const postLink = document.createElement("span");
+      postLink.classList.add("post-link");
+      postLink.innerText = "Пост №" + post.dataset.num;
+
+      postLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        post.scrollIntoView({ behavior: "smooth", block: "center" });
+
+        MainClass_Events.fixScrollToPost(post.dataset.num);
+
+        this.close();
+      });
+
+      buttonsWrapper.appendChild(postLink);
+
+      imageWrapper.appendChild(buttonsWrapper);
+      imageWrapper.appendChild(image);
+    });
+
+    imagesList.addEventListener("click", (e) => {
+      e.preventDefault();
+
+      const target = e.target;
+
+      if (target.tagName !== "IMG") {
+        return;
+      }
+
+      // IMAGE CLICK
+
+      setTimeout(() => {
+        target.__sourceImage.click();
+      });
+    });
+
+    wrapper.appendChild(imagesList);
+
+    return wrapper;
+  }
+
+  getModalClasses() {
+    return ["view-images"];
+  }
+
+  onShow() {}
+
+  close() {
+    this.modalRef?.remove();
+  }
+}

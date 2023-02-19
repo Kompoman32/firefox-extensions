@@ -106,9 +106,10 @@ html.kd-toggle body .kd-modal .kd-button.primary:active {
 
 /* Common */
 
-/* Download Images */
+/* Download/View Images */
 
-html.kd-toggle body .kd-modal.download-images > .kd-modal-content {
+html.kd-toggle body .kd-modal.download-images > .kd-modal-content,
+html.kd-toggle body .kd-modal.view-images > .kd-modal-content {
   position: relative;
 
   padding: 10px;
@@ -121,18 +122,21 @@ html.kd-toggle body .kd-modal.download-images > .kd-modal-content {
   gap: 8px;
 }
 
-html.kd-toggle body .kd-modal.download-images h2 {
+html.kd-toggle body .kd-modal.download-images h2,
+html.kd-toggle body .kd-modal.view-images h2 {
   text-align: center;
   padding: 0;
   margin: 0;
 }
 
 html.kd-toggle body .kd-modal.download-images h2,
-html.kd-toggle body .kd-modal.download-images .footer {
+html.kd-toggle body .kd-modal.download-images .footer,
+html.kd-toggle body .kd-modal.view-images h2 {
   flex: 0 0 0;
 }
 
-html.kd-toggle body .kd-modal.download-images .images {
+html.kd-toggle body .kd-modal.download-images .images,
+html.kd-toggle body .kd-modal.view-images .images {
   flex: 1 1 0;
 
   display: flex;
@@ -145,19 +149,20 @@ html.kd-toggle body .kd-modal.download-images .images {
   overflow: auto;
 }
 
-html.kd-toggle body .kd-modal.download-images .images img {
+html.kd-toggle body .kd-modal.download-images .images img,
+html.kd-toggle body .kd-modal.view-images .images img {
   box-sizing: content-box;
 
   padding: 10px;
 
-  border: 1px solid var(--theme_default_link);
+  border: 1px solid transparent;
   border-radius: 10px;
 
   cursor: pointer;
 }
 
-html.kd-toggle body .kd-modal.download-images .images img:not(.selected) {
-  border-color: transparent;
+html.kd-toggle body .kd-modal.download-images .images img.selected {
+  border-color: var(--theme_default_link);
 }
 
 html.kd-toggle body .kd-modal.download-images .footer {
@@ -212,6 +217,43 @@ html.kd-toggle body .kd-modal.download-images .loader-wrapper .kd-button {
 
   transform: translate(-50%, calc(-50% + 120px));
 }
+
+/* View Images */
+
+html.kd-toggle body > .kd-modals > .kd-modal.view-images {
+  z-index: 983;
+}
+
+html.kd-toggle body .kd-modal.view-images .images .image-wrapper {
+  padding: 10px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+html.kd-toggle body .kd-modal.view-images .images .image-wrapper img {
+  padding: 0;
+}
+html.kd-toggle body .kd-modal.view-images .images .image-wrapper .header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+html.kd-toggle body .kd-modal.view-images .images .image-wrapper .header .post-link {
+  color: var(--theme_default_text);
+
+  cursor: pointer;
+}
+
+html.kd-toggle body .kd-modal.view-images .images .image-wrapper .header .post-link:hover {
+  color: var(--theme_default_link);
+}
+
+/* View Images */
 
 /* Download Images LARGE*/
 

@@ -1437,6 +1437,13 @@ class MainClass_Events {
     ];
 
     if (postsImgs.length) {
+      if (isThreadPost) {
+        addMenuItem("view-images", "Посмотреть изображения", (e) => {
+          e.preventDefault();
+          MainClass_Events.viewAllImages(e, postsImgs);
+        });
+      }
+
       addMenuItem("download-images", "Скачать изображения", (e) => {
         e.preventDefault();
         MainClass_Events.downloadImages(e, +postLink.id, isThreadPost, postsImgs);
@@ -1533,7 +1540,7 @@ class MainClass_Events {
     });
   }
 
-  static async downloadImages(e, postId, isThreadPost, postsImgs, isZip) {
+  static downloadImages(e, postId, isThreadPost, postsImgs, isZip) {
     const zipFilename = `${isThreadPost ? "thread" : "post"}-${postId}.zip`;
 
     MainClass_Modals.showModal(
@@ -1541,6 +1548,14 @@ class MainClass_Events {
         images: postsImgs,
         zip: isZip,
         zipFilename: zipFilename,
+      })
+    );
+  }
+
+  static viewAllImages(e, postsImgs) {
+    MainClass_Modals.showModal(
+      new Modal_ImageViewer({
+        images: postsImgs,
       })
     );
   }
