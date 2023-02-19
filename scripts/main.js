@@ -1432,15 +1432,21 @@ class MainClass_Events {
       MainClass_Events.updateImages(e, +postLink.id, isThreadPost);
     });
 
-    addMenuItem("download-images", "Скачать изображения", (e) => {
-      e.preventDefault();
-      MainClass_Events.downloadImages(e, +postLink.id, isThreadPost);
-    });
+    const postsImgs = [
+      ...document.querySelectorAll(`#${isThreadPost ? "thread" : "post"}-${+postLink.id} .post__image-link img`),
+    ];
 
-    addMenuItem("download-images-zip", "Скачать изображения zip", (e) => {
-      e.preventDefault();
-      MainClass_Events.downloadImages(e, +postLink.id, isThreadPost, true);
-    });
+    if (postsImgs.length) {
+      addMenuItem("download-images", "Скачать изображения", (e) => {
+        e.preventDefault();
+        MainClass_Events.downloadImages(e, +postLink.id, isThreadPost, postsImgs);
+      });
+
+      addMenuItem("download-images-zip", "Скачать изображения zip", (e) => {
+        e.preventDefault();
+        MainClass_Events.downloadImages(e, +postLink.id, isThreadPost, postsImgs, true);
+      });
+    }
 
     addMenuItem("save-link", "Сохранить ссылку", (e) => {
       e.preventDefault();
@@ -1527,11 +1533,7 @@ class MainClass_Events {
     });
   }
 
-  static async downloadImages(e, postId, isThreadPost, isZip) {
-    let post = document.querySelector(`#${isThreadPost ? "thread" : "post"}-${postId}`);
-
-    const postsImgs = [...post.querySelectorAll(".post__image-link img")];
-
+  static async downloadImages(e, postId, isThreadPost, postsImgs, isZip) {
     const zipFilename = `${isThreadPost ? "thread" : "post"}-${postId}.zip`;
 
     MainClass_Modals.showModal(
@@ -1541,8 +1543,6 @@ class MainClass_Events {
         zipFilename: zipFilename,
       })
     );
-
-    return;
   }
 
   static parentDuplicateCollapserClick(parentPost, e) {
@@ -1747,8 +1747,8 @@ class MainClass_Modals {
 
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
-        e.preventDefault();
-        e.stopImmediatePropagation();
+        // e.preventDefault();
+        // e.stopImmediatePropagation();
 
         typeof modal.close === "function" && modal.close();
       }

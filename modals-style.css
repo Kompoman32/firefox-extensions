@@ -68,6 +68,7 @@ html.kd-toggle body .kd-modal .kd-button {
   background: var(--kd-modal-button-secondary-bg);
   color: var(--kd-modal-button-secondary-color);
 }
+
 html.kd-toggle body .kd-modal .kd-button:hover {
   background: var(--kd-modal-button-secondary-bg-hover);
   color: var(--kd-modal-button-secondary-color-hover);
@@ -75,6 +76,10 @@ html.kd-toggle body .kd-modal .kd-button:hover {
 html.kd-toggle body .kd-modal .kd-button:active {
   background: var(--kd-modal-button-secondary-bg-active);
   color: var(--kd-modal-button-secondary-color-active);
+}
+html.kd-toggle body .kd-modal .kd-button[disabled] {
+  pointer-events: none;
+  opacity: 0.5;
 }
 
 html.kd-toggle body .kd-modal .kd-button.primary {

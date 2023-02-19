@@ -76,6 +76,7 @@ class Modal_ImageDownloader extends ModalClass {
       }
 
       this.refreshSizeText();
+      this.upadateIsValid();
     });
 
     wrapper.appendChild(imagesList);
@@ -107,17 +108,15 @@ class Modal_ImageDownloader extends ModalClass {
     OkButton.addEventListener("click", (e) => {
       e.preventDefault();
 
-      let promise = Promise.resolve(true);
+      let confirmed = true;
 
       if (sizeText.title) {
-        promise = confirm(sizeText.title);
+        confirmed = confirm(sizeText.title);
       }
 
-      promise.then((confirmed) => {
-        if (confirmed) {
-          this.saveImages();
-        }
-      });
+      if (confirmed === true) {
+        this.saveImages();
+      }
     });
 
     footer.appendChild(OkButton);
@@ -161,9 +160,11 @@ class Modal_ImageDownloader extends ModalClass {
 
   onShow() {
     this.refreshSizeText();
+    this.upadateIsValid();
   }
 
   close() {
+    this.abortController.abort();
     this.modalRef?.remove();
   }
 
@@ -231,6 +232,19 @@ class Modal_ImageDownloader extends ModalClass {
 
       sizeText.classList.add("warning");
       sizeText.title = warningText;
+    }
+  }
+
+  upadateIsValid() {
+    const button = this.modalRef.querySelector(".kd-button.primary");
+
+    const images = [...this.modalRef.querySelectorAll(".images img.selected")];
+    const isValid = !!images.length;
+
+    if (isValid) {
+      button.removeAttribute("disabled");
+    } else {
+      button.setAttribute("disabled", true);
     }
   }
 
