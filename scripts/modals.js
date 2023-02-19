@@ -42,8 +42,8 @@ class Modal_ImageDownloader extends ModalClass {
     (this.imageElements || []).forEach((x) => {
       const src = x.dataset.thumbSrc || x.dataset.src || x.src;
 
-      const height = x.dataset.thumbHeight + "px";
-      const width = x.dataset.thumbWidth + "px";
+      const height = (x.dataset.thumbHeight || x.getAttribute("height")) + "px";
+      const width = (x.dataset.thumbWidth || x.getAttribute("width")) + "px";
 
       const image = document.createElement("img");
       image.classList.add("selected");
@@ -51,6 +51,7 @@ class Modal_ImageDownloader extends ModalClass {
       image.src = src;
       image.style.height = height;
       image.style.width = width;
+      image.title = x.dataset.title;
 
       image.dataset.src = x.dataset.src;
       image.dataset.title = x.dataset.title;

@@ -133,6 +133,7 @@ html.kd-toggle body .kd-modal.download-images .images {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  align-content: flex-start;
 
   gap: 8px;
 
@@ -207,7 +208,7 @@ html.kd-toggle body .kd-modal.download-images .loader-wrapper .kd-button {
   transform: translate(-50%, calc(-50% + 120px));
 }
 
-/* Download Images */
+/* Download Images LARGE*/
 
 html.kd-toggle body .kd-modal.download-images .loader-wrapper .loader {
   position: absolute;
