@@ -254,7 +254,7 @@ function restoreOptions() {
         return;
       }
 
-      element.innerHTML = line;
+      element.innerText = line;
     });
   }
 

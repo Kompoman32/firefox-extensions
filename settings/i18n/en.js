@@ -8,7 +8,7 @@ var i18n_en_lang_lines = {
   common: {
     "render-timeout": "Render check posts timeout",
     "image-height": "Max image height",
-    "thumb-replace": "Replace thumb images with<br/>full-sized images<br/>(slow loading)",
+    "thumb-replace": "Replace thumb images with\nfull-sized images\n(slow loading)",
     "title-to-bottom": "Title link go to #bottom",
     "run-gif": "Run GIF",
     "download-warning": "Warn about size downloading a group of files",
@@ -33,7 +33,7 @@ var i18n_en_lang_lines = {
     },
   },
   popup: {
-    "show-background": "Add background on<br/>image/video popup<br/>(reply popup not working)",
+    "show-background": "Add background on\nimage/video popup\n(reply popup not working)",
     background: {
       preview: "Popup preview",
       color: "Popup background color",

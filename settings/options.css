@@ -264,6 +264,10 @@ div.collapser.collapsed {
   position: static;
 }
 
+label {
+  white-space: pre-line;
+}
+
 /*#endregion  ALL */
 
 /*#region  MERGED */
