@@ -538,6 +538,7 @@ class MainClass_Render {
 
     MainClass_Render.addPostNbleClass(post);
     MainClass_Render.updatePostMenu(post);
+    MainClass_Render.addPostHider(post);
 
     post.dataset.postUpdated = true;
   }
@@ -895,6 +896,21 @@ class MainClass_Render {
 
     document.body.appendChild(modals);
   }
+
+  static addPostHider(post) {
+    if (!post) {
+      return;
+    }
+
+    const hider = post.querySelector(".post_hide-btn") || document.createElement("div");
+    hider.classList.add("post_hide-btn");
+    hider.innerText = "👁";
+
+    hider.removeEventListener("click", MainClass_Events.hidePost);
+    hider.addEventListener("click", MainClass_Events.hidePost);
+
+    post.insertAdjacentElement("afterbegin", hider);
+  }
 }
 
 class MainClass_Derender {
@@ -1001,6 +1017,8 @@ class MainClass_Derender {
     MainClass_Derender.deUpdatePostImages(post);
     MainClass_Derender.deUpdatePostVideos(post);
     MainClass_Derender.deupdatePostMenu(post);
+    MainClass_Derender.deupdatePostMenu(post);
+    MainClass_Derender.removePostHider(post);
 
     if (MainClass_Base.isThreadPage) {
       MainClass_Derender.deUpdatePostDuplicates(post);
@@ -1105,6 +1123,16 @@ class MainClass_Derender {
     }
 
     ["img", "gif", "vid"].forEach((x) => modal.classList.remove(x));
+  }
+
+  static removePostHider(post) {
+    const hider = post?.querySelector(".post_hide-btn");
+    if (!post || !hider) {
+      return;
+    }
+
+    hider.removeEventListener("click", MainClass_Events.hidePost);
+    hider.remove();
   }
 }
 
@@ -1384,29 +1412,6 @@ class MainClass_Events {
     if (MainClass_Base.settings.popupAnimate && modal && modal.contains(event.target)) {
       modal.classList.remove("animation-paused");
     }
-
-    if (
-      target?.tagName === "DIV" &&
-      target.classList.contains("post") &&
-      !target.classList.contains("post_type_hidden") &&
-      !target.classList.contains("post_preview")
-    ) {
-      setTimeout(() => {
-        const menuButton = target.querySelector(".post__btn_type_menu");
-        if (menuButton) {
-          MainClass_Events.dispatchClick(menuButton);
-
-          setTimeout(() => {
-            const menu = document.querySelector("#ABU-select") || { childNodes: [] };
-            const hideMenuItem = [...menu.childNodes].find((x) => x.innerText === "Скрыть");
-
-            if (hideMenuItem) {
-              MainClass_Events.dispatchClick(hideMenuItem);
-            }
-          });
-        }
-      });
-    }
   }
 
   static async postMenuClickListener(e) {
@@ -1621,6 +1626,31 @@ class MainClass_Events {
     };
 
     window.addEventListener("scroll", scrolEv);
+  }
+
+  static hidePost(event) {
+    const post = event.target.parentElement;
+
+    if (post.classList.contains("post_type_hidden") || post.classList.contains("post_preview")) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    const menuButton = post.querySelector(".post__btn_type_menu");
+    if (menuButton) {
+      MainClass_Events.dispatchClick(menuButton);
+
+      setTimeout(() => {
+        const menu = document.querySelector("#ABU-select") || { childNodes: [] };
+        const hideMenuItem = [...menu.childNodes].find((x) => x.innerText === "Скрыть");
+
+        if (hideMenuItem) {
+          MainClass_Events.dispatchClick(hideMenuItem);
+        }
+      });
+    }
   }
 
   static dispatchClick(target) {

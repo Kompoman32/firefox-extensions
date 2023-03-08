@@ -173,8 +173,8 @@ html.kd-toggle body .post.post_preview {
   z-index: 999 !important;
 }
 
-html.kd-toggle body .post:not(.post_preview)::before {
-  content: "👁";
+html.kd-toggle body .post_hide-btn {
+  position: absolute;
 
   top: 5px;
   left: -21px;
@@ -189,15 +189,19 @@ html.kd-toggle body .post:not(.post_preview)::before {
   line-height: 16px;
 
   cursor: pointer;
+
+  user-select: none;
+
+  color: var(--theme_default_alttext);
 }
 
-html.kd-toggle body .post:not(.post_preview) > * {
-  cursor: auto;
+html.kd-toggle body .post_hide-btn:hover {
+  color: var(--theme_default_text);
 }
 
-/* html.kd-toggle body .post:not(.post_preview)::before {
-  content: '👁';
-} */
+html.kd-toggle body .post:not(.post_preview)::before {
+  content: "";
+}
 
 html.kd-toggle body .thread.collapsed > *:not(.post__details__oppost) {
   display: none;
