@@ -173,6 +173,32 @@ html.kd-toggle body .post.post_preview {
   z-index: 999 !important;
 }
 
+html.kd-toggle body .post:not(.post_preview)::before {
+  content: "👁";
+
+  top: 5px;
+  left: -21px;
+
+  width: 16px;
+  height: 16px;
+
+  background: var(--theme_default_altbtnbg);
+
+  border-radius: 6px;
+
+  line-height: 16px;
+
+  cursor: pointer;
+}
+
+html.kd-toggle body .post:not(.post_preview) > * {
+  cursor: auto;
+}
+
+/* html.kd-toggle body .post:not(.post_preview)::before {
+  content: '👁';
+} */
+
 html.kd-toggle body .thread.collapsed > *:not(.post__details__oppost) {
   display: none;
 }

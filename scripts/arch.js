@@ -10,8 +10,8 @@ function notFoundPage() {
   }
 
   const a = document.createElement("a");
-  a.innerText = "arhivach.ng";
-  a.href = `https://www.google.com/search?hl=ru&q=%2F${threadGroup}%2Fres%2F${threadId}%20site%3Aarhivach.ng`;
+  a.innerText = "arhivach.top";
+  a.href = `https://www.google.com/search?hl=ru&q=%2F${threadGroup}%2Fres%2F${threadId}%20site%3Aarhivach.top`;
 
   const textWrapper = document.querySelector(".box__header.nf__header");
 

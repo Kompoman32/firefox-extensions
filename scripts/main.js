@@ -1379,9 +1379,33 @@ class MainClass_Events {
 
   static mouseUpBodyListener(event) {
     const modal = document.querySelector("body > .mv .mv__main");
+    const target = event.target;
 
     if (MainClass_Base.settings.popupAnimate && modal && modal.contains(event.target)) {
       modal.classList.remove("animation-paused");
+    }
+
+    if (
+      target?.tagName === "DIV" &&
+      target.classList.contains("post") &&
+      !target.classList.contains("post_type_hidden") &&
+      !target.classList.contains("post_preview")
+    ) {
+      setTimeout(() => {
+        const menuButton = target.querySelector(".post__btn_type_menu");
+        if (menuButton) {
+          MainClass_Events.dispatchClick(menuButton);
+
+          setTimeout(() => {
+            const menu = document.querySelector("#ABU-select") || { childNodes: [] };
+            const hideMenuItem = [...menu.childNodes].find((x) => x.innerText === "Скрыть");
+
+            if (hideMenuItem) {
+              MainClass_Events.dispatchClick(hideMenuItem);
+            }
+          });
+        }
+      });
     }
   }
 
@@ -1470,7 +1494,7 @@ class MainClass_Events {
       MainClass_Events.savePostLink(e, postLink, true);
     });
 
-    addMenuItem("save-arhivach", "Сохранить на arhivach.ng", (e) => {
+    addMenuItem("save-arhivach", "Сохранить на arhivach.top", (e) => {
       e.preventDefault();
       e.stopPropagation();
       MainClass_Events.saveArhivach(e, postLink);
@@ -1525,7 +1549,7 @@ class MainClass_Events {
     }
 
     const a = document.createElement("a");
-    a.href = `https://arhivach.ng/add/#${postLink}`;
+    a.href = `https://arhivach.top/add/#${postLink}`;
     a.target = "_blank";
     a.click();
   }
@@ -1597,6 +1621,16 @@ class MainClass_Events {
     };
 
     window.addEventListener("scroll", scrolEv);
+  }
+
+  static dispatchClick(target) {
+    target.dispatchEvent(
+      new MouseEvent("click", {
+        bubbles: true,
+        cancelable: true,
+        view: window,
+      })
+    );
   }
 }
 
