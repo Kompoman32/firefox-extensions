@@ -32,6 +32,7 @@ var i18n_en_lang_lines = {
       "max-symbols": "/b/ titles max symbols",
     },
     "save-position": "Save scroll position on tab close",
+    "save-position-tooltip": "expires after 7 days, for /b/ - 3 days",
   },
   popup: {
     "show-background": "Add background on\nimage/video popup\n(reply popup not working)",

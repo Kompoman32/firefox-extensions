@@ -256,6 +256,15 @@ function restoreOptions() {
 
       element.innerText = line;
     });
+    document.querySelectorAll("[data-i18n-tooltip]").forEach((element) => {
+      const line = I18N.getLine(element.dataset.i18nTooltip);
+
+      if (line === null) {
+        return;
+      }
+
+      element.setAttribute("title", line);
+    });
   }
 
   function setCurrentChoice(result) {
