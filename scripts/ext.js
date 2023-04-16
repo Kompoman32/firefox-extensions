@@ -78,6 +78,7 @@ function setDefaultSettingsIfUndefined(settings, defaultSettings) {
     MainClass_Base.setupTopBar();
     MainClass_Base.setupStyleBySettings();
     MainClass_Events.setupCoreListeners();
+    MainClass_Events.checkExpiresLocalOptions();
 
     setTimeout(() => {
       MainClass_Base.setToggled(MainClass_Base.toggled);

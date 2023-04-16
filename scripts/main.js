@@ -1,5 +1,3 @@
-var bTimeExpires = 3 * 24 * 60 * 60 * 1000;
-
 function consoleLog(...args) {
   if (localStorage.getItem("kd-debug")) {
     console.log(...args);
@@ -1163,11 +1161,7 @@ class MainClass_Events {
           ? MainClass_Base.localSettings.savedPositions.b
           : MainClass_Base.localSettings.savedPositions.all;
 
-        const obj = { post: num };
-
-        if (MainClass_Base.isBThread) {
-          obj.date = +new Date();
-        }
+        const obj = { post: num, date: +new Date() };
 
         arr[MainClass_Base.currentThreadId] = obj;
 
@@ -1192,6 +1186,58 @@ class MainClass_Events {
     }
 
     location.hash = obj.post;
+  }
+
+  static checkExpiresLocalOptions() {
+    const bTimeExpires = 3 * 24 * 60 * 60 * 1000;
+    const allTimeExpires = 7 * 24 * 60 * 60 * 1000;
+
+    const currentDate = +new Date();
+
+    let changed = false;
+
+    const checkExpires = (arr, timeExpires) => {
+      const isArray = Array.isArray(arr);
+
+      Object.keys(arr).forEach((key, i) => {
+        const obj = arr[key];
+        const date = obj?.date;
+
+        if (date && currentDate > date + timeExpires) {
+          if (isArray) {
+            arr[key] = undefined;
+          } else {
+            delete arr[key];
+          }
+
+          changed = true;
+        }
+      });
+
+      if (isArray) {
+        return arr.filter((x) => !!x);
+      }
+
+      return arr;
+    };
+
+    MainClass_Base.localSettings.collapsedThreads.b = checkExpires(
+      MainClass_Base.localSettings.collapsedThreads.b,
+      bTimeExpires
+    );
+    MainClass_Base.localSettings.collapsedThreads.all = checkExpires(
+      MainClass_Base.localSettings.collapsedThreads.all,
+      allTimeExpires
+    );
+    MainClass_Base.localSettings.savedPositions.b = checkExpires(
+      MainClass_Base.localSettings.savedPositions.b,
+      bTimeExpires
+    );
+    // MainClass_Base.localSettings.savedPositions.all = checkExpires(MainClass_Base.localSettings.savedPositions.all, allTimeExpires);
+
+    if (changed) {
+      MainClass_Base.saveAllLocalSettings();
+    }
   }
 
   static collapseThreadClick(e) {
