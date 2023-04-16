@@ -30,7 +30,7 @@ class I18N {
   }
 
   static getLine(line) {
-    const lines = I18N.lines[I18N.lang];
+    const lines = I18N.lines[I18N.lang] || I18N.lines[i18nLanguageEnum.ru] || I18N.lines[i18nLanguageEnum.en];
 
     if (!lines) {
       return null;

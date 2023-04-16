@@ -113,6 +113,14 @@ class MainClass_Base {
     });
   }
 
+  static saveAllSettings() {
+    MainClass_Base.setOptions(MainClass_Base.settings);
+  }
+
+  static saveAllLocalSettings() {
+    MainClass_Base.setLocalOptions(MainClass_Base.localSettings);
+  }
+
   static setOptions(options) {
     browser.storage.sync.set(options).catch(() => {
       clearInterval(MainClass_Base.interval);
@@ -221,6 +229,10 @@ class MainClass_Base {
 
     MainClass_Base.setOptions({ toggled: true });
 
+    window.onbeforeunload = MainClass_Events.beforeUnload;
+
+    MainClass_Events.resetThreadPosition();
+
     setTimeout(() => {
       if (!!location.hash) {
         location = location;
@@ -237,6 +249,8 @@ class MainClass_Base {
     MainClass_Base.settings.toggled = false;
 
     MainClass_Base.setOptions({ toggled: false });
+
+    window.onbeforeunload = null;
   }
 
   static setupStyleBySettings() {
@@ -1137,6 +1151,49 @@ class MainClass_Derender {
 }
 
 class MainClass_Events {
+  static beforeUnload(event) {
+    // event.preventDefault();
+
+    if (MainClass_Base.isThreadPage && MainClass_Base.settings.saveThreadPosition) {
+      const post = [...document.querySelectorAll(".post")].find((x) => x.getBoundingClientRect().y > 0);
+      const num = +post?.dataset.num;
+
+      if (post) {
+        const arr = MainClass_Base.isBThread
+          ? MainClass_Base.localSettings.savedPositions.b
+          : MainClass_Base.localSettings.savedPositions.all;
+
+        const obj = { post: num };
+
+        if (MainClass_Base.isBThread) {
+          obj.date = +new Date();
+        }
+
+        arr[MainClass_Base.currentThreadId] = obj;
+
+        MainClass_Base.saveAllLocalSettings();
+      }
+    }
+  }
+
+  static resetThreadPosition() {
+    if (!MainClass_Base.isThreadPage) {
+      return;
+    }
+
+    const arr = MainClass_Base.isBThread
+      ? MainClass_Base.localSettings?.savedPositions?.b
+      : MainClass_Base.localSettings?.savedPositions?.all;
+
+    const obj = arr?.[MainClass_Base.currentThreadId];
+
+    if (!obj) {
+      return;
+    }
+
+    location.hash = obj.post;
+  }
+
   static collapseThreadClick(e) {
     e.preventDefault();
     e.stopPropagation();
@@ -1169,7 +1226,7 @@ class MainClass_Events {
           }
 
           arr.push(obj);
-          MainClass_Base.setLocalOptions(MainClass_Base.localSettings);
+          MainClass_Base.saveAllLocalSettings();
         }
       } else {
         thread.classList.remove("collapsed");
@@ -1183,7 +1240,7 @@ class MainClass_Events {
           if (index > -1) {
             arr.splice(index, 1);
 
-            MainClass_Base.setLocalOptions(MainClass_Base.localSettings);
+            MainClass_Base.saveAllLocalSettings();
           }
         }
       }
@@ -1206,6 +1263,7 @@ class MainClass_Events {
           const showPlashqueChanged = newSettings.showPlashque !== currentSettings.showPlashque;
           const titleToBottomChanged = newSettings.titleToBottom !== currentSettings.titleToBottom;
           const runGifChanged = newSettings.runGif !== currentSettings.runGif;
+          const saveThreadPositionChanged = newSettings.saveThreadPosition !== currentSettings.saveThreadPosition;
           const downloadWarningChanged =
             newSettings.downloadWarning !== currentSettings.downloadWarning ||
             newSettings.downloadWarningSize !== currentSettings.downloadWarningSize ||

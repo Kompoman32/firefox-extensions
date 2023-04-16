@@ -31,6 +31,7 @@ var i18n_en_lang_lines = {
       show: "Show titles on /b/",
       "max-symbols": "/b/ titles max symbols",
     },
+    "save-position": "Save scroll position on tab close",
   },
   popup: {
     "show-background": "Add background on\nimage/video popup\n(reply popup not working)",

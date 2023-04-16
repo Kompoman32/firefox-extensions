@@ -19,6 +19,8 @@ var defaultOptionsValues = {
 
   runGif: true,
 
+  saveThreadPosition: false,
+
   downloadWarning: true,
   downloadWarningSize: 10,
   downloadWarningScale: "Mb",
@@ -67,5 +69,9 @@ var defaultLocalOptionsValues = {
   collapsedThreads: {
     b: [],
     all: [],
+  },
+  savedPositions: {
+    b: {},
+    all: {},
   },
 };
