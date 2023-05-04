@@ -31,7 +31,7 @@
         "*://2ch.life/*/arch/*",
         "*://beta.2ch.life/*/arch/*"
       ],
-      "js": ["scripts/arch.js"],
+      "js": ["default.js", "scripts/main.js", "scripts/modals.js", "scripts/arch.js"],
       "css": [],
       "run_at": "document_end"
     },

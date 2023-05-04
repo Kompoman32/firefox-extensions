@@ -765,7 +765,7 @@ class MainClass_Render {
     }
 
     if (post.classList.contains("post_type_oppost")) {
-      post = post.parentElement;
+      post = post.parentElement.parentElement;
     }
 
     let button = post.querySelector('[*|href="#icon__addmenu"]');
@@ -1871,21 +1871,22 @@ class MainClass_Shortcuts {
     };
 
     const checkMatch = (shortcut) => {
+      shortcut = shortcut || [];
       return shortcut[0] === shift && shortcut[1] === ctrl && shortcut[2] === alt && shortcut[3] === key;
     };
 
     switch (true) {
-      case checkMatch(MainClass_Base.settings.shortcuts.popupAnimating): {
+      case checkMatch(MainClass_Base.settings.shortcuts?.popupAnimating): {
         stopEvent();
         MainClass_Base.setOptions({ popupAnimate: !MainClass_Base.settings.popupAnimate });
         break;
       }
-      case checkMatch(MainClass_Base.settings.shortcuts.popupBackground): {
+      case checkMatch(MainClass_Base.settings.shortcuts?.popupBackground): {
         stopEvent();
         MainClass_Base.setOptions({ popupBackground: !MainClass_Base.settings.popupBackground });
         break;
       }
-      case checkMatch(MainClass_Base.settings.shortcuts.popupChangeAnimation): {
+      case checkMatch(MainClass_Base.settings.shortcuts?.popupChangeAnimation): {
         stopEvent();
 
         const currentPopupAnimationIndex = animationValues.indexOf(MainClass_Base.settings.popupAnimation);
@@ -1894,12 +1895,12 @@ class MainClass_Shortcuts {
         MainClass_Base.setOptions({ popupAnimation: animationValues[nextAnimationIndex] });
         break;
       }
-      case checkMatch(MainClass_Base.settings.shortcuts.nbleHighlight): {
+      case checkMatch(MainClass_Base.settings.shortcuts?.nbleHighlight): {
         stopEvent();
         MainClass_Base.setOptions({ colorPost: !MainClass_Base.settings.colorPost });
         break;
       }
-      case checkMatch(MainClass_Base.settings.shortcuts.popupSkipVideo): {
+      case checkMatch(MainClass_Base.settings.shortcuts?.popupSkipVideo): {
         stopEvent();
         MainClass_Base.setOptions({ popupSkipVideo: !MainClass_Base.settings.popupSkipVideo });
         break;
