@@ -33,45 +33,80 @@ async function sleep(time = 100) {
   });
 }
 
+function getAllKeyboardMisstypoSynonyms(text) {
+  const normal = `ё1234567890-=йцукенгшщзхъ\\фывапролджэячсмитьбю.`;
+  const translated = `\`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./`;
+  const normalUppercase = `Ё!"№;%:?*()_+ЙЦУКЕНГШЩЗХЪ/ФЫВАПРОЛДЖЭЯЧСМИТЬБЮ,`.toLocaleLowerCase();
+  const translatedUppercase = `~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?`.toLocaleLowerCase();
+
+  const missLeftNormal = `ёё1234567890-ййцукенгшщзхъффывапролджяячсмитьбю`;
+  const missLeftTranslated = `\`\`1234567890-qqwertyuiop[]aasdfghjkl;'zzxcvbnm,.`;
+  const missLeftNormalUppercase = `ЁЁ!"№;%:?*()_ЙЙЦУКЕНГШЩЗХЪФФЫВАПРОЛДЖЯЯЧСМИТЬБЮ`.toLocaleLowerCase();
+  const missLeftTranslatedUppercase = `~~!@#$%^&*()_QQWERTYUIOP{}AASDFGHJKL:ZZXCVBNM<>`.toLocaleLowerCase();
+
+  const missRightNormal = `1234567890-==цукенгшщзхъ\\\\ывапролджээчсмитьбю..`;
+  const missRightTranslated = `1234567890-==wertyuiop[]\\\\sdfghjkl;''xcvbnm,.//`;
+  const missRightNormalUppercase = `!"№;%:?*()_++ЦУКЕНГШЩЗХЪ//ЫВАПРОЛДЖЭЭЧСМИТЬБЮ,,`.toLocaleLowerCase();
+  const missRightTranslatedUppercase = `!@#$%^&*()_++WERTYUIOP{}||SDFGHJKL:""XCVBNM<>??`.toLocaleLowerCase();
+
+  const results = [];
+
+  text.split("").forEach((char, i) => {
+    let arrsToCheck = [
+      normal,
+      translated,
+      normalUppercase,
+      translatedUppercase,
+      missLeftNormal,
+      missLeftTranslated,
+      missLeftNormalUppercase,
+      missLeftTranslatedUppercase,
+      missRightNormal,
+      missRightTranslated,
+      missRightNormalUppercase,
+      missRightTranslatedUppercase,
+    ];
+    let index = -1;
+
+    const foundedArrIndex = arrsToCheck.findIndex((arr) => arr.includes(char));
+
+    if (foundedArrIndex > -1) {
+      index = arrsToCheck[foundedArrIndex].indexOf(char);
+      arrsToCheck.splice(foundedArrIndex, 1);
+    }
+
+    if (index < 0) {
+      return;
+    }
+
+    results.push(
+      ...arrsToCheck
+        .map((arr) => {
+          const newText = text.split("");
+
+          newText.splice(i, 1, arr[index]);
+          return newText.join("");
+        })
+        .filter((x, i, arr) => arr.indexOf(x) === i)
+    );
+  });
+
+  return results.filter((x, i, arr) => arr.indexOf(x) === i);
+}
+
+var bumpsSynonyms = [];
+var rollsSynonyms = [];
+
 function isPostTextBump(text) {
   text = text.toLocaleLowerCase().trim();
 
-  const bumps = [
-    "bump",
-    "bamp",
-    "бамп",
-    "игьз",
-    "ифьз",
-    ",fvg",
-    "<fvg",
-    "bum",
-    "bam",
-    "бам",
-    "игь",
-    "ифь",
-    ",fv",
-    "<fv",
-    "бумп",
-    ",evg",
-    "<evg",
-    "бiмп",
-    "бшмп",
-    ",шvg",
-    "<шvg",
-    ",ivg",
-    "<ivg",
-    "бшмп",
-  ];
-
-  return bumps.includes(text);
+  return bumpsSynonyms.includes(text);
 }
 
 function isPostTextRoll(text) {
   text = text.toLocaleLowerCase().trim();
 
-  const rolls = ["roll", "ролл", "кщдд", "hjkk", "rol", "рол", "кщд", "hjk"];
-
-  return rolls.includes(text);
+  return rollsSynonyms.includes(text);
 }
 
 function isDuplicatePostText(source, target) {
@@ -109,6 +144,20 @@ class MainClass_Base {
     Object.keys(initializer).forEach((key) => {
       MainClass_Base[key] = initializer[key];
     });
+
+    const bumps = ["bump", "bamp", "бамп", "бумп", "бам", "bam"];
+
+    bumpsSynonyms = bumps.reduce((acc, x) => {
+      acc.push(...getAllKeyboardMisstypoSynonyms(x));
+      return acc;
+    }, []);
+
+    const rolls = ["roll", "ролл", "rull", "рулл", "rol", "рол"];
+
+    rollsSynonyms = rolls.reduce((acc, x) => {
+      acc.push(...getAllKeyboardMisstypoSynonyms(x));
+      return acc;
+    }, []);
   }
 
   static saveAllSettings() {
