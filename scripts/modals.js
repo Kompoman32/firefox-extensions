@@ -168,23 +168,28 @@ class Modal_ImageDownloader extends ModalClass {
     this.modalRef?.remove();
   }
 
-  refreshSizeText() {
-    function parseSize(text) {
-      text = text.split(",")[0] || "";
-      const val = +text.substring(0, text.length - 2) || 0;
-      switch (true) {
-        case text.includes("Кб"):
-          return val;
+  parseSize(text) {
+    text = text.split(",")[0] || "";
+    const val = +text.substring(0, text.length - 2) || 0;
+    switch (true) {
+      case text.includes("Кб"):
+        return val;
 
-        case text.includes("Мб"):
-          return val * 1024;
+      case text.includes("Мб"):
+        return val * 1024;
 
-        case text.includes("Гб"):
-          return val * 1024 * 1024;
-      }
-      return val;
+      case text.includes("Гб"):
+        return val * 1024 * 1024;
     }
+    return val;
+  }
 
+  getImagesSize() {
+    const images = [...this.modalRef.querySelectorAll(".images img.selected")];
+    return images.reduce((acc, x) => acc + this.parseSize(x.dataset.size), 0);
+  }
+
+  refreshSizeText() {
     function needWarning(size) {
       const needWarning = MainClass_Base.settings.downloadWarning;
 
@@ -216,8 +221,7 @@ class Modal_ImageDownloader extends ModalClass {
       return `${size.toFixed("2")}${sizeLabels[labelInd]}`;
     }
 
-    const images = [...this.modalRef.querySelectorAll(".images img.selected")];
-    const size = images.reduce((acc, x) => acc + parseSize(x.dataset.size), 0);
+    const size = this.getImagesSize();
 
     const sizeFormatted = formatSize(size);
 
@@ -257,13 +261,15 @@ class Modal_ImageDownloader extends ModalClass {
 
     const promises = [];
     const files = [];
+    const errorImgs = [];
 
-    this.setLoading(images.length);
+    this.setLoading(this.getImagesSize());
 
     const namesMap = new Map();
 
     images.forEach(async (img, i) => {
       let filename = img.dataset.title;
+      const imgSize = this.parseSize(img.dataset.size);
 
       if (namesMap.has(filename)) {
         const originalFileName = filename;
@@ -282,7 +288,7 @@ class Modal_ImageDownloader extends ModalClass {
       promises.push(
         fetch(imgURL, { signal: this.abortController.signal })
           .then(async (x) => {
-            this.setLoadingProgress();
+            this.setLoadingProgress(imgSize);
 
             const blob = await x.blob();
             files.push({
@@ -292,7 +298,7 @@ class Modal_ImageDownloader extends ModalClass {
             });
           })
           .catch((e) => {
-            this.setLoadingProgress();
+            errorImgs.push(img);
             throw e;
           })
       );
@@ -303,8 +309,10 @@ class Modal_ImageDownloader extends ModalClass {
         return;
       }
 
-      if (promises.some((x) => x.status === "rejected")) {
-        alert("Некоторые файлы не были загружены из-за непредвиденной ошибки");
+      const hasErrors = promises.some((x) => x.status === "rejected");
+
+      if (hasErrors) {
+        alert("Некоторые файлы не были загружены из-за непредвиденной ошибки. Они остались выделенными.");
       }
 
       browser.runtime.sendMessage({
@@ -315,7 +323,11 @@ class Modal_ImageDownloader extends ModalClass {
         },
       });
 
-      this.close();
+      if (!hasErrors) {
+        this.close();
+      } else {
+        this.processErrorImages(errorImgs);
+      }
     });
   }
 
@@ -326,15 +338,29 @@ class Modal_ImageDownloader extends ModalClass {
 
     loaderWrapper.classList.remove("hidden");
 
-    this.loadingCount = -1;
-    this.setLoadingProgress();
+    this.loadingCount = 0;
+    this.setLoadingProgress(0);
   }
 
-  setLoadingProgress() {
-    this.loadingCount++;
+  setLoadingProgress(size) {
+    this.loadingCount += size;
 
     const statusBar = this.modalRef.querySelector(".loader-wrapper .status-bar");
     statusBar.style.width = ((this.loadingCount / this.loadingMaxCount) * 100).toFixed(2) + "%";
+  }
+
+  processErrorImages(errorImages) {
+    const images = [...this.modalRef.querySelectorAll(".images img.selected")];
+    images.forEach((img) => {
+      if (errorImages.every((x) => x !== img)) {
+        img.classList.remove("selected");
+      }
+    });
+
+    this.refreshSizeText();
+    this.upadateIsValid();
+
+    this.abortLoading();
   }
 
   abortLoading() {
@@ -342,6 +368,9 @@ class Modal_ImageDownloader extends ModalClass {
 
     const loaderWrapper = this.modalRef.querySelector(".loader-wrapper");
     loaderWrapper.classList.add("hidden");
+
+    this.loadingCount = 0;
+    this.setLoadingProgress(0);
   }
 }
 
