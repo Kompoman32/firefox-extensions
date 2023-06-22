@@ -451,7 +451,8 @@ html.kd-toggle body .mv.animated .mv__main.animation-paused {
   animation-name: "unset";
 }
 
-html.kd-toggle body #js-mv-player[loop] + #html5videofixer::after {
+html.kd-toggle body #js-mv-player + #html5videofixer::before,
+html.kd-toggle body #js-mv-player + #html5videofixer::after {
   content: "↻";
   display: block;
   position: absolute;
@@ -460,10 +461,20 @@ html.kd-toggle body #js-mv-player[loop] + #html5videofixer::after {
   right: 0;
   margin: 2px 8px;
   font-size: 16px;
-  transform: scale(1.5);
+  transform: scale(1.5) rotateZ(90deg);
   line-height: 16px;
   letter-spacing: 0px;
   text-align: center;
+}
+
+html.kd-toggle body #js-mv-player:not([loop]) + #html5videofixer::after {
+  content: "⟍";
+  transform: scale(1.5);
+}
+
+html.kd-toggle body #js-mv-player:not([loop]) + #html5videofixer::before,
+html.kd-toggle body #js-mv-player:not([loop]) + #html5videofixer::after {
+  opacity: 0.5;
 }
 
 /** Catalog */
