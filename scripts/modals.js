@@ -191,6 +191,9 @@ class Modal_ImageDownloader extends ModalClass {
     } else {
       images.forEach((x) => x.classList.add("selected"));
     }
+
+    this.refreshSizeText();
+    this.upadateIsValid();
   }
 
   onImageListClick(e) {
@@ -220,18 +223,15 @@ class Modal_ImageDownloader extends ModalClass {
     this.selectionDraggableValue = !target.classList.contains("selected");
 
     target.classList.toggle("selected", this.selectionDraggableValue);
+
+    this.refreshSizeText();
+    this.upadateIsValid();
   }
+
   onImageListMouseUp(e) {
     this.selectionDraggable = false;
-
-    const target = e.target;
-
-    if (target.tagName !== "IMG") {
-      return;
-    }
-
-    target.classList.toggle("selected", this.selectionDraggableValue);
   }
+
   onImageListMouseMove(e) {
     e.preventDefault();
 
@@ -241,7 +241,14 @@ class Modal_ImageDownloader extends ModalClass {
       return;
     }
 
+    const oldValue = target.classList.contains("selected");
+
     target.classList.toggle("selected", this.selectionDraggableValue);
+
+    if (oldValue !== this.selectionDraggableValue) {
+      this.refreshSizeText();
+      this.upadateIsValid();
+    }
   }
 
   parseSize(text) {
@@ -312,6 +319,9 @@ class Modal_ImageDownloader extends ModalClass {
 
       sizeText.classList.add("warning");
       sizeText.title = warningText;
+    } else {
+      sizeText.classList.remove("warning");
+      sizeText.title = "";
     }
   }
 
