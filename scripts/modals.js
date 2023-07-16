@@ -15,6 +15,9 @@ class Modal_ImageDownloader extends ModalClass {
   zipFilename = "";
   imageElements = [];
 
+  selectionDraggable = false;
+  selectionDraggableValue = false;
+
   loadingCount = 0;
   loadingMaxCount = 0;
 
@@ -31,9 +34,19 @@ class Modal_ImageDownloader extends ModalClass {
     const wrapper = document.createElement("div");
 
     //Header
-    const header = document.createElement("h2");
-    header.innerText = "Выберите изображения для скачивания";
+    const header = document.createElement("header");
     wrapper.appendChild(header);
+
+    //Header title
+    const title = document.createElement("h2");
+    title.innerText = "Выберите изображения для скачивания";
+    header.appendChild(title);
+
+    const selectAllButton = document.createElement("button");
+    selectAllButton.classList.add("kd-button", "secondary");
+    selectAllButton.innerText = "Выбрать все";
+    selectAllButton.addEventListener("click", this.onSelectAllButtonClick.bind(this));
+    header.appendChild(selectAllButton);
 
     // Images
     const imagesList = document.createElement("div");
@@ -52,6 +65,7 @@ class Modal_ImageDownloader extends ModalClass {
       image.style.height = height;
       image.style.width = width;
       image.title = x.dataset.title;
+      image.setAttribute("draggable", false);
 
       image.dataset.src = x.dataset.src;
       image.dataset.title = x.dataset.title;
@@ -60,24 +74,10 @@ class Modal_ImageDownloader extends ModalClass {
       imagesList.appendChild(image);
     });
 
-    imagesList.addEventListener("click", (e) => {
-      e.preventDefault();
-
-      const target = e.target;
-
-      if (target.tagName !== "IMG") {
-        return;
-      }
-
-      if (target.classList.contains("selected")) {
-        target.classList.remove("selected");
-      } else {
-        target.classList.add("selected");
-      }
-
-      this.refreshSizeText();
-      this.upadateIsValid();
-    });
+    // imagesList.addEventListener("click", this.onImageListClick.bind(this));
+    imagesList.addEventListener("mousedown", this.onImageListMouseDown.bind(this));
+    document.addEventListener("mouseup", this.onImageListMouseUp.bind(this));
+    imagesList.addEventListener("mousemove", this.onImageListMouseMove.bind(this));
 
     wrapper.appendChild(imagesList);
 
@@ -166,6 +166,82 @@ class Modal_ImageDownloader extends ModalClass {
   close() {
     this.abortController.abort();
     this.modalRef?.remove();
+  }
+
+  onSelectAllButtonClick() {
+    const images = [...this.modalRef.querySelectorAll(".images img")];
+
+    let allSelected = true;
+    let allUnselected = true;
+
+    for (let i = 0; i < images.length; i++) {
+      if (images[i].classList.contains("selected")) {
+        allUnselected = false;
+      } else {
+        allSelected = false;
+      }
+
+      if (!allSelected && !allUnselected) {
+        break;
+      }
+    }
+
+    if (allSelected) {
+      images.forEach((x) => x.classList.remove("selected"));
+    } else {
+      images.forEach((x) => x.classList.add("selected"));
+    }
+  }
+
+  onImageListClick(e) {
+    e.preventDefault();
+
+    const target = e.target;
+
+    if (target.tagName !== "IMG") {
+      return;
+    }
+
+    target.classList.toggle("selected", !target.classList.contains("selected"));
+
+    this.refreshSizeText();
+    this.upadateIsValid();
+  }
+  onImageListMouseDown(e) {
+    e.preventDefault();
+
+    const target = e.target;
+
+    if (target.tagName !== "IMG") {
+      return;
+    }
+
+    this.selectionDraggable = true;
+    this.selectionDraggableValue = !target.classList.contains("selected");
+
+    target.classList.toggle("selected", this.selectionDraggableValue);
+  }
+  onImageListMouseUp(e) {
+    this.selectionDraggable = false;
+
+    const target = e.target;
+
+    if (target.tagName !== "IMG") {
+      return;
+    }
+
+    target.classList.toggle("selected", this.selectionDraggableValue);
+  }
+  onImageListMouseMove(e) {
+    e.preventDefault();
+
+    const target = e.target;
+
+    if (target.tagName !== "IMG" || !this.selectionDraggable) {
+      return;
+    }
+
+    target.classList.toggle("selected", this.selectionDraggableValue);
   }
 
   parseSize(text) {

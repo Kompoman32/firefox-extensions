@@ -159,6 +159,8 @@ html.kd-toggle body .kd-modal.view-images .images img {
   border-radius: 10px;
 
   cursor: pointer;
+
+  user-select: none;
 }
 
 html.kd-toggle body .kd-modal.download-images .images img.selected {
@@ -255,7 +257,17 @@ html.kd-toggle body .kd-modal.view-images .images .image-wrapper .header .post-l
 
 /* View Images */
 
-/* Download Images LARGE*/
+/* Download Images */
+
+/* Select all button */
+html.kd-toggle body .kd-modal.download-images header {
+  position: relative;
+}
+html.kd-toggle body .kd-modal.download-images header .kd-button {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
 
 html.kd-toggle body .kd-modal.download-images .loader-wrapper .loader {
   position: absolute;
